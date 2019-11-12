@@ -28,6 +28,12 @@ class RegionFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_region, container, false)
+
+        rootView.regionRecyclerView.apply {
+            setItemSpacingDp(REGION_SPACING)
+            setControllerAndBuildModels(RegionEpoxyController())
+        }
+
         return rootView
     }
 
@@ -38,6 +44,7 @@ class RegionFragment : Fragment() {
 
     companion object {
         private const val ARG_PARAM1 = "param1"
+        private const val REGION_SPACING = 8
 
         /**
          * Use this factory method to create a new instance of

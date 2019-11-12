@@ -7,6 +7,4 @@ import dagger.android.ContributesAndroidInjector
 
 @Module
 interface RegionModule {
-    /*@Binds
-    abstract fun providePostDetailView(fragment: RegionFragment): RegionView*/
 }
