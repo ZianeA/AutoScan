@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegionFragment">
+    tools:context=".presentation.region.RegionFragment">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -20,6 +20,7 @@
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
+        android:id="@+id/testTextView"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="@string/hello_blank_fragment"

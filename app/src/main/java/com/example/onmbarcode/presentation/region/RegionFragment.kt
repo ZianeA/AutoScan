@@ -1,13 +1,17 @@
-package com.example.onmbarcode
+package com.example.onmbarcode.presentation.region
 
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
+import com.example.onmbarcode.R
+import com.ncapdevi.fragnav.FragNavController
+import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_region.view.*
+import javax.inject.Inject
 
 /**
  * A simple [Fragment] subclass.
@@ -15,9 +19,8 @@ import androidx.core.app.ActivityCompat
  * create an instance of this fragment.
  */
 class RegionFragment : Fragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    @Inject
+    lateinit var fragNavController: FragNavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,6 +31,10 @@ class RegionFragment : Fragment() {
         return rootView
     }
 
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
 
     companion object {
         private const val ARG_PARAM1 = "param1"
