@@ -11,13 +11,13 @@ class EquipmentRepository @Inject constructor() {
         return Single.just(createDummyData())
     }
 
-    private fun createDummyData(dataCount: Int = 100): List<Equipment> {
+    private fun createDummyData(dataCount: Int = 20): List<Equipment> {
         val equipments = mutableListOf<Equipment>()
         val equipmentTypes = listOf("écran", "clavier", "souris", "chaise", "imprimante", "bureau")
         for (i in 0..dataCount) {
             val barcode = Random.nextInt(2000, 9999)
             val type = equipmentTypes[Random.nextInt(0, equipmentTypes.size - 1)]
-            equipments.add(Equipment(barcode, type))
+            equipments.add(Equipment(barcode, type, Random.nextBoolean()))
         }
 
         return equipments

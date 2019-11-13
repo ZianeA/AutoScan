@@ -1,6 +1,8 @@
 package com.example.onmbarcode.presentation.equipment
 
 
+import android.animation.ArgbEvaluator
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,10 +10,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import androidx.transition.AutoTransition
+import androidx.transition.Transition
+import androidx.transition.TransitionManager
 import com.airbnb.epoxy.EpoxyRecyclerView
 
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.desk.Desk
+import com.google.android.material.animation.ArgbEvaluatorCompat
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_equipment.view.*
 import javax.inject.Inject
@@ -25,7 +33,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
     @Inject
     lateinit var presenter: EquipmentPresenter
 
-    private val epoxyController = EquipmentEpoxyController()
+    lateinit var epoxyController: EquipmentEpoxyController
     private lateinit var recyclerView: EpoxyRecyclerView
 
     override fun onCreateView(
@@ -42,6 +50,23 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
         recyclerView = rootView.equipmentRecyclerView
         recyclerView.setItemSpacingDp(EQUIPMENT_ITEM_SPACING)
+        // TODO refactor, move to EpoxyModel
+        epoxyController = EquipmentEpoxyController(View.OnClickListener {
+            val greenColor = ContextCompat.getColor(it.context, R.color.materialGreen)
+            val redColor = ContextCompat.getColor(it.context, R.color.materialRed)
+            val cardView = it as CardView
+
+            if (cardView.cardBackgroundColor.defaultColor == greenColor)
+                return@OnClickListener
+
+            ObjectAnimator.ofObject(
+                cardView,
+                "cardBackgroundColor",
+                ArgbEvaluator(),
+                redColor,
+                greenColor
+            ).start()
+        })
 
         return rootView
     }
@@ -72,7 +97,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     companion object {
-        private const val EQUIPMENT_ITEM_SPACING = 8
+        private const val EQUIPMENT_ITEM_SPACING = 1
         private const val ARG_SELECTED_DESK = "selected_desk"
 
         /**
