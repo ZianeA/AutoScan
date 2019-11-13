@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.onmbarcode.R
+import com.example.onmbarcode.presentation.desk.DeskFragment
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_region.view.*
@@ -30,8 +31,11 @@ class RegionFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_region, container, false)
 
         rootView.regionRecyclerView.apply {
-            setItemSpacingDp(REGION_SPACING)
-            setControllerAndBuildModels(RegionEpoxyController())
+            setItemSpacingDp(REGION_ITEM_SPACING)
+            val regionEpoxyController = RegionEpoxyController {
+                fragNavController.pushFragment(DeskFragment.newInstance(it))
+            }
+            setControllerAndBuildModels(regionEpoxyController)
         }
 
         return rootView
@@ -43,22 +47,15 @@ class RegionFragment : Fragment() {
     }
 
     companion object {
-        private const val ARG_PARAM1 = "param1"
-        private const val REGION_SPACING = 8
+        private const val REGION_ITEM_SPACING = 8
 
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         * @param param1 Parameter 1.
          * @return A new instance of fragment RegionFragment.
          */
         @JvmStatic
-        fun newInstance(param1: String) =
-            RegionFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                }
-            }
+        fun newInstance() = RegionFragment()
     }
 }

@@ -1,16 +1,23 @@
 package com.example.onmbarcode.presentation.region
 
+import android.view.View
 import com.airbnb.epoxy.AsyncEpoxyController
 
-class RegionEpoxyController : AsyncEpoxyController() {
+class RegionEpoxyController(private val onRegionClickListener: ((clickedRegion: Region) -> Unit)) :
+    AsyncEpoxyController() {
     override fun buildModels() {
         region {
+            val darElBeidaRegion = Region("Dar El Beida", 20, 40)
             id(0)
-            region(Region("Dar El Beida", 20, 40))
+            region(darElBeidaRegion)
+            clickListener(View.OnClickListener { onRegionClickListener.invoke(darElBeidaRegion) })
         }
+
         region {
+            val babEzzouarRegion = Region("Bab Ezzouar", 32, 50)
             id(1)
-            region(Region("Bab Ezzouar", 32, 50))
+            region(babEzzouarRegion)
+            clickListener(View.OnClickListener { onRegionClickListener.invoke(babEzzouarRegion) })
         }
     }
 }

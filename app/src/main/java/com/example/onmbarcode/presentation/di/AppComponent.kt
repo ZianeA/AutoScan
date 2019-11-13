@@ -8,7 +8,7 @@ import dagger.android.support.AndroidSupportInjectionModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [AndroidSupportInjectionModule::class, ActivityBindingModule::class])
+@Component(modules = [AndroidSupportInjectionModule::class, AppModule::class, ActivityBindingModule::class])
 interface AppComponent {
     fun inject(app: OnmBarCodeApp)
 

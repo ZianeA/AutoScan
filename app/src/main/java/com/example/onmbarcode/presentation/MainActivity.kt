@@ -1,6 +1,7 @@
 package com.example.onmbarcode.presentation
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.onmbarcode.R
@@ -35,14 +36,26 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
         fragNavController.onSaveInstanceState(outState)
     }
 
+    override fun onBackPressed() {
+        if (!fragNavController.popFragment()) {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            fragNavController.popFragment()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = androidInjector
 
     override val numberOfRootFragments: Int = 1
 
     override fun getRootFragment(index: Int): Fragment {
-        if (index == FragNavController.TAB1) return RegionFragment.newInstance(
-            ""
-        )
+        if (index == FragNavController.TAB1) return RegionFragment.newInstance()
         else throw IllegalArgumentException("Unknown index")
     }
 }

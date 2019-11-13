@@ -5,5 +5,8 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="toolbar_title_region">Région</string>
+    <string name="toolbar_title_desk">Bureau</string>
     <string name="scanned_desk_count">Nombre de bureaux scannés: %1$d/%2$d</string>
+    <string name="scanned_equipment_count">Nombre d\'équipements scannés: %1$d/%2$d</string>
+    <string name="desk_barcode">Bureau: %1$d</string>
 </resources>
