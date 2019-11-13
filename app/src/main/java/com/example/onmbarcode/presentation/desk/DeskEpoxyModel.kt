@@ -13,6 +13,9 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
     @EpoxyAttribute
     lateinit var desk: Desk
 
+    @EpoxyAttribute
+    lateinit var clickListener: View.OnClickListener
+
     override fun bind(holder: DeskHolder) {
         super.bind(holder)
         holder.apply {
@@ -22,7 +25,13 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
                 desk.scanCount,
                 desk.totalScanCount
             )
+            view.setOnClickListener(clickListener)
         }
+    }
+
+    override fun unbind(holder: DeskHolder) {
+        super.unbind(holder)
+        holder.view.setOnClickListener(null)
     }
 }
 

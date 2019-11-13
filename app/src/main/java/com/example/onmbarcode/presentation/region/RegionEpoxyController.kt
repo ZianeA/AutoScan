@@ -17,7 +17,7 @@ class RegionEpoxyController(private val onRegionClickListener: ((clickedRegion: 
             val babEzzouarRegion = Region("Bab Ezzouar", 32, 50)
             id(1)
             region(babEzzouarRegion)
-            clickListener(View.OnClickListener { onRegionClickListener.invoke(babEzzouarRegion) })
+            clickListener { _ -> onRegionClickListener.invoke(babEzzouarRegion) }
         }
     }
 }

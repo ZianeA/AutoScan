@@ -9,4 +9,7 @@
     <string name="scanned_desk_count">Nombre de bureaux scannés: %1$d/%2$d</string>
     <string name="scanned_equipment_count">Nombre d\'équipements scannés: %1$d/%2$d</string>
     <string name="desk_barcode">Bureau: %1$d</string>
+    <string name="toolbar_title_equipment">Équipement</string>
+    <string name="equipment_barcode">Équipement: %1$d</string>
+    <string name="equipment_type">Type: %1$s</string>
 </resources>

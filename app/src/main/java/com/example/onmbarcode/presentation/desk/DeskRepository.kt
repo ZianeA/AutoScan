@@ -11,9 +11,9 @@ class DeskRepository @Inject constructor() {
         return Single.just(createDummyData())
     }
 
-    private fun createDummyData(deskCount: Int = 100): List<Desk> {
+    private fun createDummyData(dataCount: Int = 100): List<Desk> {
         val desks = mutableListOf<Desk>()
-        for (i in 0..deskCount) {
+        for (i in 0..dataCount) {
             val deskBarcode = Random.nextInt(2000, 9999)
             val totalScanCount = Random.nextInt(2, 20)
             val scanCount = Random.nextInt(0, totalScanCount)

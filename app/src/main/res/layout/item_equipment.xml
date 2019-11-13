@@ -4,28 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
-    android:orientation="vertical">
+    android:background="@android:color/white">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/equipmentBarcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Région Dar El Beida" />
+        tools:text="Équipement: 25860" />
 
     <TextView
-        android:id="@+id/scanCount"
+        android:id="@+id/equipmentType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/title"
-        app:layout_constraintTop_toBottomOf="@+id/title"
-        tools:text="Nombre de bureaux scannés: 5/60" />
+        app:layout_constraintStart_toStartOf="@+id/equipmentBarcode"
+        app:layout_constraintTop_toBottomOf="@+id/equipmentBarcode"
+        tools:text="Type: écran" />
 </androidx.constraintlayout.widget.ConstraintLayout>
