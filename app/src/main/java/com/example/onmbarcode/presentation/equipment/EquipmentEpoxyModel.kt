@@ -38,6 +38,8 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             val equipmentColor = if (equipment.isScanned) greenColor else redColor
             cardView.setBackgroundColor(equipmentColor)
             cardView.setOnClickListener {
+                if (equipment.isScanned) return@setOnClickListener
+
                 animateEquipmentColor(
                     cardView,
                     revealView,
@@ -59,9 +61,6 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
         scannedColor: Int,
         unscannedColor: Int
     ) {
-        if (cardView.cardBackgroundColor.defaultColor == scannedColor)
-            return
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             //get the center for the clipping circle relative to view.
             val cx = revealView.width / 2
