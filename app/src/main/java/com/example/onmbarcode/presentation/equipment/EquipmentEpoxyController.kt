@@ -3,7 +3,14 @@ package com.example.onmbarcode.presentation.equipment
 import android.view.View
 import com.airbnb.epoxy.AsyncEpoxyController
 
-class EquipmentEpoxyController(private val onEquipmentClickListener: View.OnClickListener): AsyncEpoxyController() {
+//TODO rename listener
+class EquipmentEpoxyController(
+    private val onEquipmentClickListener: ((
+        equipment: Equipment,
+        equipmentIndex: Int,
+        allEquipments: List<Equipment>
+    ) -> Unit)
+) : AsyncEpoxyController() {
     var equipments: List<Equipment> = emptyList()
         set(value) {
             field = value
@@ -11,11 +18,11 @@ class EquipmentEpoxyController(private val onEquipmentClickListener: View.OnClic
         }
 
     override fun buildModels() {
-        equipments.forEach {
+        equipments.forEachIndexed { i, it ->
             EquipmentEpoxyModel_()
                 .id(it.barcode)
                 .equipment(it)
-                .clickListener(onEquipmentClickListener)
+                .clickListener { _ -> onEquipmentClickListener.invoke(it, i, equipments) }
                 .addTo(this)
         }
     }

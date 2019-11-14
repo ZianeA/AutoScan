@@ -17,7 +17,7 @@ class EquipmentRepository @Inject constructor() {
         for (i in 0..dataCount) {
             val barcode = Random.nextInt(2000, 9999)
             val type = equipmentTypes[Random.nextInt(0, equipmentTypes.size - 1)]
-            equipments.add(Equipment(barcode, type, Random.nextBoolean()))
+            equipments.add(Equipment(barcode, type, false))
         }
 
         return equipments

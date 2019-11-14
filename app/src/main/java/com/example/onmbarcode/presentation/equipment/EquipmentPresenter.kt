@@ -15,7 +15,7 @@ class EquipmentPresenter @Inject constructor(
 ) {
     private val disposables = CompositeDisposable()
 
-    fun start(desk: Desk){
+    fun start(desk: Desk) {
         val disposable = equipmentRepository.getEquipments(desk.barcode)
             .applySchedulers(schedulerProvider)
             .subscribe({ view.displayEquipments(it) }, { /*onError*/ })
@@ -23,7 +23,22 @@ class EquipmentPresenter @Inject constructor(
         disposables.add(disposable)
     }
 
-    fun stop(){
+    fun onEquipmentScanned(
+        scannedEquipment: Equipment,
+        equipmentIndex: Int,
+        allEquipment: List<Equipment>
+    ) {
+        val rearrangedEquipmentList = allEquipment.toMutableList()
+            .apply {
+                removeAt(equipmentIndex)
+                add(0, scannedEquipment.copy(isScanned = true))
+            }
+            .toList()
+
+        view.displayEquipments(rearrangedEquipmentList)
+    }
+
+    fun stop() {
         disposables.clear()
     }
 }
