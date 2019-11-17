@@ -1,32 +1,21 @@
 package com.example.onmbarcode.presentation.equipment
 
 
-import android.animation.ArgbEvaluator
-import android.animation.ObjectAnimator
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewAnimationUtils
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
-import androidx.transition.AutoTransition
-import androidx.transition.Transition
-import androidx.transition.TransitionManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.epoxy.EpoxyRecyclerView
 
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.desk.Desk
-import com.google.android.material.animation.ArgbEvaluatorCompat
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_equipment.view.*
 import javax.inject.Inject
-import kotlin.math.hypot
 
 /**
  * A simple [Fragment] subclass.
@@ -37,7 +26,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
     @Inject
     lateinit var presenter: EquipmentPresenter
 
-    lateinit var epoxyController: EquipmentEpoxyController
+    private lateinit var epoxyController: EquipmentEpoxyController
     private lateinit var recyclerView: EpoxyRecyclerView
 
     override fun onCreateView(
@@ -82,12 +71,20 @@ class EquipmentFragment : Fragment(), EquipmentView {
         }
 
         epoxyController.equipments = equipments
-        recyclerView.scrollToPosition(0) //TODO move call to presenter
+    }
+
+    override fun scrollToTop(currentIndex: Int) {
+        val lastVisibleItemPosition =
+            (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+        if (lastVisibleItemPosition < PAGE_SIZE) {
+            recyclerView.scrollToPosition(0)
+        }
     }
 
     companion object {
         private const val EQUIPMENT_ITEM_SPACING = 1
         private const val ARG_SELECTED_DESK = "selected_desk"
+        private const val PAGE_SIZE = 8 //TODO update this
 
         /**
          * Use this factory method to create a new instance of

@@ -36,6 +36,7 @@ class EquipmentPresenter @Inject constructor(
             .toList()
 
         view.displayEquipments(rearrangedEquipmentList)
+        view.scrollToTop(equipmentIndex + 1)
     }
 
     fun stop() {
