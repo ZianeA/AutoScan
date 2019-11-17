@@ -14,4 +14,13 @@
     <string name="toolbar_title_equipment">Équipement</string>
     <string name="equipment_barcode">Équipement: %1$d</string>
     <string name="equipment_type">Type: %1$s</string>
+    <string name="equipment_state">État: %1$s</string>
+    <string name="equipment_state_dialog_title">Choisissez un état</string>
+
+    <!--Items order is important!-->
+    <string-array name="equipment_state">
+        <item>Bon</item>
+        <item>Moyen</item>
+        <item>Mauvais</item>
+    </string-array>
 </resources>

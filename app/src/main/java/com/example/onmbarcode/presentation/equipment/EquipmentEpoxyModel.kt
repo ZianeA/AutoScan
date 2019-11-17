@@ -35,6 +35,11 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                 view.context.getString(R.string.equipment_barcode, equipment.barcode)
             equipmentType.text = view.context.getString(R.string.equipment_type, equipment.type)
 
+            val equipmentLocalizedState =
+                view.resources.getStringArray(R.array.equipment_state)[equipment.state.ordinal]
+            equipmentState.text =
+                view.context.getString(R.string.equipment_state, equipmentLocalizedState)
+
             val equipmentColor = if (equipment.isScanned) greenColor else redColor
             cardView.setBackgroundColor(equipmentColor)
             cardView.setOnClickListener {
@@ -77,7 +82,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             revealView.visibility = View.VISIBLE
             anim.addListener(onEnd = {
                 clickListener.invoke(equipment)
-                cardView.setCardBackgroundColor(scannedColor)
+                cardView.setBackgroundColor(scannedColor)
                 revealView.visibility = View.INVISIBLE
             })
             anim.start()
@@ -109,6 +114,7 @@ class EquipmentHolder : KotlinEpoxyHolder() {
 
     val equipmentBarcode by bind<TextView>(R.id.equipmentBarcode)
     val equipmentType by bind<TextView>(R.id.equipmentType)
+    val equipmentState by bind<TextView>(R.id.equipmentState)
     val cardView by bind<CardView>(R.id.equipmentCardView)
     val revealView by bind<ImageView>(R.id.revealView)
 }

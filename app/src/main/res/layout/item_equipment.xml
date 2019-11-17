@@ -5,8 +5,8 @@
     android:id="@+id/equipmentCardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:cardBackgroundColor="@color/materialGreen"
-    app:cardElevation="0dp">
+    app:cardElevation="0dp"
+    tools:cardBackgroundColor="@color/materialGreen">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -17,11 +17,11 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="invisible"
-            app:srcCompat="@color/materialGreen"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@color/materialGreen" />
 
         <TextView
             android:id="@+id/equipmentBarcode"
@@ -40,14 +40,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@+id/equipmentBarcode"
+            app:layout_constraintTop_toBottomOf="@+id/equipmentBarcode"
+            tools:text="Type: écran" />
+
+        <TextView
+            android:id="@+id/equipmentState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@android:color/black"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/equipmentBarcode"
-            app:layout_constraintTop_toBottomOf="@+id/equipmentBarcode"
-            tools:text="Type: écran" />
+            app:layout_constraintStart_toStartOf="@+id/equipmentType"
+            app:layout_constraintTop_toBottomOf="@+id/equipmentType"
+            tools:text="État: moyen" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

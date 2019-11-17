@@ -22,7 +22,8 @@ import javax.inject.Inject
  * Use the [EquipmentFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class EquipmentFragment : Fragment(), EquipmentView {
+class EquipmentFragment : Fragment(), EquipmentView,
+    EquipmentStateDialogFragment.EquipmentStateDialogListener {
     @Inject
     lateinit var presenter: EquipmentPresenter
 
@@ -73,7 +74,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
         epoxyController.equipments = equipments
     }
 
-    override fun scrollToTop(currentIndex: Int) {
+    override fun scrollToTop() {
         val lastVisibleItemPosition =
             (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
         if (lastVisibleItemPosition < PAGE_SIZE) {
@@ -81,10 +82,19 @@ class EquipmentFragment : Fragment(), EquipmentView {
         }
     }
 
+    override fun displayEquipmentStatePicker(currentState: Equipment.EquipmentState) {
+        EquipmentStateDialogFragment.newInstance(currentState.ordinal)
+            .show(childFragmentManager, "EquipmentStateDialogFragment")
+    }
+
+    override fun onEquipmentStatePicked(index: Int) {
+        presenter.onEquipmentStatePicked(index)
+    }
+
     companion object {
         private const val EQUIPMENT_ITEM_SPACING = 1
         private const val ARG_SELECTED_DESK = "selected_desk"
-        private const val PAGE_SIZE = 8 //TODO update this
+        private const val PAGE_SIZE = 6 //TODO update this
 
         /**
          * Use this factory method to create a new instance of

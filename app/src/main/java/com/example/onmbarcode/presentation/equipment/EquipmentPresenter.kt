@@ -15,6 +15,11 @@ class EquipmentPresenter @Inject constructor(
 ) {
     private val disposables = CompositeDisposable()
 
+    // TODO This is used for testing purposes only, should be removed
+    private lateinit var allEquipments: List<Equipment>
+    private lateinit var scannedEquipment: Equipment
+    private var scannedEquipmentIndex: Int = -1
+
     fun start(desk: Desk) {
         val disposable = equipmentRepository.getEquipments(desk.barcode)
             .applySchedulers(schedulerProvider)
@@ -25,18 +30,31 @@ class EquipmentPresenter @Inject constructor(
 
     fun onEquipmentScanned(
         scannedEquipment: Equipment,
-        equipmentIndex: Int,
-        allEquipment: List<Equipment>
+        scannedEquipmentIndex: Int,
+        allEquipments: List<Equipment>
     ) {
-        val rearrangedEquipmentList = allEquipment.toMutableList()
+        this.scannedEquipment = scannedEquipment
+        this.scannedEquipmentIndex = scannedEquipmentIndex
+        this.allEquipments = allEquipments
+        view.displayEquipmentStatePicker(scannedEquipment.state)
+    }
+
+    fun onEquipmentStatePicked(stateIndex: Int) {
+        val rearrangedEquipmentList = allEquipments.toMutableList()
             .apply {
-                removeAt(equipmentIndex)
-                add(0, scannedEquipment.copy(isScanned = true))
+                removeAt(scannedEquipmentIndex)
+                add(
+                    0,
+                    scannedEquipment.copy(
+                        isScanned = true,
+                        state = Equipment.EquipmentState.getByValue(stateIndex)
+                    )
+                )
             }
             .toList()
 
         view.displayEquipments(rearrangedEquipmentList)
-        view.scrollToTop(equipmentIndex + 1)
+        view.scrollToTop()
     }
 
     fun stop() {
