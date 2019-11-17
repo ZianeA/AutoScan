@@ -3,9 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     android:background="@android:color/white"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/title"
@@ -16,7 +15,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Région DRMC" />
+        tools:text="Station DAR-EL-BEIDA-HB" />
 
     <TextView
         android:id="@+id/scanCount"
@@ -27,5 +26,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        tools:text="Nombre de station scannés: 3/15" />
+        tools:text="Nombre de bureaux scannés: 5/60" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

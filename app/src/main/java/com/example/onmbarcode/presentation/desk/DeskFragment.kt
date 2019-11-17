@@ -14,6 +14,7 @@ import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.equipment.EquipmentFragment
 import com.example.onmbarcode.presentation.region.Region
 import com.example.onmbarcode.presentation.region.RegionFragment
+import com.example.onmbarcode.presentation.station.Station
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_desk.view.*
@@ -77,7 +78,7 @@ class DeskFragment : Fragment(), DeskView {
 
     companion object {
         private const val DESK_ITEM_SPACING = 8
-        private const val ARG_SELECTED_REGION = "selected_region"
+        private const val ARG_SELECTED_STATION = "selected_station"
 
         /**
          * Use this factory method to create a new instance of
@@ -86,10 +87,10 @@ class DeskFragment : Fragment(), DeskView {
          * @return A new instance of fragment DeskFragment.
          */
         @JvmStatic
-        fun newInstance(selectedRegion: Region) =
+        fun newInstance(selectedStation: Station) =
             DeskFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(ARG_SELECTED_REGION, selectedRegion)
+                    putParcelable(ARG_SELECTED_STATION, selectedStation)
                 }
             }
     }

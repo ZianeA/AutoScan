@@ -7,17 +7,17 @@ class RegionEpoxyController(private val onRegionClickListener: ((clickedRegion: 
     AsyncEpoxyController() {
     override fun buildModels() {
         region {
-            val darElBeidaRegion = Region("Dar El Beida", 20, 40)
+            val drmcRegion = Region("DRMC", 2, 8)
             id(0)
-            region(darElBeidaRegion)
-            clickListener(View.OnClickListener { onRegionClickListener.invoke(darElBeidaRegion) })
+            region(drmcRegion)
+            clickListener(View.OnClickListener { onRegionClickListener.invoke(drmcRegion) })
         }
 
         region {
-            val babEzzouarRegion = Region("Bab Ezzouar", 32, 50)
+            val drmeRegion = Region("DRME", 4, 6)
             id(1)
-            region(babEzzouarRegion)
-            clickListener { _ -> onRegionClickListener.invoke(babEzzouarRegion) }
+            region(drmeRegion)
+            clickListener { _ -> onRegionClickListener.invoke(drmeRegion) }
         }
     }
 }

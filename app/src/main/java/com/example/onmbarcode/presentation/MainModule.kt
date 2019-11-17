@@ -8,6 +8,7 @@ import com.example.onmbarcode.presentation.equipment.EquipmentFragment
 import com.example.onmbarcode.presentation.equipment.EquipmentModule
 import com.example.onmbarcode.presentation.region.RegionFragment
 import com.example.onmbarcode.presentation.region.RegionModule
+import com.example.onmbarcode.presentation.station.StationFragment
 import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
@@ -31,5 +32,9 @@ class MainModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [EquipmentModule::class])
         fun equipmentFragment(): EquipmentFragment
+
+        @FragmentScope
+        @ContributesAndroidInjector
+        fun stationFragment(): StationFragment
     }
 }

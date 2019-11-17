@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.desk.DeskFragment
+import com.example.onmbarcode.presentation.station.StationFragment
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_region.view.*
@@ -33,7 +34,7 @@ class RegionFragment : Fragment() {
         rootView.regionRecyclerView.apply {
             setItemSpacingDp(REGION_ITEM_SPACING)
             val regionEpoxyController = RegionEpoxyController {
-                fragNavController.pushFragment(DeskFragment.newInstance(it))
+                fragNavController.pushFragment(StationFragment.newInstance(it))
             }
             setControllerAndBuildModels(regionEpoxyController)
         }
