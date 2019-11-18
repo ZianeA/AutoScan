@@ -7,9 +7,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
+import com.airbnb.epoxy.EpoxyViewHolder
 
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.desk.Desk
@@ -44,7 +47,12 @@ class EquipmentFragment : Fragment(), EquipmentView,
 
         recyclerView = rootView.equipmentRecyclerView
         recyclerView.setItemSpacingDp(EQUIPMENT_ITEM_SPACING)
-        epoxyController = EquipmentEpoxyController(presenter::onEquipmentScanned)
+        epoxyController = EquipmentEpoxyController()
+        epoxyController.addModelBuildListener { presenter.onEquipmentsDisplayed() }
+
+        rootView.barcodeSubmitButton.setOnClickListener {
+            presenter.onBarcodeEntered(rootView.barcodeEditText.text.toString())
+        }
 
         return rootView
     }
@@ -61,7 +69,7 @@ class EquipmentFragment : Fragment(), EquipmentView,
         presenter.stop()
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
     }
@@ -74,12 +82,35 @@ class EquipmentFragment : Fragment(), EquipmentView,
         epoxyController.equipments = equipments
     }
 
-    override fun scrollToTop() {
-        val lastVisibleItemPosition =
-            (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-        if (lastVisibleItemPosition < PAGE_SIZE) {
-            recyclerView.scrollToPosition(0)
+    override fun animateEquipment(equipmentBarcode: Long) {
+        /*val equipmentEpoxyModel =
+            (recyclerView.findViewHolderForAdapterPosition(0)
+                    as EpoxyViewHolder).model
+                    as EquipmentEpoxyModel
+
+        equipmentEpoxyModel.animateEquipmentColor(presenter::onEquipmentAnimationEnd)*/
+    }
+
+    override fun smoothScrollToTop() {
+        if (recyclerView.computeVerticalScrollOffset() == 0) {
+            presenter.onSmoothScrollToTopEnd()
+            return
         }
+
+        recyclerView.smoothScrollToPosition(0)
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (recyclerView.computeVerticalScrollOffset() == 0) {
+                    presenter.onSmoothScrollToTopEnd()
+                    recyclerView.clearOnScrollListeners()
+                }
+            }
+        })
+    }
+
+    override fun scrollToTop() {
+        recyclerView.scrollToPosition(0)
     }
 
     override fun displayEquipmentStatePicker(currentState: Equipment.EquipmentState) {
@@ -94,7 +125,6 @@ class EquipmentFragment : Fragment(), EquipmentView,
     companion object {
         private const val EQUIPMENT_ITEM_SPACING = 1
         private const val ARG_SELECTED_DESK = "selected_desk"
-        private const val PAGE_SIZE = 6 //TODO update this
 
         /**
          * Use this factory method to create a new instance of

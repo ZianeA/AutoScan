@@ -10,11 +10,9 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.animation.addListener
 import androidx.core.content.ContextCompat
-import androidx.transition.TransitionManager
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
-import com.airbnb.epoxy.OnModelClickListener
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.util.KotlinEpoxyHolder
 import kotlin.math.hypot
@@ -24,12 +22,11 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
     @EpoxyAttribute
     lateinit var equipment: Equipment
 
-    //TODO rename
-    @EpoxyAttribute
-    lateinit var clickListener: ((equipment: Equipment) -> Unit)
+    lateinit var holder: EquipmentHolder
 
     override fun bind(holder: EquipmentHolder) {
         super.bind(holder)
+        this.holder = holder
         holder.apply {
             equipmentBarcode.text =
                 view.context.getString(R.string.equipment_barcode, equipment.barcode)
@@ -40,18 +37,8 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             equipmentState.text =
                 view.context.getString(R.string.equipment_state, equipmentLocalizedState)
 
-            val equipmentColor = if (equipment.isScanned) greenColor else redColor
+            val equipmentColor = if (equipment.isScanned) scannedColor else notScannedColor
             cardView.setBackgroundColor(equipmentColor)
-            cardView.setOnClickListener {
-                if (equipment.isScanned) return@setOnClickListener
-
-                animateEquipmentColor(
-                    cardView,
-                    revealView,
-                    greenColor,
-                    redColor
-                )
-            }
         }
     }
 
@@ -60,56 +47,59 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
         holder.revealView.visibility = View.INVISIBLE
     }
 
-    private fun animateEquipmentColor(
-        cardView: CardView,
-        revealView: View,
-        scannedColor: Int,
-        unscannedColor: Int
-    ) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            //get the center for the clipping circle relative to view.
-            val cx = revealView.width / 2
-            val cy = revealView.height / 2
+    fun animateEquipmentColor(animationEndListener: (() -> Unit)) {
+        holder.apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                //get the center for the clipping circle relative to view.
+                val cx = revealView.width / 2
+                val cy = revealView.height / 2
 
-            // get the final radius for the clipping circle
-            val finalRadius = hypot(cx.toDouble(), cy.toDouble()).toFloat() * 2
+                // get the final radius for the clipping circle
+                val finalRadius = hypot(cx.toDouble(), cy.toDouble()).toFloat() * 2
 
-            // create the animator for this view (the start radius is zero)
-            val anim =
-                ViewAnimationUtils.createCircularReveal(revealView, 0, cy, 0f, finalRadius)
+                // create the animator for this view (the start radius is zero)
+                val anim =
+                    ViewAnimationUtils.createCircularReveal(revealView, 0, cy, 0f, finalRadius)
 
-            // start the animation
-            revealView.visibility = View.VISIBLE
-            anim.addListener(onEnd = {
-                clickListener.invoke(equipment)
-                cardView.setBackgroundColor(scannedColor)
-                revealView.visibility = View.INVISIBLE
-            })
-            anim.start()
-        } else {
-            val anim = ObjectAnimator.ofObject(
-                cardView,
-                "cardBackgroundColor",
-                ArgbEvaluator(),
-                unscannedColor,
-                scannedColor
-            )
-            anim.addListener(onEnd = { clickListener.invoke(equipment) })
-            anim.start()
+                // start the animation
+                revealView.visibility = View.VISIBLE
+                anim.addListener(onEnd = {
+                    animationEndListener.invoke()
+                    cardView.setBackgroundColor(scannedColor)
+                    revealView.visibility = View.INVISIBLE
+                })
+                anim.duration = ANIMATION_DURATION
+                anim.start()
+            } else {
+                val anim = ObjectAnimator.ofObject(
+                    cardView,
+                    "cardBackgroundColor",
+                    ArgbEvaluator(),
+                    notScannedColor,
+                    scannedColor
+                )
+                anim.addListener(onEnd = { animationEndListener.invoke() })
+                anim.duration = ANIMATION_DURATION
+                anim.start()
+            }
         }
+    }
+
+    companion object {
+        private const val ANIMATION_DURATION: Long = 1000
     }
 }
 
 class EquipmentHolder : KotlinEpoxyHolder() {
     lateinit var view: View
-    var greenColor: Int = 0
-    var redColor: Int = 0
+    var scannedColor: Int = 0
+    var notScannedColor: Int = 0
 
     override fun bindView(itemView: View) {
         super.bindView(itemView)
         view = itemView
-        greenColor = ContextCompat.getColor(view.context, R.color.materialGreen)
-        redColor = ContextCompat.getColor(view.context, R.color.materialRed)
+        scannedColor = ContextCompat.getColor(view.context, R.color.materialGreen)
+        notScannedColor = ContextCompat.getColor(view.context, R.color.materialRed)
     }
 
     val equipmentBarcode by bind<TextView>(R.id.equipmentBarcode)

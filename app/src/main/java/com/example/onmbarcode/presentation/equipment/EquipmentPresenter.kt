@@ -19,23 +19,31 @@ class EquipmentPresenter @Inject constructor(
     private lateinit var allEquipments: List<Equipment>
     private lateinit var scannedEquipment: Equipment
     private var scannedEquipmentIndex: Int = -1
+    private var hasScanned = false
 
     fun start(desk: Desk) {
         val disposable = equipmentRepository.getEquipments(desk.barcode)
             .applySchedulers(schedulerProvider)
-            .subscribe({ view.displayEquipments(it) }, { /*onError*/ })
+            .subscribe(
+                { view.displayEquipments(it); /*TODO remove*/ allEquipments = it },
+                { /*onError*/ })
 
         disposables.add(disposable)
     }
 
-    fun onEquipmentScanned(
-        scannedEquipment: Equipment,
-        scannedEquipmentIndex: Int,
-        allEquipments: List<Equipment>
-    ) {
+    fun onBarcodeEntered(barcode: String) {
+        val scannedEquipment =
+            allEquipments.filterIndexed { index, it ->
+                if (it.barcode == barcode.toInt()) {
+                    scannedEquipmentIndex = index
+                    true
+                } else {
+                    false
+                }
+            }
+                .first()
+
         this.scannedEquipment = scannedEquipment
-        this.scannedEquipmentIndex = scannedEquipmentIndex
-        this.allEquipments = allEquipments
         view.displayEquipmentStatePicker(scannedEquipment.state)
     }
 
@@ -53,8 +61,25 @@ class EquipmentPresenter @Inject constructor(
             }
             .toList()
 
-        view.displayEquipments(rearrangedEquipmentList)
+        allEquipments = rearrangedEquipmentList //TODO refactor.
+        hasScanned = true
+        view.smoothScrollToTop()
+    }
+
+    fun onSmoothScrollToTopEnd() {
+        view.displayEquipments(allEquipments)
+    }
+
+    fun onEquipmentsDisplayed() {
+        if (!hasScanned) return
+
         view.scrollToTop()
+        view.animateEquipment(scannedEquipment.barcode.toLong())
+        hasScanned = false
+    }
+
+    fun onEquipmentAnimationEnd() {
+
     }
 
     fun stop() {

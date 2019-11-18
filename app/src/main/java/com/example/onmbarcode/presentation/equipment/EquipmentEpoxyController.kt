@@ -4,13 +4,7 @@ import android.view.View
 import com.airbnb.epoxy.AsyncEpoxyController
 
 //TODO rename listener
-class EquipmentEpoxyController(
-    private val onEquipmentClickListener: ((
-        equipment: Equipment,
-        equipmentIndex: Int,
-        allEquipments: List<Equipment>
-    ) -> Unit)
-) : AsyncEpoxyController() {
+class EquipmentEpoxyController : AsyncEpoxyController() {
     var equipments: List<Equipment> = emptyList()
         set(value) {
             field = value
@@ -22,7 +16,6 @@ class EquipmentEpoxyController(
             EquipmentEpoxyModel_()
                 .id(it.barcode)
                 .equipment(it)
-                .clickListener { _ -> onEquipmentClickListener.invoke(it, i, equipments) }
                 .addTo(this)
         }
     }
