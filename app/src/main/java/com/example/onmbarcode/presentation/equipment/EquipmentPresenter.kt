@@ -2,13 +2,9 @@ package com.example.onmbarcode.presentation.equipment
 
 import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.di.FragmentScope
-import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.applySchedulers
 import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
-import io.reactivex.Completable
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @FragmentScope
@@ -19,7 +15,6 @@ class EquipmentPresenter @Inject constructor(
 ) {
     private val disposables = CompositeDisposable()
 
-    private lateinit var currentEquipments: MutableList<Equipment>
     private lateinit var scannedEquipment: Equipment
     private var hasScanned = false
 
@@ -27,8 +22,9 @@ class EquipmentPresenter @Inject constructor(
         val disposable = equipmentRepository.getEquipments(desk.barcode)
             .map { equipments -> equipments.sortedByDescending { it.scanDate } }
             .applySchedulers(schedulerProvider)
-            .doOnSuccess { currentEquipments = it.toMutableList() }
-            .subscribe({ view.displayEquipments(it) }, { /*onError*/ })
+            .subscribe(
+                { view.displayEquipments(it) },
+                { /*onError*/ })
 
         disposables.add(disposable)
     }
@@ -45,59 +41,55 @@ class EquipmentPresenter @Inject constructor(
     }
 
     fun onEquipmentStatePicked(stateIndex: Int) {
-        // Update UI first and then update database and server
-        val disposable = Single.fromCallable {
-            val scannedEquipmentIndex = currentEquipments.indexOf(scannedEquipment)
-            scannedEquipment = scannedEquipment.copy(
-                scanState = ScanState.PendingScan,
-                state = EquipmentState.getByValue(stateIndex)
-            ) //TODO refactor, duplicate code
-            currentEquipments.apply {
-                removeAt(scannedEquipmentIndex)
-                add(0, scannedEquipment)
-            }
-        }
-            .observeOn(schedulerProvider.main)
-            .doOnSuccess {
-                currentEquipments = it
-                hasScanned = true
-                view.smoothScrollToTop()
-            }
-            .observeOn(schedulerProvider.worker)
-            .flatMapCompletable {
-                scannedEquipment = scannedEquipment.copy(
-                    scanState = ScanState.ScannedAndSynced,
-                    state = EquipmentState.getByValue(stateIndex),
-                    scanDate = System.currentTimeMillis()
-                )
-
-                equipmentRepository.updateEquipment(scannedEquipment)
-            }/*.delay(20, TimeUnit.MILLISECONDS) //TODO remove this delay*/
-            .doOnComplete { currentEquipments[0] = scannedEquipment }
+        val updatedEquipment = scannedEquipment.copy(
+            isScanned = true,
+            state = Equipment.EquipmentState.getByValue(stateIndex),
+            scanDate = System.currentTimeMillis()
+        )
+        val disposable = equipmentRepository.updateEquipment(updatedEquipment)
             .applySchedulers(schedulerProvider)
-            .subscribe(
-                {
-                    hasScanned = true
-                    view.smoothScrollToTop()
-                },
-                { /*onError*/ })
+            .doOnComplete { hasScanned = true }
+            .subscribe({ view.smoothScrollToTop() }, { /*onError*/ })
 
         disposables.add(disposable)
+
+        /*val rearrangedEquipmentList = allEquipments.toMutableList()
+            .apply {
+                removeAt(scannedEquipmentIndex)
+                add(
+                    0,
+                    scannedEquipment.copy(
+                        isScanned = true,
+                        state = Equipment.EquipmentState.getByValue(stateIndex)
+                    )
+                )
+            }
+            .toList()
+
+        allEquipments = rearrangedEquipmentList //TODO refactor.
+        hasScanned = true
+        view.smoothScrollToTop()*/
     }
 
     fun onSmoothScrollToTopEnd() {
-        view.displayEquipments(currentEquipments, scannedEquipment.barcode)
+        val disposable = equipmentRepository.getEquipments(-1)
+            .map { equipments -> equipments.sortedByDescending { it.scanDate } }
+            .applySchedulers(schedulerProvider)
+            .subscribe({ view.displayEquipments(it) }, { /*onError*/ })
+
+        disposables.add(disposable)
     }
 
     fun onEquipmentsDisplayed() {
         if (hasScanned.not()) return
 
         view.scrollToTop()
+//        view.animateEquipment(scannedEquipment.barcode.toLong())
         hasScanned = false
     }
 
     fun onEquipmentAnimationEnd() {
-//        view.displayEquipments(currentEquipments)
+
     }
 
     fun stop() {

@@ -2,12 +2,10 @@ package com.example.onmbarcode.presentation.equipment
 
 import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
-import android.graphics.PorterDuff
 import android.os.Build
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.animation.addListener
@@ -16,7 +14,6 @@ import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.example.onmbarcode.R
-import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.KotlinEpoxyHolder
 import kotlin.math.hypot
 
@@ -24,9 +21,6 @@ import kotlin.math.hypot
 abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
     @EpoxyAttribute
     lateinit var equipment: Equipment
-
-    @EpoxyAttribute
-    lateinit var controller: EquipmentEpoxyController
 
     lateinit var holder: EquipmentHolder
 
@@ -43,35 +37,14 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             equipmentState.text =
                 view.context.getString(R.string.equipment_state, equipmentLocalizedState)
 
-            //TODO Refactor
-            if (controller.equipmentToAnimateBarcode == equipment.barcode
-                && equipment.scanState != ScanState.PendingScan
-            ) {
-                view.post {
-                    animateEquipmentColor { }
-                    controller.equipmentToAnimateBarcode = -1
-                }
-
-            } else {
-                val equipmentColor =
-                    if (equipment.scanState == ScanState.ScannedAndSynced) scannedColor else notScannedColor
-                cardView.setBackgroundColor(equipmentColor)
-            }
-
-            if (equipment.scanState == ScanState.PendingScan) {
-                val progressBarColor = ContextCompat.getColor(view.context, android.R.color.black)
-                progressBar.apply {
-                    indeterminateDrawable.setColorFilter(progressBarColor, PorterDuff.Mode.MULTIPLY)
-                    visibility = View.VISIBLE
-                }
-            }
+            val equipmentColor = if (equipment.isScanned) scannedColor else notScannedColor
+            cardView.setBackgroundColor(equipmentColor)
         }
     }
 
     override fun unbind(holder: EquipmentHolder) {
         super.unbind(holder)
         holder.revealView.visibility = View.INVISIBLE
-        holder.progressBar.visibility = View.INVISIBLE
     }
 
     fun animateEquipmentColor(animationEndListener: (() -> Unit)) {
@@ -89,7 +62,6 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                     ViewAnimationUtils.createCircularReveal(revealView, 0, cy, 0f, finalRadius)
 
                 // start the animation
-                progressBar.visibility = View.INVISIBLE
                 revealView.visibility = View.VISIBLE
                 anim.addListener(onEnd = {
                     animationEndListener.invoke()
@@ -135,5 +107,4 @@ class EquipmentHolder : KotlinEpoxyHolder() {
     val equipmentState by bind<TextView>(R.id.equipmentState)
     val cardView by bind<CardView>(R.id.equipmentCardView)
     val revealView by bind<ImageView>(R.id.revealView)
-    val progressBar by bind<ProgressBar>(R.id.progressBar)
 }

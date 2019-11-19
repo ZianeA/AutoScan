@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
@@ -75,39 +74,24 @@ class EquipmentFragment : Fragment(), EquipmentView,
         super.onAttach(context)
     }
 
-    override fun displayEquipments(equipments: List<Equipment>, equipmentToAnimate: Int) {
+    override fun displayEquipments(equipments: List<Equipment>) {
         if (recyclerView.adapter == null) {
             recyclerView.setController(epoxyController)
         }
 
         epoxyController.equipments = equipments
-        epoxyController.equipmentToAnimateBarcode = equipmentToAnimate
     }
 
-    override fun animateEquipment(barcode: Int) {
-        /*recyclerView.itemAnimator = object : DefaultItemAnimator() {
-            override fun onAnimationFinished(viewHolder: RecyclerView.ViewHolder) {
-                super.onAnimationFinished(viewHolder)
-                val equipmentEpoxyModel =
-                    (viewHolder as EpoxyViewHolder).model as EquipmentEpoxyModel
-
-                if (equipmentEpoxyModel.equipment.barcode == barcode) {
-                    equipmentEpoxyModel.animateEquipmentColor(presenter::onEquipmentAnimationEnd)
-                }
-            }
-        }*/
-    }
-
-    //TODO rename
-    private fun animate() {
+    override fun animateEquipment(equipmentBarcode: Long) {
         val equipmentEpoxyModel =
-            (recyclerView.findViewHolderForLayoutPosition(0)
-                    as? EpoxyViewHolder)?.model
-                    as? EquipmentEpoxyModel
+            (recyclerView.findViewHolderForAdapterPosition(0)
+                    as EpoxyViewHolder).model
+                    as EquipmentEpoxyModel
 
-        equipmentEpoxyModel?.animateEquipmentColor(presenter::onEquipmentAnimationEnd)
+        equipmentEpoxyModel.animateEquipmentColor(presenter::onEquipmentAnimationEnd)
     }
 
+    //TODO Refactor
     override fun smoothScrollToTop() {
         if (recyclerView.computeVerticalScrollOffset() == 0) {
             presenter.onSmoothScrollToTopEnd()
@@ -120,7 +104,7 @@ class EquipmentFragment : Fragment(), EquipmentView,
                 super.onScrolled(recyclerView, dx, dy)
                 if (recyclerView.computeVerticalScrollOffset() == 0) {
                     presenter.onSmoothScrollToTopEnd()
-                    recyclerView.removeOnScrollListener(this)
+                    recyclerView.clearOnScrollListeners()
                 }
             }
         })

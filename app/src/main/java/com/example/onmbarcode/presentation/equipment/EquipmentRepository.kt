@@ -39,7 +39,7 @@ class EquipmentRepository @Inject constructor(private val local: EquipmentDao) {
                 Equipment(
                     barcode,
                     type,
-                    Equipment.ScanState.NotScanned,
+                    false,
                     equipmentState,
                     System.currentTimeMillis()
                 )
