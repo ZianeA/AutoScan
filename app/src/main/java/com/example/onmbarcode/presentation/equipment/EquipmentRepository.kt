@@ -1,14 +1,31 @@
 package com.example.onmbarcode.presentation.equipment
 
+import io.reactivex.Completable
 import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
 
 @Singleton
-class EquipmentRepository @Inject constructor() {
+class EquipmentRepository @Inject constructor(private val local: EquipmentDao) {
     fun getEquipments(deskId: Int): Single<List<Equipment>> {
-        return Single.just(createDummyData())
+        return local.getAll()
+            .flatMap {
+                if (it.isEmpty()) {
+                    local.addAll(createDummyData(100))
+                        .andThen(local.getAll())
+                } else {
+                    Single.just(it)
+                }
+            }
+    }
+
+    fun findEquipment(barcode: Int): Single<Equipment> {
+        return local.getByBarcode(barcode)
+    }
+
+    fun updateEquipment(equipment: Equipment): Completable {
+        return local.update(equipment)
     }
 
     private fun createDummyData(dataCount: Int = 20): List<Equipment> {
@@ -18,7 +35,15 @@ class EquipmentRepository @Inject constructor() {
             val barcode = Random.nextInt(2000, 9999)
             val type = equipmentTypes[Random.nextInt(0, equipmentTypes.size - 1)]
             val equipmentState = Equipment.EquipmentState.values().toList().shuffled().first()
-            equipments.add(Equipment(barcode, type, false, equipmentState))
+            equipments.add(
+                Equipment(
+                    barcode,
+                    type,
+                    false,
+                    equipmentState,
+                    System.currentTimeMillis()
+                )
+            )
         }
 
         return equipments

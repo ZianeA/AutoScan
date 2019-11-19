@@ -83,14 +83,15 @@ class EquipmentFragment : Fragment(), EquipmentView,
     }
 
     override fun animateEquipment(equipmentBarcode: Long) {
-        /*val equipmentEpoxyModel =
+        val equipmentEpoxyModel =
             (recyclerView.findViewHolderForAdapterPosition(0)
                     as EpoxyViewHolder).model
                     as EquipmentEpoxyModel
 
-        equipmentEpoxyModel.animateEquipmentColor(presenter::onEquipmentAnimationEnd)*/
+        equipmentEpoxyModel.animateEquipmentColor(presenter::onEquipmentAnimationEnd)
     }
 
+    //TODO Refactor
     override fun smoothScrollToTop() {
         if (recyclerView.computeVerticalScrollOffset() == 0) {
             presenter.onSmoothScrollToTopEnd()
