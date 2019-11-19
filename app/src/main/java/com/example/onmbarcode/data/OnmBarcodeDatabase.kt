@@ -7,7 +7,7 @@ import com.example.onmbarcode.presentation.equipment.Equipment
 import com.example.onmbarcode.presentation.equipment.EquipmentDao
 
 @Database(entities = [Equipment::class], version = 1)
-@TypeConverters(Equipment.EquipmentStateConverter::class)
+@TypeConverters(Equipment.EquipmentStateConverter::class, Equipment.ScanStateConverter::class)
 abstract class OnmBarcodeDatabase : RoomDatabase() {
     abstract fun equipmentDao(): EquipmentDao
 }

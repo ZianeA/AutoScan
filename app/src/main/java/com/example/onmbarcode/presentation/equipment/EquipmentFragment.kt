@@ -82,16 +82,33 @@ class EquipmentFragment : Fragment(), EquipmentView,
         epoxyController.equipments = equipments
     }
 
-    override fun animateEquipment(equipmentBarcode: Long) {
-        val equipmentEpoxyModel =
-            (recyclerView.findViewHolderForAdapterPosition(0)
-                    as EpoxyViewHolder).model
-                    as EquipmentEpoxyModel
+    override fun animateEquipment(equipmentPosition: Int) {
+        if (recyclerView.computeVerticalScrollOffset() == 0) {
+            animate()
+            return
+        }
 
-        equipmentEpoxyModel.animateEquipmentColor(presenter::onEquipmentAnimationEnd)
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (recyclerView.computeVerticalScrollOffset() == 0) {
+                    animate()
+                    recyclerView.removeOnScrollListener(this)
+                }
+            }
+        })
     }
 
-    //TODO Refactor
+    //TODO rename
+    private fun animate(){
+        val equipmentEpoxyModel =
+            (recyclerView.findViewHolderForLayoutPosition(0)
+                    as? EpoxyViewHolder)?.model
+                    as? EquipmentEpoxyModel
+
+        equipmentEpoxyModel?.animateEquipmentColor(presenter::onEquipmentAnimationEnd)
+    }
+
     override fun smoothScrollToTop() {
         if (recyclerView.computeVerticalScrollOffset() == 0) {
             presenter.onSmoothScrollToTopEnd()
@@ -104,7 +121,7 @@ class EquipmentFragment : Fragment(), EquipmentView,
                 super.onScrolled(recyclerView, dx, dy)
                 if (recyclerView.computeVerticalScrollOffset() == 0) {
                     presenter.onSmoothScrollToTopEnd()
-                    recyclerView.clearOnScrollListeners()
+                    recyclerView.removeOnScrollListener(this)
                 }
             }
         })
