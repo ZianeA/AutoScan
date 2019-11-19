@@ -4,6 +4,6 @@ interface EquipmentView {
     fun displayEquipments(equipments: List<Equipment>)
     fun scrollToTop()
     fun displayEquipmentStatePicker(currentState: Equipment.EquipmentState)
-    fun animateEquipment(equipmentBarcode: Long)
+    fun animateEquipment(equipmentPosition: Int)
     fun smoothScrollToTop()
 }
