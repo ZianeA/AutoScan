@@ -25,6 +25,9 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
     @EpoxyAttribute
     lateinit var equipment: Equipment
 
+    @EpoxyAttribute
+    lateinit var controller: EquipmentEpoxyController
+
     lateinit var holder: EquipmentHolder
 
     override fun bind(holder: EquipmentHolder) {
@@ -41,9 +44,19 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                 view.context.getString(R.string.equipment_state, equipmentLocalizedState)
 
             //TODO Refactor
-            val equipmentColor =
-                if (equipment.scanState == ScanState.ScannedAndSynced) scannedColor else notScannedColor
-            cardView.setBackgroundColor(equipmentColor)
+            if (controller.equipmentToAnimateBarcode == equipment.barcode
+                && equipment.scanState != ScanState.PendingScan
+            ) {
+                view.post {
+                    animateEquipmentColor { }
+                    controller.equipmentToAnimateBarcode = -1
+                }
+
+            } else {
+                val equipmentColor =
+                    if (equipment.scanState == ScanState.ScannedAndSynced) scannedColor else notScannedColor
+                cardView.setBackgroundColor(equipmentColor)
+            }
 
             if (equipment.scanState == ScanState.PendingScan) {
                 val progressBarColor = ContextCompat.getColor(view.context, android.R.color.black)

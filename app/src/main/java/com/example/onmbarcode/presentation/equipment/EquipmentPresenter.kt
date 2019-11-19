@@ -72,16 +72,21 @@ class EquipmentPresenter @Inject constructor(
                 )
 
                 equipmentRepository.updateEquipment(scannedEquipment)
-            }/*.delay(2, TimeUnit.SECONDS) //TODO remove this delay*/
+            }/*.delay(20, TimeUnit.MILLISECONDS) //TODO remove this delay*/
             .doOnComplete { currentEquipments[0] = scannedEquipment }
             .applySchedulers(schedulerProvider)
-            .subscribe({ view.animateEquipment(0) }, { /*onError*/ })
+            .subscribe(
+                {
+                    hasScanned = true
+                    view.smoothScrollToTop()
+                },
+                { /*onError*/ })
 
         disposables.add(disposable)
     }
 
     fun onSmoothScrollToTopEnd() {
-        view.displayEquipments(currentEquipments)
+        view.displayEquipments(currentEquipments, scannedEquipment.barcode)
     }
 
     fun onEquipmentsDisplayed() {
@@ -92,7 +97,7 @@ class EquipmentPresenter @Inject constructor(
     }
 
     fun onEquipmentAnimationEnd() {
-        view.displayEquipments(currentEquipments)
+//        view.displayEquipments(currentEquipments)
     }
 
     fun stop() {

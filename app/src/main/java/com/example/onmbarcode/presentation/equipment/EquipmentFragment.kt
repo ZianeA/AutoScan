@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
@@ -74,33 +75,31 @@ class EquipmentFragment : Fragment(), EquipmentView,
         super.onAttach(context)
     }
 
-    override fun displayEquipments(equipments: List<Equipment>) {
+    override fun displayEquipments(equipments: List<Equipment>, equipmentToAnimate: Int) {
         if (recyclerView.adapter == null) {
             recyclerView.setController(epoxyController)
         }
 
         epoxyController.equipments = equipments
+        epoxyController.equipmentToAnimateBarcode = equipmentToAnimate
     }
 
-    override fun animateEquipment(equipmentPosition: Int) {
-        if (recyclerView.computeVerticalScrollOffset() == 0) {
-            animate()
-            return
-        }
+    override fun animateEquipment(barcode: Int) {
+        /*recyclerView.itemAnimator = object : DefaultItemAnimator() {
+            override fun onAnimationFinished(viewHolder: RecyclerView.ViewHolder) {
+                super.onAnimationFinished(viewHolder)
+                val equipmentEpoxyModel =
+                    (viewHolder as EpoxyViewHolder).model as EquipmentEpoxyModel
 
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (recyclerView.computeVerticalScrollOffset() == 0) {
-                    animate()
-                    recyclerView.removeOnScrollListener(this)
+                if (equipmentEpoxyModel.equipment.barcode == barcode) {
+                    equipmentEpoxyModel.animateEquipmentColor(presenter::onEquipmentAnimationEnd)
                 }
             }
-        })
+        }*/
     }
 
     //TODO rename
-    private fun animate(){
+    private fun animate() {
         val equipmentEpoxyModel =
             (recyclerView.findViewHolderForLayoutPosition(0)
                     as? EpoxyViewHolder)?.model
