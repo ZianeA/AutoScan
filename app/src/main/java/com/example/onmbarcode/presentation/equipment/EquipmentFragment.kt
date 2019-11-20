@@ -7,17 +7,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
-import com.airbnb.epoxy.EpoxyViewHolder
 
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.desk.Desk
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_equipment.*
 import kotlinx.android.synthetic.main.fragment_equipment.view.*
 import javax.inject.Inject
 
@@ -51,9 +49,15 @@ class EquipmentFragment : Fragment(), EquipmentView,
         epoxyController = EquipmentEpoxyController()
         epoxyController.addModelBuildListener { presenter.onEquipmentsDisplayed() }
 
-        rootView.barcodeSubmitButton.setOnClickListener {
+        /*rootView.barcodeSubmitButton.setOnClickListener {
             presenter.onBarcodeEntered(rootView.barcodeEditText.text.toString())
-        }
+        }*/
+
+        rootView.barcodeInput.addTextChangedListener(afterTextChanged = {
+            presenter.onBarcodeChange(
+                it.toString()
+            )
+        })
 
         return rootView
     }
@@ -81,31 +85,7 @@ class EquipmentFragment : Fragment(), EquipmentView,
         }
 
         epoxyController.equipments = equipments
-        epoxyController.equipmentToAnimateBarcode = equipmentToAnimate
-    }
-
-    override fun animateEquipment(barcode: Int) {
-        /*recyclerView.itemAnimator = object : DefaultItemAnimator() {
-            override fun onAnimationFinished(viewHolder: RecyclerView.ViewHolder) {
-                super.onAnimationFinished(viewHolder)
-                val equipmentEpoxyModel =
-                    (viewHolder as EpoxyViewHolder).model as EquipmentEpoxyModel
-
-                if (equipmentEpoxyModel.equipment.barcode == barcode) {
-                    equipmentEpoxyModel.animateEquipmentColor(presenter::onEquipmentAnimationEnd)
-                }
-            }
-        }*/
-    }
-
-    //TODO rename
-    private fun animate() {
-        val equipmentEpoxyModel =
-            (recyclerView.findViewHolderForLayoutPosition(0)
-                    as? EpoxyViewHolder)?.model
-                    as? EquipmentEpoxyModel
-
-        equipmentEpoxyModel?.animateEquipmentColor(presenter::onEquipmentAnimationEnd)
+        EquipmentEpoxyModel.equipmentToAnimateBarcode = equipmentToAnimate
     }
 
     override fun smoothScrollToTop() {
@@ -137,6 +117,10 @@ class EquipmentFragment : Fragment(), EquipmentView,
 
     override fun onEquipmentStatePicked(index: Int) {
         presenter.onEquipmentStatePicked(index)
+    }
+
+    override fun clearBarcodeInputArea() {
+        barcodeInput.text.clear()
     }
 
     companion object {

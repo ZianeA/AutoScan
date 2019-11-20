@@ -25,9 +25,6 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
     @EpoxyAttribute
     lateinit var equipment: Equipment
 
-    @EpoxyAttribute
-    lateinit var controller: EquipmentEpoxyController
-
     lateinit var holder: EquipmentHolder
 
     override fun bind(holder: EquipmentHolder) {
@@ -44,12 +41,12 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                 view.context.getString(R.string.equipment_state, equipmentLocalizedState)
 
             //TODO Refactor
-            if (controller.equipmentToAnimateBarcode == equipment.barcode
+            if (equipmentToAnimateBarcode == equipment.barcode
                 && equipment.scanState != ScanState.PendingScan
             ) {
                 view.post {
                     animateEquipmentColor { }
-                    controller.equipmentToAnimateBarcode = -1
+                    equipmentToAnimateBarcode = -1
                 }
 
             } else {
@@ -115,6 +112,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
 
     companion object {
         private const val ANIMATION_DURATION: Long = 1000
+        var equipmentToAnimateBarcode: Int = -1
     }
 }
 

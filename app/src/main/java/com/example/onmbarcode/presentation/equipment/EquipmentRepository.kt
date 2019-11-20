@@ -32,7 +32,15 @@ class EquipmentRepository @Inject constructor(private val local: EquipmentDao) {
         val equipments = mutableListOf<Equipment>()
         val equipmentTypes = listOf("écran", "clavier", "souris", "chaise", "imprimante", "bureau")
         for (i in 0..dataCount) {
-            val barcode = Random.nextInt(2000, 9999)
+            val barcode = when (i) {
+                10 -> 25113
+                20 -> 30317
+                25 -> 19955
+                41 -> 26137
+                else -> Random.nextInt(10000, 99999)
+
+            }
+
             val type = equipmentTypes[Random.nextInt(0, equipmentTypes.size - 1)]
             val equipmentState = Equipment.EquipmentState.values().toList().shuffled().first()
             equipments.add(

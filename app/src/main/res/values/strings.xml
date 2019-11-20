@@ -16,6 +16,7 @@
     <string name="equipment_type">Type: %1$s</string>
     <string name="equipment_state">État: %1$s</string>
     <string name="equipment_state_dialog_title">Choisissez un état</string>
+    <string name="barcode_input_hint">Code-barre</string>
 
     <!--Items order is important!-->
     <string-array name="equipment_state">

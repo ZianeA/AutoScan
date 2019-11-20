@@ -8,6 +8,7 @@ import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import java.lang.IllegalArgumentException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -33,30 +34,28 @@ class EquipmentPresenter @Inject constructor(
         disposables.add(disposable)
     }
 
-    //TODO do asynchronously
-    fun onBarcodeEntered(barcode: String) {
-        val parsedBarcode = barcode.toInt() //TODO add sanity check
+    //TODO do rename
+    private fun scanBarcode(barcode: String) {
+        val parsedBarcode = barcode.toIntOrNull()
+            ?: throw IllegalArgumentException(
+                "Malformed equipment barcode. Equipment barcode must contain only numeric values"
+            )
+        view.clearBarcodeInputArea()
+
         val disposable = equipmentRepository.findEquipment(parsedBarcode)
-            .applySchedulers(schedulerProvider)
             .doOnSuccess { scannedEquipment = it }
-            .subscribe({ view.displayEquipmentStatePicker(it.state) }, { /*onError*/ })
-
-        disposables.add(disposable)
-    }
-
-    fun onEquipmentStatePicked(stateIndex: Int) {
-        // Update UI first and then update database and server
-        val disposable = Single.fromCallable {
-            val scannedEquipmentIndex = currentEquipments.indexOf(scannedEquipment)
-            scannedEquipment = scannedEquipment.copy(
-                scanState = ScanState.PendingScan,
-                state = EquipmentState.getByValue(stateIndex)
-            ) //TODO refactor, duplicate code
-            currentEquipments.apply {
-                removeAt(scannedEquipmentIndex)
-                add(0, scannedEquipment)
+            .flatMap {
+                Single.fromCallable {
+                    val scannedEquipmentIndex = currentEquipments.indexOf(scannedEquipment)
+                    scannedEquipment = scannedEquipment.copy(
+                        scanState = ScanState.PendingScan
+                    ) //TODO refactor, duplicate code
+                    currentEquipments.apply {
+                        removeAt(scannedEquipmentIndex)
+                        add(0, scannedEquipment)
+                    }
+                }
             }
-        }
             .observeOn(schedulerProvider.main)
             .doOnSuccess {
                 currentEquipments = it
@@ -67,7 +66,6 @@ class EquipmentPresenter @Inject constructor(
             .flatMapCompletable {
                 scannedEquipment = scannedEquipment.copy(
                     scanState = ScanState.ScannedAndSynced,
-                    state = EquipmentState.getByValue(stateIndex),
                     scanDate = System.currentTimeMillis()
                 )
 
@@ -85,6 +83,18 @@ class EquipmentPresenter @Inject constructor(
         disposables.add(disposable)
     }
 
+    fun onBarcodeChange(barcode: String) {
+        when {
+            barcode.length < 5 -> return
+            barcode.length == EQUIPMENT_BARCODE_LENGTH -> scanBarcode(barcode)
+            else -> throw IllegalArgumentException("Equipment barcode must not be more than 5 digits long")
+        }
+    }
+
+    fun onEquipmentStatePicked(stateIndex: Int) {
+        // TODO("Not implemented")
+    }
+
     fun onSmoothScrollToTopEnd() {
         view.displayEquipments(currentEquipments, scannedEquipment.barcode)
     }
@@ -97,10 +107,13 @@ class EquipmentPresenter @Inject constructor(
     }
 
     fun onEquipmentAnimationEnd() {
-//        view.displayEquipments(currentEquipments)
     }
 
     fun stop() {
         disposables.clear()
+    }
+
+    companion object {
+        private const val EQUIPMENT_BARCODE_LENGTH = 5
     }
 }

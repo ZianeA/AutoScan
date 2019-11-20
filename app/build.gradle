@@ -65,4 +65,6 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
 
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
+    testImplementation "io.mockk:mockk:1.9.3"
 }
