@@ -6,9 +6,7 @@ import android.graphics.PorterDuff
 import android.os.Build
 import android.view.View
 import android.view.ViewAnimationUtils
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.core.animation.addListener
 import androidx.core.content.ContextCompat
@@ -18,6 +16,7 @@ import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.KotlinEpoxyHolder
+import java.util.*
 import kotlin.math.hypot
 
 @EpoxyModelClass(layout = R.layout.item_equipment)
@@ -27,18 +26,17 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
 
     lateinit var holder: EquipmentHolder
 
+    @ExperimentalStdlibApi
     override fun bind(holder: EquipmentHolder) {
         super.bind(holder)
         this.holder = holder
         holder.apply {
-            equipmentBarcode.text =
-                view.context.getString(R.string.equipment_barcode, equipment.barcode)
-            equipmentType.text = view.context.getString(R.string.equipment_type, equipment.type)
+            equipmentBarcode.text = equipment.barcode.toString()
+            equipmentType.text = equipment.type.capitalize(Locale.FRENCH)
 
+            //TODO Remove if unused
             val equipmentLocalizedState =
                 view.resources.getStringArray(R.array.equipment_state)[equipment.state.ordinal]
-            equipmentState.text =
-                view.context.getString(R.string.equipment_state, equipmentLocalizedState)
 
             //TODO Refactor
             if (equipmentToAnimateBarcode == equipment.barcode
@@ -52,16 +50,24 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             } else {
                 val equipmentColor =
                     if (equipment.scanState == ScanState.ScannedAndSynced) scannedColor else notScannedColor
-                cardView.setBackgroundColor(equipmentColor)
+                cardView.setCardBackgroundColor(equipmentColor)
             }
 
             if (equipment.scanState == ScanState.PendingScan) {
-                val progressBarColor = ContextCompat.getColor(view.context, android.R.color.black)
+                val progressBarColor = ContextCompat.getColor(view.context, android.R.color.white)
                 progressBar.apply {
                     indeterminateDrawable.setColorFilter(progressBarColor, PorterDuff.Mode.MULTIPLY)
                     visibility = View.VISIBLE
                 }
             }
+
+            dropdownMenu.setAdapter(
+                ArrayAdapter(
+                    view.context,
+                    R.layout.dropdown_menu_popup_item,
+                    view.resources.getStringArray(R.array.equipment_state)
+                )
+            )
         }
     }
 
@@ -124,14 +130,14 @@ class EquipmentHolder : KotlinEpoxyHolder() {
     override fun bindView(itemView: View) {
         super.bindView(itemView)
         view = itemView
-        scannedColor = ContextCompat.getColor(view.context, R.color.materialGreen)
-        notScannedColor = ContextCompat.getColor(view.context, R.color.materialRed)
+        scannedColor = ContextCompat.getColor(view.context, R.color.scanned_and_synced)
+        notScannedColor = ContextCompat.getColor(view.context, R.color.not_scanned)
     }
 
     val equipmentBarcode by bind<TextView>(R.id.equipmentBarcode)
     val equipmentType by bind<TextView>(R.id.equipmentType)
-    val equipmentState by bind<TextView>(R.id.equipmentState)
     val cardView by bind<CardView>(R.id.equipmentCardView)
     val revealView by bind<ImageView>(R.id.revealView)
     val progressBar by bind<ProgressBar>(R.id.progressBar)
+    val dropdownMenu by bind<AutoCompleteTextView>(R.id.dropdownMenu)
 }

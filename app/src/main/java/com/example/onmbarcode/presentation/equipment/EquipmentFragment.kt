@@ -45,7 +45,11 @@ class EquipmentFragment : Fragment(), EquipmentView,
         }
 
         recyclerView = rootView.equipmentRecyclerView
-        recyclerView.setItemSpacingDp(EQUIPMENT_ITEM_SPACING)
+        recyclerView.addItemDecoration(
+            EquipmentItemDecoration(
+                resources.getDimension(R.dimen.equipment_item_spacing).toInt()
+            )
+        )
         epoxyController = EquipmentEpoxyController()
         epoxyController.addModelBuildListener { presenter.onEquipmentsDisplayed() }
 
@@ -124,7 +128,6 @@ class EquipmentFragment : Fragment(), EquipmentView,
     }
 
     companion object {
-        private const val EQUIPMENT_ITEM_SPACING = 1
         private const val ARG_SELECTED_DESK = "selected_desk"
 
         /**
