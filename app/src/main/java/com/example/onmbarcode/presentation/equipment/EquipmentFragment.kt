@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
@@ -24,8 +26,7 @@ import javax.inject.Inject
  * Use the [EquipmentFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class EquipmentFragment : Fragment(), EquipmentView,
-    EquipmentConditionDialogFragment.EquipmentConditionDialogListener {
+class EquipmentFragment : Fragment(), EquipmentView {
     @Inject
     lateinit var presenter: EquipmentPresenter
 
@@ -50,12 +51,8 @@ class EquipmentFragment : Fragment(), EquipmentView,
                 resources.getDimension(R.dimen.equipment_item_spacing).toInt()
             )
         )
-        epoxyController = EquipmentEpoxyController()
+        epoxyController = EquipmentEpoxyController(presenter::onEquipmentConditionPicked)
         epoxyController.addModelBuildListener { presenter.onEquipmentsDisplayed() }
-
-        /*rootView.barcodeSubmitButton.setOnClickListener {
-            presenter.onBarcodeEntered(rootView.barcodeEditText.text.toString())
-        }*/
 
         rootView.barcodeInput.addTextChangedListener(afterTextChanged = {
             presenter.onBarcodeChange(
@@ -114,17 +111,13 @@ class EquipmentFragment : Fragment(), EquipmentView,
         recyclerView.scrollToPosition(0)
     }
 
-    override fun displayEquipmentConditionPicker(currentCondition: Equipment.EquipmentCondition) {
-        EquipmentConditionDialogFragment.newInstance(currentCondition.ordinal)
-            .show(childFragmentManager, "EquipmentConditionDialogFragment")
-    }
-
-    override fun onEquipmentConditionPicked(index: Int) {
-        presenter.onEquipmentConditionPicked(index)
-    }
-
     override fun clearBarcodeInputArea() {
         barcodeInput.text.clear()
+    }
+
+    override fun displayEquipmentConditionChangedMessage() {
+        Toast.makeText(context, "Equipment condition changed successfully", Toast.LENGTH_SHORT)
+            .show()
     }
 
     companion object {

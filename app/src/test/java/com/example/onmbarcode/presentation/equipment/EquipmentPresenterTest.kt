@@ -11,12 +11,13 @@ import org.junit.jupiter.api.extension.ExtendWith
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
 internal class EquipmentPresenterTest {
+    private val equipmentRepository: EquipmentRepository = mockk()
     private val view: EquipmentView = mockk()
     private lateinit var presenter: EquipmentPresenter
 
     @BeforeEach
     internal fun setUp() {
         clearAllMocks()
-//        presenter = EquipmentPresenter()
+        presenter = EquipmentPresenter(view)
     }
 }

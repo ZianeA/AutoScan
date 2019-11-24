@@ -37,7 +37,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@drawable/rounded_corners"
+        android:background="@drawable/rounded_corners_32dp"
         android:elevation="2dp"
         android:textAlignment="center"
         android:ems="10"

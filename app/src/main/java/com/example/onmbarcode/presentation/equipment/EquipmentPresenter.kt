@@ -91,8 +91,17 @@ class EquipmentPresenter @Inject constructor(
         }
     }
 
-    fun onEquipmentConditionPicked(conditionIndex: Int) {
-        // TODO("Not implemented")
+    fun onEquipmentConditionPicked(conditionIndex: Int, equipment: Equipment) {
+        val disposable = equipmentRepository.updateEquipment(
+            equipment.copy(
+                condition = EquipmentCondition.getByValue(
+                    conditionIndex
+                )
+            )
+        ).applySchedulers(schedulerProvider)
+            .subscribe({view.displayEquipmentConditionChangedMessage()}, {})
+
+        disposables.add(disposable)
     }
 
     fun onSmoothScrollToTopEnd() {
