@@ -2,8 +2,6 @@
     <string name="app_name">ONM Barcode</string>
     <string name="action_settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="toolbar_title_region">Région</string>
     <string name="toolbar_title_station">Station</string>
     <string name="toolbar_title_desk">Bureau</string>
@@ -19,7 +17,7 @@
     <string name="barcode_input_hint">Code à barre</string>
 
     <!--Items order is important!-->
-    <string-array name="equipment_state">
+    <string-array name="equipment_condition">
         <item>Bon</item>
         <item>Moyen</item>
         <item>Mauvais</item>

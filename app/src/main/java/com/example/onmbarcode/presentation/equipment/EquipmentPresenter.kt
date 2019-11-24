@@ -91,7 +91,7 @@ class EquipmentPresenter @Inject constructor(
         }
     }
 
-    fun onEquipmentStatePicked(stateIndex: Int) {
+    fun onEquipmentConditionPicked(conditionIndex: Int) {
         // TODO("Not implemented")
     }
 

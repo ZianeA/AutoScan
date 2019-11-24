@@ -25,7 +25,7 @@ import javax.inject.Inject
  * create an instance of this fragment.
  */
 class EquipmentFragment : Fragment(), EquipmentView,
-    EquipmentStateDialogFragment.EquipmentStateDialogListener {
+    EquipmentConditionDialogFragment.EquipmentConditionDialogListener {
     @Inject
     lateinit var presenter: EquipmentPresenter
 
@@ -114,13 +114,13 @@ class EquipmentFragment : Fragment(), EquipmentView,
         recyclerView.scrollToPosition(0)
     }
 
-    override fun displayEquipmentStatePicker(currentState: Equipment.EquipmentState) {
-        EquipmentStateDialogFragment.newInstance(currentState.ordinal)
-            .show(childFragmentManager, "EquipmentStateDialogFragment")
+    override fun displayEquipmentConditionPicker(currentCondition: Equipment.EquipmentCondition) {
+        EquipmentConditionDialogFragment.newInstance(currentCondition.ordinal)
+            .show(childFragmentManager, "EquipmentConditionDialogFragment")
     }
 
-    override fun onEquipmentStatePicked(index: Int) {
-        presenter.onEquipmentStatePicked(index)
+    override fun onEquipmentConditionPicked(index: Int) {
+        presenter.onEquipmentConditionPicked(index)
     }
 
     override fun clearBarcodeInputArea() {

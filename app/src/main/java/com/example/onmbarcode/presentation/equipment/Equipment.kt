@@ -1,7 +1,6 @@
 package com.example.onmbarcode.presentation.equipment
 
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 
@@ -11,10 +10,10 @@ data class Equipment(
     @PrimaryKey val barcode: Int,
     val type: String,
     val scanState: ScanState,
-    val state: EquipmentState,
+    val condition: EquipmentCondition,
     val scanDate: Long
 ) {
-    enum class EquipmentState {
+    enum class EquipmentCondition {
         GOOD, AVERAGE, BAD;
 
         companion object {
@@ -25,12 +24,13 @@ data class Equipment(
 
     enum class ScanState { ScannedAndSynced, ScannedButNotSynced, NotScanned, PendingScan }
 
-    class EquipmentStateConverter {
+    class EquipmentConditionConverter {
         @TypeConverter
-        fun fromEquipmentStateToString(state: EquipmentState) = state.name
+        fun fromEquipmentConditionToString(condition: EquipmentCondition) = condition.name
 
         @TypeConverter
-        fun fromStringToEquipmentState(state: String) = EquipmentState.valueOf(state)
+        fun fromStringToEquipmentCondition(condition: String) =
+            EquipmentCondition.valueOf(condition)
     }
 
     class ScanStateConverter {

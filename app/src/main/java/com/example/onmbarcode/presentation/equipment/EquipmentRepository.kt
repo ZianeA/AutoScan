@@ -42,7 +42,7 @@ class EquipmentRepository @Inject constructor(private val local: EquipmentDao) {
             }
 
             val type = equipmentTypes[Random.nextInt(0, equipmentTypes.size - 1)]
-            val equipmentState = Equipment.EquipmentState.values().toList().shuffled().first()
+            val equipmentState = Equipment.EquipmentCondition.values().toList().shuffled().first()
             equipments.add(
                 Equipment(
                     barcode,

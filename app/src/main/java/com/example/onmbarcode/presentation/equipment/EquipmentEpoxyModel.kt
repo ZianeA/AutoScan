@@ -31,12 +31,12 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
         super.bind(holder)
         this.holder = holder
         holder.apply {
-            equipmentBarcode.text = equipment.barcode.toString()
             equipmentType.text = equipment.type.capitalize(Locale.FRENCH)
+            equipmentBarcode.text = equipment.barcode.toString()
 
             //TODO Remove if unused
-            val equipmentLocalizedState =
-                view.resources.getStringArray(R.array.equipment_state)[equipment.state.ordinal]
+            val equipmentLocalizedCondition =
+                view.resources.getStringArray(R.array.equipment_condition)[equipment.condition.ordinal]
 
             //TODO Refactor
             if (equipmentToAnimateBarcode == equipment.barcode
@@ -65,7 +65,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                 ArrayAdapter(
                     view.context,
                     R.layout.dropdown_menu_popup_item,
-                    view.resources.getStringArray(R.array.equipment_state)
+                    view.resources.getStringArray(R.array.equipment_condition)
                 )
             )
         }
