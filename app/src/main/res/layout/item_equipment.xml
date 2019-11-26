@@ -15,15 +15,15 @@
 
         <ImageView
             android:id="@+id/revealView"
-            android:layout_width="0dp"
+            android:layout_width="-1dp"
             android:layout_height="0dp"
-            android:background="@drawable/rounded_corners_8dp"
-            android:backgroundTint="@color/scanned_and_synced"
-            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:tint="@color/scanned_and_synced"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/rounded_corners_8dp" />
 
         <TextView
             android:id="@+id/equipmentBarcode"
@@ -63,7 +63,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:visibility="invisible"
-            app:layout_constraintEnd_toEndOf="@+id/revealView"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible" />
 
@@ -77,12 +77,13 @@
             android:text="Équipement scannée mais non synchronisé"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@android:color/white"
-            app:layout_constraintEnd_toEndOf="@+id/revealView"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/equipmentType" />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
             style="@style/DropdownMenuStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

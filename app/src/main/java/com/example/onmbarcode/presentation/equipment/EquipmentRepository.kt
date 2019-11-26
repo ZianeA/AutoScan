@@ -8,11 +8,11 @@ import kotlin.random.Random
 
 @Singleton
 class EquipmentRepository @Inject constructor(private val local: EquipmentDao) {
-    fun getEquipments(deskId: Int): Single<List<Equipment>> {
+    fun getEquipments(deskId: String): Single<List<Equipment>> {
         return local.getAll()
             .flatMap {
                 if (it.isEmpty()) {
-                    local.addAll(createDummyData(100))
+                    local.addAll(createDummyData(100, deskId))
                         .andThen(local.getAll())
                 } else {
                     Single.just(it)
@@ -28,7 +28,7 @@ class EquipmentRepository @Inject constructor(private val local: EquipmentDao) {
         return local.update(equipment)
     }
 
-    private fun createDummyData(dataCount: Int = 20): List<Equipment> {
+    private fun createDummyData(dataCount: Int = 20, deskId: String): List<Equipment> {
         val equipments = mutableListOf<Equipment>()
         val equipmentTypes = listOf("écran", "clavier", "souris", "chaise", "imprimante", "bureau")
         for (i in 0..dataCount) {
@@ -49,7 +49,8 @@ class EquipmentRepository @Inject constructor(private val local: EquipmentDao) {
                     type,
                     Equipment.ScanState.NotScanned,
                     equipmentState,
-                    System.currentTimeMillis()
+                    System.currentTimeMillis(),
+                    deskId
                 )
             )
         }

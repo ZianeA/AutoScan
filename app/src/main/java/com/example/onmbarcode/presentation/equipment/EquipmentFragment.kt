@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
@@ -32,6 +31,10 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     private lateinit var epoxyController: EquipmentEpoxyController
     private lateinit var recyclerView: EpoxyRecyclerView
+    private lateinit var equipments: List<Equipment> //TODO add a setter to equipments
+    private var equipmentToAnimate = -1
+    private var shouldScrollToTop = false
+    private var isScrolling = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,12 +55,15 @@ class EquipmentFragment : Fragment(), EquipmentView {
             )
         )
         epoxyController = EquipmentEpoxyController(presenter::onEquipmentConditionPicked)
-        epoxyController.addModelBuildListener { presenter.onEquipmentsDisplayed() }
+        epoxyController.addModelBuildListener {
+            if (shouldScrollToTop) {
+                recyclerView.scrollToPosition(0)
+                shouldScrollToTop = false
+            }
+        }
 
         rootView.barcodeInput.addTextChangedListener(afterTextChanged = {
-            presenter.onBarcodeChange(
-                it.toString()
-            )
+            presenter.onBarcodeChange(it.toString())
         })
 
         return rootView
@@ -87,20 +93,42 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
         epoxyController.equipments = equipments
         EquipmentEpoxyModel.equipmentToAnimateBarcode = equipmentToAnimate
+        this.equipments = equipments
     }
 
-    override fun smoothScrollToTop() {
+    override fun displayEquipmentsDelayed(equipments: List<Equipment>, equipmentToAnimate: Int) {
+        if (!isScrolling) {
+            displayEquipments(equipments, equipmentToAnimate)
+            return
+        } else {
+            this.equipments = equipments
+            this.equipmentToAnimate = equipmentToAnimate
+        }
+    }
+
+    //Disable user scrolling while scrolling
+    override fun scrollToTopAndDisplayEquipments(equipments: List<Equipment>) {
+        shouldScrollToTop = true
+        // refresh equipments
+        // TODO we should probably do this inside the presenter
+        this.equipments = equipments
+
         if (recyclerView.computeVerticalScrollOffset() == 0) {
-            presenter.onSmoothScrollToTopEnd()
+            displayEquipments(equipments)
             return
         }
 
         recyclerView.smoothScrollToPosition(0)
+        isScrolling = true
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (recyclerView.computeVerticalScrollOffset() == 0) {
-                    presenter.onSmoothScrollToTopEnd()
+                    isScrolling = false
+                    displayEquipments(
+                        this@EquipmentFragment.equipments,
+                        this@EquipmentFragment.equipmentToAnimate
+                    )
                     recyclerView.removeOnScrollListener(this)
                 }
             }
@@ -119,6 +147,8 @@ class EquipmentFragment : Fragment(), EquipmentView {
         Toast.makeText(context, "Equipment condition changed successfully", Toast.LENGTH_SHORT)
             .show()
     }
+
+    override fun getEquipments() = equipments
 
     companion object {
         private const val ARG_SELECTED_DESK = "selected_desk"

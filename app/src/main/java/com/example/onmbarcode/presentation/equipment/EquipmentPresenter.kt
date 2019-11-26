@@ -3,9 +3,9 @@ package com.example.onmbarcode.presentation.equipment
 import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.di.FragmentScope
 import com.example.onmbarcode.presentation.equipment.Equipment.*
+import com.example.onmbarcode.presentation.util.Clock
 import com.example.onmbarcode.presentation.util.applySchedulers
 import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
-import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import java.lang.IllegalArgumentException
@@ -16,19 +16,15 @@ import javax.inject.Inject
 class EquipmentPresenter @Inject constructor(
     private val view: EquipmentView,
     private val equipmentRepository: EquipmentRepository,
-    private val schedulerProvider: SchedulerProvider
+    private val schedulerProvider: SchedulerProvider,
+    private val clock: Clock
 ) {
     private val disposables = CompositeDisposable()
 
-    private lateinit var currentEquipments: MutableList<Equipment>
-    private lateinit var scannedEquipment: Equipment
-    private var hasScanned = false
-
     fun start(desk: Desk) {
-        val disposable = equipmentRepository.getEquipments(desk.barcode)
+        val disposable = equipmentRepository.getEquipments(desk.barcode.toString())
             .map { equipments -> equipments.sortedByDescending { it.scanDate } }
             .applySchedulers(schedulerProvider)
-            .doOnSuccess { currentEquipments = it.toMutableList() }
             .subscribe({ view.displayEquipments(it) }, { /*onError*/ })
 
         disposables.add(disposable)
@@ -43,42 +39,58 @@ class EquipmentPresenter @Inject constructor(
         view.clearBarcodeInputArea()
 
         val disposable = equipmentRepository.findEquipment(parsedBarcode)
-            .doOnSuccess { scannedEquipment = it }
-            .flatMap {
-                Single.fromCallable {
-                    val scannedEquipmentIndex = currentEquipments.indexOf(scannedEquipment)
-                    scannedEquipment = scannedEquipment.copy(
-                        scanState = ScanState.PendingScan
-                    ) //TODO refactor, duplicate code
-                    currentEquipments.apply {
-                        removeAt(scannedEquipmentIndex)
-                        add(0, scannedEquipment)
-                    }
+            .observeOn(schedulerProvider.main)
+            .map {
+                object {
+                    val scannedEquipment = it
+                    val equipments = view.getEquipments().toMutableList()
                 }
             }
+            .observeOn(schedulerProvider.worker)
+            .map {
+                val scannedEquipmentIndex =
+                    it.equipments.indexOfFirst { e -> e.barcode == it.scannedEquipment.barcode }
+                it.equipments.apply {
+                    removeAt(scannedEquipmentIndex)
+                    add(0, it.scannedEquipment.copy(scanState = ScanState.PendingScan))
+                }
+
+                it
+            }
             .observeOn(schedulerProvider.main)
-            .doOnSuccess {
-                currentEquipments = it
-                hasScanned = true
-                view.smoothScrollToTop()
+            .doOnSuccess { view.scrollToTopAndDisplayEquipments(it.equipments) }
+            .observeOn(schedulerProvider.worker)
+            .flatMap {
+                val updatedEquipment = it.scannedEquipment.copy(
+                    scanState = ScanState.ScannedAndSynced,
+                    scanDate = clock.currentTimeMillis
+                )
+                equipmentRepository.updateEquipment(updatedEquipment)
+                    .andThen(Single.just(updatedEquipment))
+            }/*.delay(2000, TimeUnit.MILLISECONDS) //TODO remove this delay*/
+            .observeOn(schedulerProvider.main)
+            .map {
+                object {
+                    val updatedEquipment = it
+                    // Get fresh equipments.
+                    // Remember this runs asynchronously, equipments could have changed
+                    val equipments = view.getEquipments()
+                }
             }
             .observeOn(schedulerProvider.worker)
-            .flatMapCompletable {
-                scannedEquipment = scannedEquipment.copy(
-                    scanState = ScanState.ScannedAndSynced,
-                    scanDate = System.currentTimeMillis()
-                )
-
-                equipmentRepository.updateEquipment(scannedEquipment)
-            }/*.delay(20, TimeUnit.MILLISECONDS) //TODO remove this delay*/
-            .doOnComplete { currentEquipments[0] = scannedEquipment }
+            .map {
+                val equipments = it.equipments.toMutableList()
+                val scannedEquipmentIndex =
+                    equipments.indexOfFirst { e -> e.barcode == it.updatedEquipment.barcode }
+                equipments[scannedEquipmentIndex] = it.updatedEquipment
+                object {
+                    val barcode = it.updatedEquipment.barcode;
+                    val equipments = equipments
+                }
+            }
             .applySchedulers(schedulerProvider)
             .subscribe(
-                {
-                    hasScanned = true
-                    view.smoothScrollToTop()
-                },
-                { /*onError*/ })
+                { view.displayEquipmentsDelayed(it.equipments, it.barcode) }, { /*onError*/ })
 
         disposables.add(disposable)
     }
@@ -99,23 +111,9 @@ class EquipmentPresenter @Inject constructor(
                 )
             )
         ).applySchedulers(schedulerProvider)
-            .subscribe({view.displayEquipmentConditionChangedMessage()}, {})
+            .subscribe({ view.displayEquipmentConditionChangedMessage() }, {})
 
         disposables.add(disposable)
-    }
-
-    fun onSmoothScrollToTopEnd() {
-        view.displayEquipments(currentEquipments, scannedEquipment.barcode)
-    }
-
-    fun onEquipmentsDisplayed() {
-        if (hasScanned.not()) return
-
-        view.scrollToTop()
-        hasScanned = false
-    }
-
-    fun onEquipmentAnimationEnd() {
     }
 
     fun stop() {

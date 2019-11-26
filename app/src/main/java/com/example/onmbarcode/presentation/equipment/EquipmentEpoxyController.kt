@@ -17,9 +17,9 @@ class EquipmentEpoxyController(private val dropdownMenuItemSelectedListener: ((c
             EquipmentEpoxyModel_()
                 .id(it.barcode)
                 .equipment(it)
-                .dropdownMenuItemClickListener(AdapterView.OnItemClickListener { _, _, position, _ ->
+                .dropdownMenuItemClickListener { _, _, position, _ ->
                     dropdownMenuItemSelectedListener.invoke(position, it)
-                })
+                }
                 .addTo(this)
         }
     }

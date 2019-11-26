@@ -4,14 +4,16 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 
-//TODO By looking at animate field, I should probably separate presentation model from database model.
+// TODO add lookup tables
+// TODO add deskBarcode foreign key
 @Entity
 data class Equipment(
     @PrimaryKey val barcode: Int,
     val type: String,
     val scanState: ScanState,
     val condition: EquipmentCondition,
-    val scanDate: Long
+    val scanDate: Long,
+    val deskBarcode: String
 ) {
     enum class EquipmentCondition {
         GOOD, AVERAGE, BAD;

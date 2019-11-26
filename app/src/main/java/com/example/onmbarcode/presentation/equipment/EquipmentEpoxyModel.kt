@@ -1,5 +1,6 @@
 package com.example.onmbarcode.presentation.equipment
 
+import android.animation.Animator
 import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
 import android.graphics.PorterDuff
@@ -17,6 +18,7 @@ import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.KotlinEpoxyHolder
+import com.google.android.material.circularreveal.CircularRevealCompat
 import java.util.*
 import kotlin.math.hypot
 
@@ -62,7 +64,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             if (equipmentToAnimateBarcode == equipment.barcode
                 && equipment.scanState != ScanState.PendingScan
             ) {
-                view.post {
+                revealView.postOnAnimation {
                     animateEquipmentColor(this)
                     equipmentToAnimateBarcode = -1
                 }
@@ -75,46 +77,30 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
         }
     }
 
+    override fun onViewDetachedFromWindow(holder: EquipmentHolder) {
+        super.onViewDetachedFromWindow(holder)
+        holder.view.clearAnimation()
+    }
+
     override fun unbind(holder: EquipmentHolder) {
         super.unbind(holder)
-        holder.revealView.visibility = View.INVISIBLE
-        holder.progressBar.visibility = View.INVISIBLE
+        holder.apply {
+            revealView.scaleX = -1f
+            progressBar.visibility = View.INVISIBLE
+        }
     }
 
     private fun animateEquipmentColor(holder: EquipmentHolder) {
         holder.apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                //get the center for the clipping circle relative to view.
-                val cx = revealView.width / 2
-                val cy = revealView.height / 2
-
-                // get the final radius for the clipping circle
-                val finalRadius = hypot(cx.toDouble(), cy.toDouble()).toFloat() * 2
-
-                // create the animator for this view (the start radius is zero)
-                val anim =
-                    ViewAnimationUtils.createCircularReveal(revealView, 0, cy, 0f, finalRadius)
-
-                // start the animation
-                progressBar.visibility = View.INVISIBLE
-                revealView.visibility = View.VISIBLE
-                anim.addListener(onEnd = {
+            progressBar.visibility = View.INVISIBLE
+            revealView.animate()
+                .scaleXBy(cardView.width * 2f)
+                .setDuration(ANIMATION_DURATION)
+                .withEndAction {
+                    revealView.scaleX = -1f
                     cardView.setCardBackgroundColor(scannedColor)
-                    revealView.visibility = View.INVISIBLE
-                })
-                anim.duration = ANIMATION_DURATION
-                anim.start()
-            } else {
-                val anim = ObjectAnimator.ofObject(
-                    cardView,
-                    "cardBackgroundColor",
-                    ArgbEvaluator(),
-                    notScannedColor,
-                    scannedColor
-                )
-                anim.duration = ANIMATION_DURATION
-                anim.start()
-            }
+                }
+                .start()
         }
     }
 
