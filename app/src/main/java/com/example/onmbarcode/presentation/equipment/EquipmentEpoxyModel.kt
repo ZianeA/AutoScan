@@ -64,10 +64,8 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             if (equipmentToAnimateBarcode == equipment.barcode
                 && equipment.scanState != ScanState.PendingScan
             ) {
-                revealView.postOnAnimation {
-                    animateEquipmentColor(this)
-                    equipmentToAnimateBarcode = -1
-                }
+                animateEquipmentColor(this)
+                equipmentToAnimateBarcode = -1
 
             } else {
                 val equipmentColor =

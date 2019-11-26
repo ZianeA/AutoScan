@@ -31,8 +31,8 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     private lateinit var epoxyController: EquipmentEpoxyController
     private lateinit var recyclerView: EpoxyRecyclerView
-    private lateinit var equipments: List<Equipment> //TODO add a setter to equipments
-    private var equipmentToAnimate = -1
+    override var equipments: List<Equipment> = emptyList()
+    override var equipmentToAnimate = -1
     private var shouldScrollToTop = false
     private var isScrolling = false
 
@@ -86,35 +86,25 @@ class EquipmentFragment : Fragment(), EquipmentView {
         super.onAttach(context)
     }
 
-    override fun displayEquipments(equipments: List<Equipment>, equipmentToAnimate: Int) {
+    override fun displayEquipments() {
         if (recyclerView.adapter == null) {
             recyclerView.setController(epoxyController)
         }
 
         epoxyController.equipments = equipments
         EquipmentEpoxyModel.equipmentToAnimateBarcode = equipmentToAnimate
-        this.equipments = equipments
     }
 
-    override fun displayEquipmentsDelayed(equipments: List<Equipment>, equipmentToAnimate: Int) {
-        if (!isScrolling) {
-            displayEquipments(equipments, equipmentToAnimate)
-            return
-        } else {
-            this.equipments = equipments
-            this.equipmentToAnimate = equipmentToAnimate
-        }
+    override fun displayEquipmentsDelayed() {
+        if (!isScrolling) displayEquipments()
     }
 
     //Disable user scrolling while scrolling
-    override fun scrollToTopAndDisplayEquipments(equipments: List<Equipment>) {
+    override fun scrollToTopAndDisplayEquipments() {
         shouldScrollToTop = true
-        // refresh equipments
-        // TODO we should probably do this inside the presenter
-        this.equipments = equipments
 
         if (recyclerView.computeVerticalScrollOffset() == 0) {
-            displayEquipments(equipments)
+            displayEquipments()
             return
         }
 
@@ -125,10 +115,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
                 super.onScrolled(recyclerView, dx, dy)
                 if (recyclerView.computeVerticalScrollOffset() == 0) {
                     isScrolling = false
-                    displayEquipments(
-                        this@EquipmentFragment.equipments,
-                        this@EquipmentFragment.equipmentToAnimate
-                    )
+                    displayEquipments()
                     recyclerView.removeOnScrollListener(this)
                 }
             }
@@ -147,8 +134,6 @@ class EquipmentFragment : Fragment(), EquipmentView {
         Toast.makeText(context, "Equipment condition changed successfully", Toast.LENGTH_SHORT)
             .show()
     }
-
-    override fun getEquipments() = equipments
 
     companion object {
         private const val ARG_SELECTED_DESK = "selected_desk"

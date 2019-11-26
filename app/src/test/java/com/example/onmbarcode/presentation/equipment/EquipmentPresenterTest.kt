@@ -19,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(MockKExtension::class)
 internal class EquipmentPresenterTest {
     private val equipmentRepository: EquipmentRepository = mockk()
-    private val view: EquipmentView = mockk()
+    private val view: EquipmentView = spyk()
     private val clock: Clock = mockk()
     private lateinit var presenter: EquipmentPresenter
 
@@ -39,13 +39,14 @@ internal class EquipmentPresenterTest {
             every { equipmentRepository.getEquipments(desk.barcode.toString()) } returns Single.just(
                 equipments
             )
-            every { view.displayEquipments(any()) } just runs
+            every { view.displayEquipments() } just runs
 
             //Act
             presenter.start(desk)
 
             //Assert
-            verify { view.displayEquipments(equipments) }
+            verify { view.setProperty("equipments") value equipments }
+            verify { view.displayEquipments() }
         }
     }
 
@@ -96,15 +97,19 @@ internal class EquipmentPresenterTest {
             every { equipmentRepository.findEquipment(any()) } returns Single.just(
                 equipmentToBeScanned
             )
-            every { view.getEquipments() } returns listOf(randomEquipment, equipmentToBeScanned)
-            every { view.scrollToTopAndDisplayEquipments(any()) } just runs
+            every { view.getProperty("equipments") } returns listOf(
+                randomEquipment,
+                equipmentToBeScanned
+            )
+            every { view.scrollToTopAndDisplayEquipments() } just runs
 
             //Act
             presenter.onBarcodeChange("12345")
 
             //Assert
             val expectedEquipments = listOf(equipmentToBeScanned, randomEquipment)
-            verify { view.scrollToTopAndDisplayEquipments(expectedEquipments) }
+            verify { view.setProperty("equipments") value expectedEquipments }
+            verify { view.scrollToTopAndDisplayEquipments() }
         }
 
         @Test
@@ -118,13 +123,13 @@ internal class EquipmentPresenterTest {
                 equipmentToBeScanned
             )
             every { clock.currentTimeMillis } returns scanDate
-            every { view.getEquipments() } returns listOf(
+            every { view.getProperty("equipments") } returns listOf(
                 createEquipment(barcode = 99999),
                 equipmentToBeScanned
             )
             every { equipmentRepository.updateEquipment(any()) } returns Completable.complete()
-            every { view.scrollToTopAndDisplayEquipments(any()) } just runs
-            every { view.displayEquipmentsDelayed(any(), any()) } just runs
+            every { view.scrollToTopAndDisplayEquipments() } just runs
+            every { view.displayEquipmentsDelayed() } just runs
 
             //Act
             presenter.onBarcodeChange("12345")
@@ -139,22 +144,27 @@ internal class EquipmentPresenterTest {
 
         //TODO UI should be updated according to result of updating the repository
         @Test
-        fun `update UI when finished updating repository`() {
+        fun `update UI when repository is updated`() {
             //Arrange
             val equipmentToBeScanned =
                 createEquipment(barcode = 99999, scanState = ScanState.NotScanned, scanDate = 505)
             val randomEquipment = createEquipment(scanDate = 909)
-            val equipments = listOf(randomEquipment, equipmentToBeScanned)
             val scanDate: Long = System.currentTimeMillis()
             every { equipmentRepository.findEquipment(any()) } returns Single.just(
                 equipmentToBeScanned
             )
             every { clock.currentTimeMillis } returns scanDate
             every { view.clearBarcodeInputArea() } just runs
-            every { view.scrollToTopAndDisplayEquipments(any()) } just runs
-            every { view.getEquipments() } returns equipments
+            every { view.scrollToTopAndDisplayEquipments() } just runs
+            every { view.getProperty("equipments") } returns listOf(
+                randomEquipment,
+                equipmentToBeScanned
+            ) andThen listOf(
+                equipmentToBeScanned.copy(scanState = ScanState.PendingScan),
+                randomEquipment
+            )
             every { equipmentRepository.updateEquipment(any()) } returns Completable.complete()
-            every { view.displayEquipmentsDelayed(any(), any()) } just runs
+            every { view.displayEquipmentsDelayed() } just runs
 
 
             //Act
@@ -162,18 +172,15 @@ internal class EquipmentPresenterTest {
 
             //Assert
             val expectedEquipments = listOf(
-                randomEquipment,
                 equipmentToBeScanned.copy(
                     scanState = ScanState.ScannedAndSynced,
                     scanDate = scanDate
-                )
+                ),
+                randomEquipment
             )
-            verify {
-                view.displayEquipmentsDelayed(
-                    expectedEquipments,
-                    equipmentToBeScanned.barcode
-                )
-            }
+            verify { view.setProperty("equipments") value expectedEquipments }
+            verify { view.setProperty("equipmentToAnimate") value equipmentToBeScanned.barcode }
+            verify { view.displayEquipmentsDelayed() }
         }
     }
 }

@@ -11,6 +11,7 @@ import io.reactivex.disposables.CompositeDisposable
 import java.lang.IllegalArgumentException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.random.Random
 
 @FragmentScope
 class EquipmentPresenter @Inject constructor(
@@ -25,7 +26,10 @@ class EquipmentPresenter @Inject constructor(
         val disposable = equipmentRepository.getEquipments(desk.barcode.toString())
             .map { equipments -> equipments.sortedByDescending { it.scanDate } }
             .applySchedulers(schedulerProvider)
-            .subscribe({ view.displayEquipments(it) }, { /*onError*/ })
+            .subscribe({
+                view.equipments = it
+                view.displayEquipments()
+            }, { /*onError*/ })
 
         disposables.add(disposable)
     }
@@ -43,7 +47,7 @@ class EquipmentPresenter @Inject constructor(
             .map {
                 object {
                     val scannedEquipment = it
-                    val equipments = view.getEquipments().toMutableList()
+                    val equipments = view.equipments.toMutableList()
                 }
             }
             .observeOn(schedulerProvider.worker)
@@ -58,7 +62,10 @@ class EquipmentPresenter @Inject constructor(
                 it
             }
             .observeOn(schedulerProvider.main)
-            .doOnSuccess { view.scrollToTopAndDisplayEquipments(it.equipments) }
+            .doOnSuccess {
+                view.equipments = it.equipments
+                view.scrollToTopAndDisplayEquipments()
+            }
             .observeOn(schedulerProvider.worker)
             .flatMap {
                 val updatedEquipment = it.scannedEquipment.copy(
@@ -67,14 +74,14 @@ class EquipmentPresenter @Inject constructor(
                 )
                 equipmentRepository.updateEquipment(updatedEquipment)
                     .andThen(Single.just(updatedEquipment))
-            }/*.delay(2000, TimeUnit.MILLISECONDS) //TODO remove this delay*/
+            }.delay(Random.nextLong(200, 1000), TimeUnit.MILLISECONDS) //TODO remove this delay
             .observeOn(schedulerProvider.main)
             .map {
                 object {
                     val updatedEquipment = it
                     // Get fresh equipments.
                     // Remember this runs asynchronously, equipments could have changed
-                    val equipments = view.getEquipments()
+                    val equipments = view.equipments
                 }
             }
             .observeOn(schedulerProvider.worker)
@@ -90,7 +97,11 @@ class EquipmentPresenter @Inject constructor(
             }
             .applySchedulers(schedulerProvider)
             .subscribe(
-                { view.displayEquipmentsDelayed(it.equipments, it.barcode) }, { /*onError*/ })
+                {
+                    view.equipments = it.equipments
+                    view.equipmentToAnimate = it.barcode
+                    view.displayEquipmentsDelayed()
+                }, { /*onError*/ })
 
         disposables.add(disposable)
     }
