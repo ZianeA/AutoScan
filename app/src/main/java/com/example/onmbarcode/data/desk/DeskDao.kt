@@ -11,13 +11,13 @@ interface DeskDao {
     fun addAll(desk: List<DeskEntity>): Completable
 
     @Query("SELECT * FROM DeskEntity")
-    fun getAll(): Single<List<DeskEntity>>
+    fun getAll(): Single<List<DeskWithEquipmentsEntity>>
 
     @Query("SELECT * FROM DeskEntity e WHERE e.isScanned = 1 ORDER BY e.scanDate")
-    fun getScanned(): Single<List<DeskEntity>>
+    fun getScanned(): Single<List<DeskWithEquipmentsEntity>>
 
     @Query("SELECT * FROM DeskEntity d WHERE d.barcode=:barcode")
-    fun getByBarcode(barcode: String): Single<DeskEntity>
+    fun getByBarcode(barcode: String): Single<DeskWithEquipmentsEntity>
 
     @Update
     fun update(desk: DeskEntity): Completable

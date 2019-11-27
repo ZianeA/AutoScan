@@ -34,7 +34,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
     override var equipments: List<Equipment> = emptyList()
     override var equipmentToAnimate = -1
     private var shouldScrollToTop = false
-    private var isScrolling = false
+    private var isUiUpdating = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,6 +59,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
             if (shouldScrollToTop) {
                 recyclerView.scrollToPosition(0)
                 shouldScrollToTop = false
+                isUiUpdating = false
             }
         }
 
@@ -93,13 +94,18 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
         epoxyController.equipments = equipments
         EquipmentEpoxyModel.equipmentToAnimateBarcode = equipmentToAnimate
+        epoxyController.requestModelBuild()
     }
 
     override fun displayEquipmentsDelayed() {
-        if (!isScrolling) displayEquipments()
+        if (!isUiUpdating) {
+            epoxyController.equipments = equipments
+            EquipmentEpoxyModel.equipmentToAnimateBarcode = equipmentToAnimate
+            epoxyController.requestDelayedModelBuild(MODEL_BUILD_DELAY)
+        }
     }
 
-    //Disable user scrolling while scrolling
+    //TODO Disable user scrolling while scrolling
     override fun scrollToTopAndDisplayEquipments() {
         shouldScrollToTop = true
 
@@ -109,12 +115,11 @@ class EquipmentFragment : Fragment(), EquipmentView {
         }
 
         recyclerView.smoothScrollToPosition(0)
-        isScrolling = true
+        isUiUpdating = true
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (recyclerView.computeVerticalScrollOffset() == 0) {
-                    isScrolling = false
                     displayEquipments()
                     recyclerView.removeOnScrollListener(this)
                 }
@@ -137,6 +142,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     companion object {
         private const val ARG_SELECTED_DESK = "selected_desk"
+        private const val MODEL_BUILD_DELAY = 200
 
         /**
          * Use this factory method to create a new instance of

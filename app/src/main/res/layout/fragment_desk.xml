@@ -38,6 +38,7 @@
         android:background="@drawable/rounded_corners_32dp"
         android:elevation="2dp"
         android:ems="10"
+        android:text="\@CNTM08"
         android:inputType='textEmailAddress|textCapCharacters'
         android:textAlignment="center"
         android:hint="@string/barcode_input_hint"

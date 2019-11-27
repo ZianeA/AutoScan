@@ -30,7 +30,7 @@ class DeskPresenter @Inject constructor(
     // maybe not because...
     // maybe yes when the user navigates back
     fun onBarcodeEntered(barcode: String) {
-        /*val disposable = deskRepository.findDesk(barcode)
+        val disposable = deskRepository.findDesk(barcode)
             .flatMap {
                 deskRepository.updateDesk(
                     it.copy(
@@ -40,11 +40,10 @@ class DeskPresenter @Inject constructor(
                 ).andThen(Single.just(it))
             }
             .applySchedulers(schedulerProvider)
-            .subscribe({ view.displayEquipmentsScreen(it) }, { *//*onError*//* })
+            .subscribe({ view.displayEquipmentsScreen(it) }, { /*onError*/ })
 
 
-        disposables.add(disposable)*/
-        TODO("not implemented")
+        disposables.add(disposable)
     }
 
     fun stop() {

@@ -1,5 +1,6 @@
 package com.example.onmbarcode.data.equipment
 
+import com.example.onmbarcode.data.Mapper
 import com.example.onmbarcode.presentation.equipment.Equipment
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -8,9 +9,12 @@ import javax.inject.Singleton
 import kotlin.random.Random
 
 @Singleton
-class EquipmentRepository @Inject constructor(private val local: EquipmentDao) {
+class EquipmentRepository @Inject constructor(
+    private val local: EquipmentDao,
+    private val equipmentEntityMapper: Mapper<EquipmentEntity, Equipment>
+) {
     fun getEquipments(deskId: String): Single<List<Equipment>> {
-        /*return local.getAll()
+        return local.getAll()
             .flatMap {
                 if (it.isEmpty()) {
                     local.addAll(createDummyData(100, deskId))
@@ -18,22 +22,20 @@ class EquipmentRepository @Inject constructor(private val local: EquipmentDao) {
                 } else {
                     Single.just(it)
                 }
-            }*/
-        TODO("not implemented")
+            }.map { equipmentEntities -> equipmentEntities.map(equipmentEntityMapper::map) }
     }
 
     fun findEquipment(barcode: Int): Single<Equipment> {
-        TODO("not implemented")
-//        return local.getByBarcode(barcode)
+        return local.getByBarcode(barcode)
+            .map(equipmentEntityMapper::map)
     }
 
     fun updateEquipment(equipment: Equipment): Completable {
-        TODO("not implemented")
-//        return local.update(equipment)
+        return local.update(equipmentEntityMapper.mapReverse(equipment))
     }
 
-    private fun createDummyData(dataCount: Int = 20, deskId: String): List<Equipment> {
-        val equipments = mutableListOf<Equipment>()
+    private fun createDummyData(dataCount: Int = 20, deskId: String): List<EquipmentEntity> {
+        val equipments = mutableListOf<EquipmentEntity>()
         val equipmentTypes = listOf("écran", "clavier", "souris", "chaise", "imprimante", "bureau")
         for (i in 0..dataCount) {
             val barcode = when (i) {
@@ -48,7 +50,7 @@ class EquipmentRepository @Inject constructor(private val local: EquipmentDao) {
             val type = equipmentTypes[Random.nextInt(0, equipmentTypes.size - 1)]
             val equipmentState = Equipment.EquipmentCondition.values().toList().shuffled().first()
             equipments.add(
-                Equipment(
+                EquipmentEntity(
                     barcode,
                     type,
                     Equipment.ScanState.NotScanned,

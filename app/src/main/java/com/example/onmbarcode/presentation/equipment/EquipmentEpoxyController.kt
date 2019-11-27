@@ -7,10 +7,6 @@ import com.airbnb.epoxy.AsyncEpoxyController
 class EquipmentEpoxyController(private val dropdownMenuItemSelectedListener: ((conditionIndex: Int, equipment: Equipment) -> Unit)) :
     AsyncEpoxyController() {
     var equipments: List<Equipment> = emptyList()
-        set(value) {
-            field = value
-            requestModelBuild()
-        }
 
     override fun buildModels() {
         equipments.forEach {

@@ -14,7 +14,7 @@ class DeskRepository @Inject constructor(
     private val deskEntityMapper: Mapper<DeskWithEquipmentsEntity, Desk>
 ) {
     fun getScannedDesks(): Single<List<Desk>> {
-        /*return local.getAll()
+        return local.getAll()
             .flatMap {
                 if (it.isEmpty()) {
                     local.addAll(createDummyData())
@@ -23,11 +23,13 @@ class DeskRepository @Inject constructor(
                     local.getScanned()
                 }
             }
-            .map { deskEntities -> deskEntities.map { deskEntityMapper.map(it) } }*/
-        TODO("not implemented")
+            .map { deskEntities -> deskEntities.map { deskEntityMapper.map(it) } }
     }
 
-    fun findDesk(barcode: String) = local.getByBarcode(barcode)
+    fun findDesk(barcode: String): Single<Desk> {
+        return local.getByBarcode(barcode)
+            .map(deskEntityMapper::map)
+    }
 
     fun updateDesk(desk: Desk): Completable {
         val deskEntity = deskEntityMapper.mapReverse(desk).deskEntity
