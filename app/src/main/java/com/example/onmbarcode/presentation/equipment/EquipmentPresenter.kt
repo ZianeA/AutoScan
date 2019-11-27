@@ -34,7 +34,7 @@ class EquipmentPresenter @Inject constructor(
         disposables.add(disposable)
     }
 
-    //TODO do rename
+    //TODO handle equipment not found
     private fun scanBarcode(barcode: String) {
         val parsedBarcode = barcode.toIntOrNull()
             ?: throw IllegalArgumentException(

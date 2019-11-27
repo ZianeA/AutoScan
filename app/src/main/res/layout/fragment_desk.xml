@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     tools:context=".presentation.desk.DeskFragment">
 
     <androidx.appcompat.widget.Toolbar
@@ -20,10 +21,44 @@
     <com.airbnb.epoxy.EpoxyRecyclerView
         android:id="@+id/deskRecyclerView"
         android:layout_width="match_parent"
-        android:background="@color/lightGray"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        android:background="@color/lightGray"
+        app:layout_constraintBottom_toTopOf="@+id/barcodeEditText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <EditText
+        android:id="@+id/barcodeEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/rounded_corners_32dp"
+        android:elevation="2dp"
+        android:ems="10"
+        android:inputType='textEmailAddress|textCapCharacters'
+        android:textAlignment="center"
+        android:hint="@string/barcode_input_hint"
+        android:maxLines="1"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/barcodeSubmitButton"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/barcodeSubmitButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/ripple_circle"
+        android:elevation="2dp"
+        app:srcCompat="@drawable/ic_send_24dp"
+        app:backgroundTint="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="@+id/barcodeEditText"
+        app:layout_constraintDimensionRatio="h,1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/barcodeEditText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

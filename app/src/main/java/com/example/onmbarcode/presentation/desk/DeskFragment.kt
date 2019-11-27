@@ -12,8 +12,6 @@ import com.airbnb.epoxy.EpoxyRecyclerView
 
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.equipment.EquipmentFragment
-import com.example.onmbarcode.presentation.region.Region
-import com.example.onmbarcode.presentation.region.RegionFragment
 import com.example.onmbarcode.presentation.station.Station
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.support.AndroidSupportInjection
@@ -27,7 +25,7 @@ import javax.inject.Inject
  */
 class DeskFragment : Fragment(), DeskView {
     @Inject
-    lateinit var deskPresenter: DeskPresenter
+    lateinit var presenter: DeskPresenter
 
     @Inject
     lateinit var fragNavController: FragNavController
@@ -51,17 +49,21 @@ class DeskFragment : Fragment(), DeskView {
         recyclerView = rootView.deskRecyclerView
         recyclerView.setItemSpacingDp(DESK_ITEM_SPACING)
 
+        rootView.barcodeSubmitButton.setOnClickListener {
+            presenter.onBarcodeEntered(rootView.barcodeEditText.text.toString())
+        }
+
         return rootView
     }
 
     override fun onStart() {
         super.onStart()
-        deskPresenter.start()
+        presenter.start()
     }
 
     override fun onStop() {
         super.onStop()
-        deskPresenter.stop()
+        presenter.stop()
     }
 
     override fun onAttach(context: Context) {
@@ -74,6 +76,10 @@ class DeskFragment : Fragment(), DeskView {
             recyclerView.setController(epoxyController)
         }
         epoxyController.desks = desks
+    }
+
+    override fun displayEquipmentsScreen(desk: Desk) {
+        fragNavController.pushFragment(EquipmentFragment.newInstance(desk))
     }
 
     companion object {

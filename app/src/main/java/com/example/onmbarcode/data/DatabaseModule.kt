@@ -18,4 +18,7 @@ class DatabaseModule {
 
     @Provides
     fun provideEquipmentDao(database: OnmBarcodeDatabase) = database.equipmentDao()
+
+    @Provides
+    fun provideDeskDao(database: OnmBarcodeDatabase) = database.deskDao()
 }
