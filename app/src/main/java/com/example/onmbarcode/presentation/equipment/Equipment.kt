@@ -1,20 +1,20 @@
 package com.example.onmbarcode.presentation.equipment
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
+import kotlinx.android.parcel.Parcelize
 
-// TODO add lookup tables
-// TODO add deskBarcode foreign key
-@Entity
+@Parcelize
 data class Equipment(
-    @PrimaryKey val barcode: Int,
+    val barcode: Int,
     val type: String,
     val scanState: ScanState,
     val condition: EquipmentCondition,
     val scanDate: Long,
     val deskBarcode: String
-) {
+) : Parcelable {
     enum class EquipmentCondition {
         GOOD, AVERAGE, BAD;
 
@@ -25,21 +25,4 @@ data class Equipment(
     }
 
     enum class ScanState { ScannedAndSynced, ScannedButNotSynced, NotScanned, PendingScan }
-
-    class EquipmentConditionConverter {
-        @TypeConverter
-        fun fromEquipmentConditionToString(condition: EquipmentCondition) = condition.name
-
-        @TypeConverter
-        fun fromStringToEquipmentCondition(condition: String) =
-            EquipmentCondition.valueOf(condition)
-    }
-
-    class ScanStateConverter {
-        @TypeConverter
-        fun fromScanStateToString(scanState: ScanState) = scanState.name
-
-        @TypeConverter
-        fun fromStringToScanState(scanState: String) = ScanState.valueOf(scanState)
-    }
 }

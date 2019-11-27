@@ -1,5 +1,6 @@
-package com.example.onmbarcode.presentation.equipment
+package com.example.onmbarcode.data.equipment
 
+import com.example.onmbarcode.presentation.equipment.Equipment
 import io.reactivex.Completable
 import io.reactivex.Single
 import javax.inject.Inject
@@ -9,7 +10,7 @@ import kotlin.random.Random
 @Singleton
 class EquipmentRepository @Inject constructor(private val local: EquipmentDao) {
     fun getEquipments(deskId: String): Single<List<Equipment>> {
-        return local.getAll()
+        /*return local.getAll()
             .flatMap {
                 if (it.isEmpty()) {
                     local.addAll(createDummyData(100, deskId))
@@ -17,15 +18,18 @@ class EquipmentRepository @Inject constructor(private val local: EquipmentDao) {
                 } else {
                     Single.just(it)
                 }
-            }
+            }*/
+        TODO("not implemented")
     }
 
     fun findEquipment(barcode: Int): Single<Equipment> {
-        return local.getByBarcode(barcode)
+        TODO("not implemented")
+//        return local.getByBarcode(barcode)
     }
 
     fun updateEquipment(equipment: Equipment): Completable {
-        return local.update(equipment)
+        TODO("not implemented")
+//        return local.update(equipment)
     }
 
     private fun createDummyData(dataCount: Int = 20, deskId: String): List<Equipment> {

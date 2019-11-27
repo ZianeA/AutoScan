@@ -1,5 +1,6 @@
 package com.example.onmbarcode.presentation.equipment
 
+import com.example.onmbarcode.data.equipment.EquipmentRepository
 import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.Clock
 import com.example.onmbarcode.util.SyncSchedulerProvider

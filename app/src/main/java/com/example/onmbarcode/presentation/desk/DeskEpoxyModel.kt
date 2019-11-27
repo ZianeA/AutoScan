@@ -20,11 +20,11 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
         super.bind(holder)
         holder.apply {
             deskBarcode.text = view.context.getString(R.string.desk_barcode, desk.barcode)
-            scanCount.text = view.context.getString(
+            /*scanCount.text = view.context.getString(
                 R.string.scanned_equipment_count,
                 desk.scanCount,
                 desk.totalScanCount
-            )
+            )*/ //TODO fix this
             view.setOnClickListener(clickListener)
         }
     }

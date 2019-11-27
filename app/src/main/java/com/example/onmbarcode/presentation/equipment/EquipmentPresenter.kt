@@ -1,5 +1,6 @@
 package com.example.onmbarcode.presentation.equipment
 
+import com.example.onmbarcode.data.equipment.EquipmentRepository
 import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.di.FragmentScope
 import com.example.onmbarcode.presentation.equipment.Equipment.*

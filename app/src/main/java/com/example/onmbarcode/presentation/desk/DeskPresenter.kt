@@ -1,5 +1,6 @@
 package com.example.onmbarcode.presentation.desk
 
+import com.example.onmbarcode.data.desk.DeskRepository
 import com.example.onmbarcode.presentation.di.FragmentScope
 import com.example.onmbarcode.presentation.util.Clock
 import com.example.onmbarcode.presentation.util.applySchedulers
@@ -29,7 +30,7 @@ class DeskPresenter @Inject constructor(
     // maybe not because...
     // maybe yes when the user navigates back
     fun onBarcodeEntered(barcode: String) {
-        val disposable = deskRepository.findDesk(barcode)
+        /*val disposable = deskRepository.findDesk(barcode)
             .flatMap {
                 deskRepository.updateDesk(
                     it.copy(
@@ -39,10 +40,11 @@ class DeskPresenter @Inject constructor(
                 ).andThen(Single.just(it))
             }
             .applySchedulers(schedulerProvider)
-            .subscribe({ view.displayEquipmentsScreen(it) }, { /*onError*/ })
+            .subscribe({ view.displayEquipmentsScreen(it) }, { *//*onError*//* })
 
 
-        disposables.add(disposable)
+        disposables.add(disposable)*/
+        TODO("not implemented")
     }
 
     fun stop() {
