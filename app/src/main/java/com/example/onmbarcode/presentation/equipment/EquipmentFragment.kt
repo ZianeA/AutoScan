@@ -152,15 +152,23 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     override fun showErrorMessage() {
-        mySnackbar.animate()
-            .alpha(1f)
-            .withEndAction {
-                mySnackbar.animate()
-                    .alpha(0f)
-                    .setStartDelay(4000)
-                    .start()
-            }
-            .start()
+        mySnackbar.apply {
+            val (initialScaleX, initialScaleY) = Pair(scaleX, scaleY)
+
+            scaleX = initialScaleX / 2
+            scaleX = initialScaleY / 2
+            animate()
+                .alpha(1f)
+                .scaleX(initialScaleX)
+                .scaleY(initialScaleY)
+                .withEndAction {
+                    animate()
+                        .alpha(0f)
+                        .setStartDelay(4000)
+                        .start()
+                }
+                .start()
+        }
     }
 
     companion object {

@@ -15,6 +15,7 @@ import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.KotlinEpoxyHolder
+import com.google.android.material.textfield.TextInputLayout
 import java.util.*
 
 @EpoxyModelClass(layout = R.layout.item_equipment)
@@ -44,7 +45,12 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             dropdownMenu.filters = emptyArray()
             dropdownMenu.setText(equipmentConditions[equipment.condition.ordinal], false)
             dropdownMenu.onItemClickListener = dropdownMenuItemClickListener
-            dropdownMenu.isEnabled = equipment.scanState == ScanState.ScannedAndSynced
+            dropdownMenu.isEnabled = when (equipment.scanState) {
+                ScanState.ScannedAndSynced -> true
+                ScanState.ScannedButNotSynced -> true
+                else -> false
+            }
+            dropdownLayout.isEndIconVisible = dropdownMenu.isEnabled
 
             // Show progress bar
             if (equipment.scanState == ScanState.PendingScan) {
@@ -143,5 +149,6 @@ class EquipmentHolder : KotlinEpoxyHolder() {
     val revealView by bind<ImageView>(R.id.revealView)
     val progressBar by bind<ProgressBar>(R.id.progressBar)
     val dropdownMenu by bind<AutoCompleteTextView>(R.id.dropdownMenu)
+    val dropdownLayout by bind<TextInputLayout>(R.id.textInputLayout)
     val scanStateMessage by bind<TextView>(R.id.scanStateMessage)
 }
