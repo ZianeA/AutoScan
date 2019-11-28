@@ -9,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
@@ -17,6 +20,7 @@ import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.desk.DeskUi
 import com.example.onmbarcode.presentation.util.ItemDecoration
+import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_equipment.*
 import kotlinx.android.synthetic.main.fragment_equipment.view.*
@@ -138,8 +142,25 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     override fun displayEquipmentConditionChangedMessage() {
-        Toast.makeText(context, "Equipment condition changed successfully", Toast.LENGTH_SHORT)
+        //TODO Reuse this snackbar
+        Snackbar.make(
+            mainContent,
+            "Equipment condition changed successfully",
+            Snackbar.LENGTH_SHORT
+        )
             .show()
+    }
+
+    override fun showErrorMessage() {
+        mySnackbar.animate()
+            .alpha(1f)
+            .withEndAction {
+                mySnackbar.animate()
+                    .alpha(0f)
+                    .setStartDelay(4000)
+                    .start()
+            }
+            .start()
     }
 
     companion object {

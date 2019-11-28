@@ -1,26 +1,21 @@
 package com.example.onmbarcode.presentation.equipment
 
-import android.animation.Animator
-import android.animation.ArgbEvaluator
-import android.animation.ObjectAnimator
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.PorterDuff
-import android.os.Build
 import android.text.InputType
 import android.view.View
-import android.view.ViewAnimationUtils
 import android.widget.*
 import androidx.cardview.widget.CardView
-import androidx.core.animation.addListener
 import androidx.core.content.ContextCompat
+import androidx.core.widget.ImageViewCompat
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.KotlinEpoxyHolder
-import com.google.android.material.circularreveal.CircularRevealCompat
 import java.util.*
-import kotlin.math.hypot
 
 @EpoxyModelClass(layout = R.layout.item_equipment)
 abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
@@ -60,28 +55,34 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                 }
             }
 
-            // Set cardview background color
-            if (equipmentToAnimateBarcode == equipment.barcode
-                && equipment.scanState != ScanState.PendingScan
-            ) {
-                animateEquipmentColor(this)
-                equipmentToAnimateBarcode = -1
-
-            } else {
-                val equipmentColor =
-                    if (equipment.scanState == ScanState.ScannedAndSynced) scannedColor else notScannedColor
-                cardView.setCardBackgroundColor(equipmentColor)
-            }
-
             // Set scan state message
-            val message = when (equipment.scanState) {
+            val messageResource = when (equipment.scanState) {
                 ScanState.ScannedAndSynced -> R.string.equipment_synced_message
                 ScanState.ScannedButNotSynced -> R.string.equipment_scanned_message
                 ScanState.NotScanned -> R.string.equipment_not_scanned_message
                 ScanState.PendingScan -> R.string.equipment_pending_message
             }
 
-            scanStateMessage.text = view.context.getString(message)
+            val message = view.context.getString(messageResource)
+            scanStateMessage.text = message
+
+            // Set cardview background color
+            val equipmentColor =
+                when (equipment.scanState) {
+                    ScanState.ScannedAndSynced -> syncedColor
+                    ScanState.ScannedButNotSynced -> scannedColor
+                    else -> notScannedColor
+                }
+
+            if (equipmentToAnimateBarcode == equipment.barcode
+                && equipment.scanState != ScanState.PendingScan
+            ) {
+                animateEquipmentColor(this, equipmentColor, message)
+                equipmentToAnimateBarcode = -1
+
+            } else {
+                cardView.setCardBackgroundColor(equipmentColor)
+            }
         }
     }
 
@@ -98,17 +99,17 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
         }
     }
 
-    private fun animateEquipmentColor(holder: EquipmentHolder) {
+    private fun animateEquipmentColor(holder: EquipmentHolder, endColor: Int, endMessage: String) {
         holder.apply {
             progressBar.visibility = View.INVISIBLE
+            ImageViewCompat.setImageTintList(revealView, ColorStateList.valueOf(endColor))
             revealView.animate()
                 .scaleXBy(cardView.width * 2f)
                 .setDuration(ANIMATION_DURATION)
                 .withEndAction {
                     revealView.scaleX = -1f
-                    cardView.setCardBackgroundColor(scannedColor)
-                    scanStateMessage.text =
-                        view.context.getString(R.string.equipment_synced_message)
+                    cardView.setCardBackgroundColor(endColor)
+                    scanStateMessage.text = endMessage
                 }
                 .start()
         }
@@ -122,15 +123,17 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
 
 class EquipmentHolder : KotlinEpoxyHolder() {
     lateinit var view: View
-    var scannedColor: Int = 0
+    var syncedColor: Int = 0
     var notScannedColor: Int = 0
+    var scannedColor: Int = 0
     lateinit var equipmentConditions: Array<String>
 
     override fun bindView(itemView: View) {
         super.bindView(itemView)
         view = itemView
-        scannedColor = ContextCompat.getColor(view.context, R.color.scanned_and_synced)
+        syncedColor = ContextCompat.getColor(view.context, R.color.scanned_and_synced)
         notScannedColor = ContextCompat.getColor(view.context, R.color.not_scanned)
+        scannedColor = ContextCompat.getColor(view.context, R.color.scanned_but_not_synced)
         equipmentConditions = view.resources.getStringArray(R.array.equipment_condition)
     }
 

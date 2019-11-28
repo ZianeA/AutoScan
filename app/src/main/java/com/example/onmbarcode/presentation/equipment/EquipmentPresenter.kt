@@ -10,6 +10,8 @@ import com.example.onmbarcode.presentation.util.applySchedulers
 import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import retrofit2.HttpException
+import java.io.IOException
 import java.lang.IllegalArgumentException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -69,13 +71,28 @@ class EquipmentPresenter @Inject constructor(
                 view.scrollToTopAndDisplayEquipments()
             }
             .observeOn(schedulerProvider.worker)
-            .flatMap {
-                val updatedEquipment = it.scannedEquipment.copy(
-                    scanState = ScanState.ScannedAndSynced,
-                    scanDate = clock.currentTimeMillis
-                )
+            .flatMap { holder ->
+                val updatedEquipment =
+                    holder.scannedEquipment.copy( //TODO be careful with equipment scan state
+                        scanState = ScanState.ScannedAndSynced,
+                        scanDate = clock.currentTimeMillis
+                    )
                 equipmentRepository.updateEquipment(updatedEquipment)
                     .andThen(Single.just(updatedEquipment))
+                    .onErrorResumeNext {
+                        when (it) {
+                            is HttpException, is IOException -> {
+                                //handle network related errors
+                                val scannedButNotSyncedEquipment =
+                                    updatedEquipment.copy(scanState = ScanState.ScannedButNotSynced)
+                                Single.just(scannedButNotSyncedEquipment)
+                            }
+                            else -> {
+                                // This is probably a serious error
+                                Single.error(it)
+                            }
+                        }
+                    }
             }.delay(Random.nextLong(200, 1000), TimeUnit.MILLISECONDS) //TODO remove this delay
             .observeOn(schedulerProvider.main)
             .map {
@@ -103,7 +120,7 @@ class EquipmentPresenter @Inject constructor(
                     view.equipments = it.equipments
                     view.equipmentToAnimate = it.barcode
                     view.displayEquipmentsDelayed()
-                }, { /*onError*/ })
+                }, { view.showErrorMessage() })
 
         disposables.add(disposable)
     }
@@ -119,9 +136,7 @@ class EquipmentPresenter @Inject constructor(
     fun onEquipmentConditionPicked(conditionIndex: Int, equipment: Equipment) {
         val disposable = equipmentRepository.updateEquipment(
             equipment.copy(
-                condition = EquipmentCondition.getByValue(
-                    conditionIndex
-                )
+                condition = EquipmentCondition.getByValue(conditionIndex)
             )
         ).applySchedulers(schedulerProvider)
             .subscribe({ view.displayEquipmentConditionChangedMessage() }, {})

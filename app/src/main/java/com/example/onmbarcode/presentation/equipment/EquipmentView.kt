@@ -7,6 +7,8 @@ interface EquipmentView {
     fun scrollToTopAndDisplayEquipments()
     fun clearBarcodeInputArea()
     fun displayEquipmentConditionChangedMessage()
+    fun showErrorMessage()
+
     var equipments: List<Equipment>
     var equipmentToAnimate: Int
 }

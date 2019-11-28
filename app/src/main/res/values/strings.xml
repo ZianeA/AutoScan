@@ -16,9 +16,9 @@
     <string name="equipment_condition">État d\'équipment</string>
     <string name="equipment_state_dialog_title">Choisissez un état</string>
     <string name="barcode_input_hint">Code à barre</string>
-    <string name="equipment_synced_message">Équipement scanné et synchronisé</string>
-    <string name="equipment_scanned_message">Équipement scanné mais non synchronisé</string>
-    <string name="equipment_not_scanned_message">Équipement non scanné</string>
+    <string name="equipment_synced_message">Scanné et synchronisé</string>
+    <string name="equipment_scanned_message">Scanné mais non synchronisé</string>
+    <string name="equipment_not_scanned_message">Non scanné</string>
     <string name="equipment_pending_message">Scan en cours…</string>
 
     <!--Items order is important!-->

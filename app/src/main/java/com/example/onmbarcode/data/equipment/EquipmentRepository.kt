@@ -4,6 +4,7 @@ import com.example.onmbarcode.data.Mapper
 import com.example.onmbarcode.presentation.equipment.Equipment
 import io.reactivex.Completable
 import io.reactivex.Single
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
@@ -30,8 +31,18 @@ class EquipmentRepository @Inject constructor(
             .map(equipmentEntityMapper::map)
     }
 
+    //TODO be careful with equipment scan state if network fails
+    // it makes sense to update network before database
     fun updateEquipment(equipment: Equipment): Completable {
-        return local.update(equipmentEntityMapper.mapReverse(equipment))
+        return Single.just(Random.nextBoolean())
+            .flatMapCompletable {
+                if (it) {
+                    local.update(equipmentEntityMapper.mapReverse(equipment))
+                } else {
+                    throw IOException()
+                }
+            }
+//        return local.update(equipmentEntityMapper.mapReverse(equipment))
     }
 
     private fun createDummyData(dataCount: Int = 20, deskId: String): List<EquipmentEntity> {
