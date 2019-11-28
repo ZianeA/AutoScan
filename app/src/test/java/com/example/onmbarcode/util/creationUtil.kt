@@ -4,6 +4,7 @@ import com.example.onmbarcode.data.desk.DeskEntity
 import com.example.onmbarcode.data.desk.DeskWithEquipmentsEntity
 import com.example.onmbarcode.data.equipment.EquipmentEntity
 import com.example.onmbarcode.presentation.desk.Desk
+import com.example.onmbarcode.presentation.desk.DeskUi
 import com.example.onmbarcode.presentation.equipment.Equipment
 
 private const val EQUIPMENT_BARCODE = 12345
@@ -52,3 +53,21 @@ fun createDeskWithEquipmentsEntity(
     deskEntity: DeskEntity = createDeskEntity(),
     equipmentEntities: List<EquipmentEntity> = listOf(createEquipmentEntity())
 ) = DeskWithEquipmentsEntity(deskEntity, equipmentEntities)
+
+fun createDeskUi(
+    barcode: String = DESK_BARCODE,
+    isScanned: Boolean = DESK_IS_SCANNED,
+    scanDate: Long = DESK_SCAN_DATE,
+    equipments: List<Equipment> = DESK_EQUIPMENTS,
+    scannedEquipmentCount: Int = equipments.filter { it.scanState != Equipment.ScanState.NotScanned }.size,
+    syncedEquipmentCount: Int = equipments.filter { it.scanState == Equipment.ScanState.ScannedAndSynced }.size,
+    equipmentsCount: Int = equipments.size
+) = DeskUi(
+    barcode,
+    isScanned,
+    scanDate,
+    equipments,
+    scannedEquipmentCount,
+    syncedEquipmentCount,
+    equipmentsCount
+)

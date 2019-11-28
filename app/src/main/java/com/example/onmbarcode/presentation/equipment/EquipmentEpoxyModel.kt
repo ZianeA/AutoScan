@@ -72,6 +72,16 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                     if (equipment.scanState == ScanState.ScannedAndSynced) scannedColor else notScannedColor
                 cardView.setCardBackgroundColor(equipmentColor)
             }
+
+            // Set scan state message
+            val message = when (equipment.scanState) {
+                ScanState.ScannedAndSynced -> R.string.equipment_synced_message
+                ScanState.ScannedButNotSynced -> R.string.equipment_scanned_message
+                ScanState.NotScanned -> R.string.equipment_not_scanned_message
+                ScanState.PendingScan -> R.string.equipment_pending_message
+            }
+
+            scanStateMessage.text = view.context.getString(message)
         }
     }
 
@@ -97,6 +107,8 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                 .withEndAction {
                     revealView.scaleX = -1f
                     cardView.setCardBackgroundColor(scannedColor)
+                    scanStateMessage.text =
+                        view.context.getString(R.string.equipment_synced_message)
                 }
                 .start()
         }
@@ -128,4 +140,5 @@ class EquipmentHolder : KotlinEpoxyHolder() {
     val revealView by bind<ImageView>(R.id.revealView)
     val progressBar by bind<ProgressBar>(R.id.progressBar)
     val dropdownMenu by bind<AutoCompleteTextView>(R.id.dropdownMenu)
+    val scanStateMessage by bind<TextView>(R.id.scanStateMessage)
 }

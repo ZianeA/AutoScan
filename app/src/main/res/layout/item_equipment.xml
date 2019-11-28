@@ -74,7 +74,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="Équipement scannée mais non synchronisé"
+            tools:text="@string/equipment_synced_message"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"

@@ -7,11 +7,12 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.util.KotlinEpoxyHolder
+import kotlinx.android.synthetic.main.item_desk.view.*
 
 @EpoxyModelClass(layout = R.layout.item_desk)
 abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
     @EpoxyAttribute
-    lateinit var desk: Desk
+    lateinit var desk: DeskUi
 
     @EpoxyAttribute
     lateinit var clickListener: View.OnClickListener
@@ -19,12 +20,17 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
     override fun bind(holder: DeskHolder) {
         super.bind(holder)
         holder.apply {
-            deskBarcode.text = view.context.getString(R.string.desk_barcode, desk.barcode)
-            /*scanCount.text = view.context.getString(
+            deskBarcode.text = desk.barcode.removePrefix(DESK_BARCODE_PREFIX)
+            scanCount.text = view.context.getString(
                 R.string.scanned_equipment_count,
-                desk.scanCount,
-                desk.totalScanCount
-            )*/ //TODO fix this
+                desk.scannedEquipmentCount,
+                desk.equipmentsCount
+            )
+            syncedCount.text = view.context.getString(
+                R.string.synced_equipment_count,
+                desk.syncedEquipmentCount,
+                desk.equipmentsCount
+            )
             view.setOnClickListener(clickListener)
         }
     }
@@ -32,6 +38,10 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
     override fun unbind(holder: DeskHolder) {
         super.unbind(holder)
         holder.view.setOnClickListener(null)
+    }
+
+    companion object {
+        private const val DESK_BARCODE_PREFIX = "@"
     }
 }
 
@@ -45,4 +55,5 @@ class DeskHolder : KotlinEpoxyHolder() {
 
     val deskBarcode by bind<TextView>(R.id.deskBarcode)
     val scanCount by bind<TextView>(R.id.scanCount)
+    val syncedCount by bind<TextView>(R.id.syncedCount)
 }

@@ -1,5 +1,6 @@
 package com.example.onmbarcode.presentation.desk
 
+import com.example.onmbarcode.data.Mapper
 import com.example.onmbarcode.data.desk.DeskRepository
 import com.example.onmbarcode.presentation.di.FragmentScope
 import com.example.onmbarcode.presentation.util.Clock
@@ -14,14 +15,16 @@ class DeskPresenter @Inject constructor(
     private val view: DeskView,
     private val deskRepository: DeskRepository,
     private val schedulerProvider: SchedulerProvider,
-    private val clock: Clock
+    private val clock: Clock,
+    private val DeskUiMapper: Mapper<DeskUi, Desk>
 ) {
     private val disposables = CompositeDisposable()
 
     fun start() {
-         val disposable = deskRepository.getScannedDesks()
-             .applySchedulers(schedulerProvider)
-             .subscribe({ view.displayDesks(it) }, { /*onError*/ })
+        val disposable = deskRepository.getScannedDesks()
+            .map { it.map(DeskUiMapper::mapReverse) }
+            .applySchedulers(schedulerProvider)
+            .subscribe({ view.displayDesks(it) }, { /*onError*/ })
 
         disposables.add(disposable)
     }
@@ -39,6 +42,7 @@ class DeskPresenter @Inject constructor(
                     )
                 ).andThen(Single.just(it))
             }
+            .map(DeskUiMapper::mapReverse)
             .applySchedulers(schedulerProvider)
             .subscribe({ view.displayEquipmentsScreen(it) }, { /*onError*/ })
 

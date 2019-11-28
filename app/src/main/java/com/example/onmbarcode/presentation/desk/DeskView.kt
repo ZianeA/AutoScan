@@ -1,6 +1,6 @@
 package com.example.onmbarcode.presentation.desk
 
 interface DeskView {
-    fun displayDesks(desks: List<Desk>)
-    fun displayEquipmentsScreen(desk: Desk)
+    fun displayDesks(desks: List<DeskUi>)
+    fun displayEquipmentsScreen(desk: DeskUi)
 }

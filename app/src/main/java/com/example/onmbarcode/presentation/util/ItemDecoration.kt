@@ -1,10 +1,10 @@
-package com.example.onmbarcode.presentation.equipment
+package com.example.onmbarcode.presentation.util
 
 import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
-class EquipmentItemDecoration(private val itemSpacing: Int) : RecyclerView.ItemDecoration() {
+class ItemDecoration(private val itemSpacing: Int) : RecyclerView.ItemDecoration() {
     override fun getItemOffsets(
         outRect: Rect,
         view: View,

@@ -15,6 +15,8 @@ import com.airbnb.epoxy.EpoxyRecyclerView
 
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.desk.Desk
+import com.example.onmbarcode.presentation.desk.DeskUi
+import com.example.onmbarcode.presentation.util.ItemDecoration
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_equipment.*
 import kotlinx.android.synthetic.main.fragment_equipment.view.*
@@ -50,7 +52,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
         recyclerView = rootView.equipmentRecyclerView
         recyclerView.addItemDecoration(
-            EquipmentItemDecoration(
+            ItemDecoration(
                 resources.getDimension(R.dimen.equipment_item_spacing).toInt()
             )
         )
@@ -72,7 +74,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     override fun onStart() {
         super.onStart()
-        val selectedDesk = arguments?.getParcelable<Desk>(ARG_SELECTED_DESK)
+        val selectedDesk = arguments?.getParcelable<DeskUi>(ARG_SELECTED_DESK)
             ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
         presenter.start(selectedDesk)
     }
@@ -151,7 +153,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
          * @return A new instance of fragment EquipmentFragment.
          */
         @JvmStatic
-        fun newInstance(selectedDesk: Desk) =
+        fun newInstance(selectedDesk: DeskUi) =
             EquipmentFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(ARG_SELECTED_DESK, selectedDesk)

@@ -5,6 +5,7 @@ import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.Clock
 import com.example.onmbarcode.util.SyncSchedulerProvider
 import com.example.onmbarcode.util.createDesk
+import com.example.onmbarcode.util.createDeskUi
 import com.example.onmbarcode.util.createEquipment
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
@@ -35,9 +36,9 @@ internal class EquipmentPresenterTest {
         @Test
         fun `pass list of equipments to view`() {
             //Arrange
-            val desk = createDesk()
+            val desk = createDeskUi()
             val equipments = listOf(createEquipment())
-            every { equipmentRepository.getEquipments(desk.barcode.toString()) } returns Single.just(
+            every { equipmentRepository.getEquipments(desk.barcode) } returns Single.just(
                 equipments
             )
             every { view.displayEquipments() } just runs

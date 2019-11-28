@@ -1,4 +1,5 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="equipment_item_spacing">8dp</dimen>
+    <dimen name="desk_item_spacing">8dp</dimen>
 </resources>

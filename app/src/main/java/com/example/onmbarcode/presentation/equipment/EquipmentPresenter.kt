@@ -2,6 +2,7 @@ package com.example.onmbarcode.presentation.equipment
 
 import com.example.onmbarcode.data.equipment.EquipmentRepository
 import com.example.onmbarcode.presentation.desk.Desk
+import com.example.onmbarcode.presentation.desk.DeskUi
 import com.example.onmbarcode.presentation.di.FragmentScope
 import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.Clock
@@ -23,8 +24,8 @@ class EquipmentPresenter @Inject constructor(
 ) {
     private val disposables = CompositeDisposable()
 
-    fun start(desk: Desk) {
-        val disposable = equipmentRepository.getEquipments(desk.barcode.toString())
+    fun start(desk: DeskUi) {
+        val disposable = equipmentRepository.getEquipments(desk.barcode)
             .map { equipments -> equipments.sortedByDescending { it.scanDate } }
             .applySchedulers(schedulerProvider)
             .subscribe({

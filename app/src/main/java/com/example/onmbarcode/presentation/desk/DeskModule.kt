@@ -1,5 +1,6 @@
 package com.example.onmbarcode.presentation.desk
 
+import com.example.onmbarcode.data.Mapper
 import dagger.Binds
 import dagger.Module
 
@@ -7,4 +8,7 @@ import dagger.Module
 interface DeskModule {
     @Binds
     fun provideDeskView(fragment: DeskFragment): DeskView
+
+    @Binds
+    fun provideDeskUiMapper(mapper: DeskUiMapper): Mapper<DeskUi, Desk>
 }
