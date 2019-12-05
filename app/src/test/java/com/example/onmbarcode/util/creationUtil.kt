@@ -7,14 +7,14 @@ import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.desk.DeskUi
 import com.example.onmbarcode.presentation.equipment.Equipment
 
-private const val EQUIPMENT_BARCODE = 12345
+private const val EQUIPMENT_BARCODE = "12345"
 private const val EQUIPMENT_TYPE = "clavier"
 private val EQUIPMENT_SCAN_STATE = Equipment.ScanState.ScannedAndSynced
 private val EQUIPMENT_CONDITION = Equipment.EquipmentCondition.AVERAGE
 private const val EQUIPMENT_SCAN_DATE: Long = 1545293705
 
 fun createEquipment(
-    barcode: Int = EQUIPMENT_BARCODE,
+    barcode: String = EQUIPMENT_BARCODE,
     type: String = EQUIPMENT_TYPE,
     scanState: Equipment.ScanState = EQUIPMENT_SCAN_STATE,
     condition: Equipment.EquipmentCondition = EQUIPMENT_CONDITION,
@@ -23,7 +23,7 @@ fun createEquipment(
 ) = Equipment(barcode, type, scanState, condition, scanDate, deskBarcode)
 
 fun createEquipmentEntity(
-    barcode: Int = EQUIPMENT_BARCODE,
+    barcode: String = EQUIPMENT_BARCODE,
     type: String = EQUIPMENT_TYPE,
     scanState: Equipment.ScanState = EQUIPMENT_SCAN_STATE,
     condition: Equipment.EquipmentCondition = EQUIPMENT_CONDITION,

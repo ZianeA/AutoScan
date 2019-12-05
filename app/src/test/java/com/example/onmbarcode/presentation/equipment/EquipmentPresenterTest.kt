@@ -83,7 +83,7 @@ internal class EquipmentPresenterTest {
             every { equipmentRepository.findEquipment(any()) } returns Single.just(createEquipment())
 
             //Act
-            val barcode = 12345
+            val barcode = "12345"
             presenter.onBarcodeChange(barcode.toString())
 
             //Assert
@@ -94,7 +94,7 @@ internal class EquipmentPresenterTest {
         fun `Rearrange equipments and update UI if barcode exists`() {
             //Arrange
             val equipmentToBeScanned = createEquipment(scanState = ScanState.PendingScan)
-            val randomEquipment = createEquipment(barcode = 99999)
+            val randomEquipment = createEquipment(barcode = "99999")
             every { view.clearBarcodeInputArea() } just runs
             every { equipmentRepository.findEquipment(any()) } returns Single.just(
                 equipmentToBeScanned
@@ -126,7 +126,7 @@ internal class EquipmentPresenterTest {
             )
             every { clock.currentTimeMillis } returns scanDate
             every { view.getProperty("equipments") } returns listOf(
-                createEquipment(barcode = 99999),
+                createEquipment(barcode = "99999"),
                 equipmentToBeScanned
             )
             every { equipmentRepository.updateEquipment(any()) } returns Completable.complete()
@@ -149,7 +149,7 @@ internal class EquipmentPresenterTest {
         fun `update UI when repository is updated`() {
             //Arrange
             val equipmentToBeScanned =
-                createEquipment(barcode = 99999, scanState = ScanState.NotScanned, scanDate = 505)
+                createEquipment(barcode = "99999", scanState = ScanState.NotScanned, scanDate = 505)
             val randomEquipment = createEquipment(scanDate = 909)
             val scanDate: Long = System.currentTimeMillis()
             every { equipmentRepository.findEquipment(any()) } returns Single.just(

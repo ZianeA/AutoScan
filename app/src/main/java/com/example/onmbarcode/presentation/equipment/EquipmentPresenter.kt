@@ -40,13 +40,13 @@ class EquipmentPresenter @Inject constructor(
 
     //TODO handle equipment not found
     private fun scanBarcode(barcode: String) {
-        val parsedBarcode = barcode.toIntOrNull()
+        barcode.toIntOrNull()
             ?: throw IllegalArgumentException(
                 "Malformed equipment barcode. Equipment barcode must contain only numeric values"
             )
         view.clearBarcodeInputArea()
 
-        val disposable = equipmentRepository.findEquipment(parsedBarcode)
+        val disposable = equipmentRepository.findEquipment(barcode)
             .observeOn(schedulerProvider.main)
             .map {
                 object {
@@ -93,7 +93,11 @@ class EquipmentPresenter @Inject constructor(
                             }
                         }
                     }
-            }.delay(Random.nextLong(200, 1000), TimeUnit.MILLISECONDS) //TODO remove this delay
+            }.delay(
+                Random.nextLong(200, 1000),
+                TimeUnit.MILLISECONDS,
+                schedulerProvider.worker
+            ) //TODO remove this delay
             .observeOn(schedulerProvider.main)
             .map {
                 object {

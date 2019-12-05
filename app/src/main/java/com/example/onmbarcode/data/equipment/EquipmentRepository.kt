@@ -26,7 +26,7 @@ class EquipmentRepository @Inject constructor(
             }.map { equipmentEntities -> equipmentEntities.map(equipmentEntityMapper::map) }
     }
 
-    fun findEquipment(barcode: Int): Single<Equipment> {
+    fun findEquipment(barcode: String): Single<Equipment> {
         return local.getByBarcode(barcode)
             .map(equipmentEntityMapper::map)
     }
@@ -62,7 +62,7 @@ class EquipmentRepository @Inject constructor(
             val equipmentState = Equipment.EquipmentCondition.values().toList().shuffled().first()
             equipments.add(
                 EquipmentEntity(
-                    barcode,
+                    barcode.toString(),
                     type,
                     Equipment.ScanState.NotScanned,
                     equipmentState,

@@ -38,7 +38,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
     private lateinit var epoxyController: EquipmentEpoxyController
     private lateinit var recyclerView: EpoxyRecyclerView
     override var equipments: List<Equipment> = emptyList()
-    override var equipmentToAnimate = -1
+    override var equipmentToAnimate = ""
     private var shouldScrollToTop = false
     private var isUiUpdating = false
 

@@ -18,7 +18,7 @@ import com.example.onmbarcode.presentation.equipment.Equipment
     )]
 )
 data class EquipmentEntity(
-    @PrimaryKey val barcode: Int,
+    @PrimaryKey val barcode: String,
     val type: String,
     val scanState: Equipment.ScanState,
     val condition: Equipment.EquipmentCondition,

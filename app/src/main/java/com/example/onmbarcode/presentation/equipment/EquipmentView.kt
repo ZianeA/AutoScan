@@ -10,5 +10,5 @@ interface EquipmentView {
     fun showErrorMessage()
 
     var equipments: List<Equipment>
-    var equipmentToAnimate: Int
+    var equipmentToAnimate: String
 }

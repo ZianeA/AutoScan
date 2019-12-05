@@ -11,7 +11,7 @@ interface EquipmentDao {
 
     //TODO this should probably return a maybe
     @Query("SELECT * FROM EquipmentEntity e WHERE e.barcode=:barcode")
-    fun getByBarcode(barcode: Int): Single<EquipmentEntity>
+    fun getByBarcode(barcode: String): Single<EquipmentEntity>
 
     //TODO is this right? Probably not. I think I was using to insert dummy data without conflict
     @Insert(onConflict = OnConflictStrategy.REPLACE)

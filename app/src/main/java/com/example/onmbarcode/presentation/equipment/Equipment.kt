@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Equipment(
-    val barcode: Int,
+    val barcode: String,
     val type: String,
     val scanState: ScanState,
     val condition: EquipmentCondition,
