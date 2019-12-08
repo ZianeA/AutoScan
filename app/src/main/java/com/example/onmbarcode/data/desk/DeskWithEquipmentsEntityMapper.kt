@@ -1,6 +1,6 @@
 package com.example.onmbarcode.data.desk
 
-import com.example.onmbarcode.data.Mapper
+import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.data.equipment.EquipmentEntity
 import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.equipment.Equipment

@@ -6,12 +6,17 @@ import com.example.onmbarcode.data.equipment.EquipmentEntity
 import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.desk.DeskUi
 import com.example.onmbarcode.presentation.equipment.Equipment
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.HashMap
 
 private const val EQUIPMENT_BARCODE = "12345"
 private const val EQUIPMENT_TYPE = "clavier"
 private val EQUIPMENT_SCAN_STATE = Equipment.ScanState.ScannedAndSynced
 private val EQUIPMENT_CONDITION = Equipment.EquipmentCondition.AVERAGE
+private val EQUIPMENT_CONDITION_FRENCH = "moyen"
 private const val EQUIPMENT_SCAN_DATE: Long = 1545293705
+private const val EQUIPMENT_SCAN_DATE_STRING = "2018-12-20 08:15:05"
 
 fun createEquipment(
     barcode: String = EQUIPMENT_BARCODE,
@@ -31,9 +36,26 @@ fun createEquipmentEntity(
     deskBarcode: String = DESK_BARCODE
 ) = EquipmentEntity(barcode, type, scanState, condition, scanDate, deskBarcode)
 
-private const val DESK_BARCODE = "@CNTM08"
+fun createEquipmentResponse(
+    barcode: String = EQUIPMENT_BARCODE,
+    type: String = EQUIPMENT_TYPE,
+    condition: String = EQUIPMENT_CONDITION_FRENCH,
+    scanDate: String = EQUIPMENT_SCAN_DATE_STRING,
+    deskBarcode: String = DESK_BARCODE
+): HashMap<*, *> {
+    return hashMapOf<Any, Any>(
+        "code" to barcode,
+        "libelle" to type,
+        "observation" to condition,
+        "date_de_scan" to scanDate,
+        "aff_code" to deskBarcode
+    )
+}
+
+private const val DESK_BARCODE = "CNTM08"
 private const val DESK_IS_SCANNED = false
 private const val DESK_SCAN_DATE: Long = 1545215405
+private const val DESK_SCAN_DATE_STRING = "2018-12-19 10:30:05"
 private val DESK_EQUIPMENTS = listOf(createEquipment())
 
 fun createDesk(
@@ -53,6 +75,18 @@ fun createDeskWithEquipmentsEntity(
     deskEntity: DeskEntity = createDeskEntity(),
     equipmentEntities: List<EquipmentEntity> = listOf(createEquipmentEntity())
 ) = DeskWithEquipmentsEntity(deskEntity, equipmentEntities)
+
+fun createDeskResponse(
+    barcode: String = DESK_BARCODE,
+    scanDate: String = DESK_SCAN_DATE_STRING,
+    equipments: Array<*> = arrayOf(createEquipmentResponse())
+): HashMap<*, *> {
+    return hashMapOf<Any, Any>(
+        "code" to barcode,
+        "date_de_scan" to scanDate,
+        "equipments" to equipments
+    )
+}
 
 fun createDeskUi(
     barcode: String = DESK_BARCODE,

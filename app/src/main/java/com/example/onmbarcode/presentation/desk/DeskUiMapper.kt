@@ -1,7 +1,6 @@
 package com.example.onmbarcode.presentation.desk
 
-import com.example.onmbarcode.data.Mapper
-import com.example.onmbarcode.presentation.equipment.Equipment
+import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.presentation.equipment.Equipment.*
 import dagger.Reusable
 import javax.inject.Inject

@@ -1,6 +1,6 @@
 package com.example.onmbarcode.data.equipment
 
-import com.example.onmbarcode.data.Mapper
+import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.presentation.equipment.Equipment
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -16,16 +16,8 @@ class EquipmentRepository @Inject constructor(
     private val equipmentEntityMapper: Mapper<EquipmentEntity, Equipment>
 ) {
     fun getEquipments(deskBarcode: String): Single<List<Equipment>> {
-        return remote.getByDesk(deskBarcode)
-        /*return local.getAll()
-            .flatMap {
-                if (it.isEmpty()) {
-                    local.addAll(createDummyData(100, deskBarcode))
-                        .andThen(local.getAll())
-                } else {
-                    Single.just(it)
-                }
-            }.map { equipmentEntities -> equipmentEntities.map(equipmentEntityMapper::map) }*/
+        return local.getByDesk(deskBarcode)
+            .map { e -> e.map(equipmentEntityMapper::map) }
     }
 
     fun findEquipment(barcode: String): Single<Equipment> {

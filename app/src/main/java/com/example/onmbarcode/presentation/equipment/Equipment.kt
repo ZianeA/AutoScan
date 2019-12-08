@@ -21,6 +21,7 @@ data class Equipment(
         companion object {
             private val values = values();
             fun getByValue(value: Int) = values.first { it.ordinal == value }
+            // TODO find a better way to handle this!!!!
             fun getByTranslation(value: String) = when (value) {
                 "bon" -> GOOD
                 "moyen" -> AVERAGE

@@ -1,4 +1,4 @@
-package com.example.onmbarcode.data
+package com.example.onmbarcode.data.mapper
 
 interface Mapper<T, R> {
     fun map(model: T): R

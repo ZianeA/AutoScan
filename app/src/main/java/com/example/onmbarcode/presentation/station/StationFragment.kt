@@ -43,7 +43,7 @@ class StationFragment : Fragment() {
         rootView.stationRecyclerView.apply {
             setItemSpacingDp(STATION_ITEM_SPACING)
             val stationEpoxyController = StationEpoxyController {
-                fragNavController.pushFragment(DeskFragment.newInstance(it))
+                fragNavController.pushFragment(DeskFragment.newInstance())
             }
             setControllerAndBuildModels(stationEpoxyController)
         }

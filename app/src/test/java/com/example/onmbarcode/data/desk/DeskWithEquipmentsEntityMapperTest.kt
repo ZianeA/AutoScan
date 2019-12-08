@@ -1,8 +1,7 @@
 package com.example.onmbarcode.data.desk
 
-import com.example.onmbarcode.data.Mapper
+import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.data.equipment.EquipmentEntity
-import com.example.onmbarcode.data.equipment.EquipmentEntityMapper
 import com.example.onmbarcode.presentation.equipment.Equipment
 import com.example.onmbarcode.util.createDesk
 import com.example.onmbarcode.util.createDeskWithEquipmentsEntity
@@ -12,7 +11,6 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

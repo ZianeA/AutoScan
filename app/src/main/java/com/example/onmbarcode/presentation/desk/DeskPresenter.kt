@@ -1,6 +1,6 @@
 package com.example.onmbarcode.presentation.desk
 
-import com.example.onmbarcode.data.Mapper
+import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.data.desk.DeskRepository
 import com.example.onmbarcode.presentation.di.FragmentScope
 import com.example.onmbarcode.presentation.util.Clock

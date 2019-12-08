@@ -1,6 +1,6 @@
 package com.example.onmbarcode.presentation.desk
 
-import com.example.onmbarcode.data.Mapper
+import com.example.onmbarcode.data.mapper.Mapper
 import dagger.Binds
 import dagger.Module
 

@@ -45,7 +45,6 @@ class DeskFragment : Fragment(), DeskView {
 
         (activity as AppCompatActivity).apply {
             setSupportActionBar(rootView.toolbar)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
         recyclerView = rootView.deskRecyclerView
@@ -89,8 +88,6 @@ class DeskFragment : Fragment(), DeskView {
     }
 
     companion object {
-        private const val ARG_SELECTED_STATION = "selected_station"
-
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
@@ -98,11 +95,6 @@ class DeskFragment : Fragment(), DeskView {
          * @return A new instance of fragment DeskFragment.
          */
         @JvmStatic
-        fun newInstance(selectedStation: Station) =
-            DeskFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(ARG_SELECTED_STATION, selectedStation)
-                }
-            }
+        fun newInstance() = DeskFragment()
     }
 }
