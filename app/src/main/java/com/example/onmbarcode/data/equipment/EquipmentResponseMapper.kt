@@ -16,6 +16,7 @@ class EquipmentResponseMapper @Inject constructor() :
     override fun map(model: HashMap<*, *>): Equipment {
         return Equipment(
             model[ATTRIBUTE_CODE_NAME] as String,
+            model[ATTRIBUTE_ID_NAME] as Int,
             model[ATTRIBUTE_LIBELLE_NAME] as String,
             Equipment.ScanState.NotScanned, //TODO deal with this. It's probably correct.
             Equipment.EquipmentCondition.getByTranslation(model[ATTRIBUTE_OBSERVATION_NAME] as String),
@@ -30,6 +31,7 @@ class EquipmentResponseMapper @Inject constructor() :
 
     companion object {
         private const val ATTRIBUTE_CODE_NAME = "code"
+        private const val ATTRIBUTE_ID_NAME = "id"
         private const val ATTRIBUTE_LIBELLE_NAME = "libelle"
         private const val ATTRIBUTE_OBSERVATION_NAME = "observation"
         private const val ATTRIBUTE_DATE_DE_SCAN_NAME = "date_de_scan"

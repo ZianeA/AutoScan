@@ -29,6 +29,7 @@ class OdooService @Inject constructor() {
         const val METHOD_READ = "read"
         const val METHOD_SEARCH = "search"
         const val METHOD_SEARCH_READ = "search_read"
+        const val METHOD_WRITE = "write"
         const val DB_NAME = "ali"
         const val PASSWORD = "admin"
         private const val USERNAME = "admin"

@@ -8,6 +8,7 @@ import com.example.onmbarcode.data.desk.DeskEntity
 import com.example.onmbarcode.presentation.equipment.Equipment
 
 // TODO add lookup tables
+// TODO make odooId
 @Entity(
     foreignKeys = [ForeignKey(
         entity = DeskEntity::class,
@@ -19,6 +20,7 @@ import com.example.onmbarcode.presentation.equipment.Equipment
 )
 data class EquipmentEntity(
     @PrimaryKey val barcode: String,
+    val odooId: Int,
     val type: String,
     val scanState: Equipment.ScanState,
     val condition: Equipment.EquipmentCondition,

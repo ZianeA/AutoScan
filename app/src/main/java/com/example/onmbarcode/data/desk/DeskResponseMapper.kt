@@ -14,9 +14,11 @@ import kotlin.collections.HashMap
 @Reusable
 class DeskResponseMapper @Inject constructor() :
     Mapper<HashMap<*, *>, DeskEntity> {
+    //TODO add attribute name constants
     override fun map(model: HashMap<*, *>): DeskEntity {
         return DeskEntity(
             model["code"] as String,
+            model["id"] as Int,
             false,
             OdooDatetimeToUnix(model["date_de_scan"] as String)/*,
             (model["equipments"] as Array<*>).map { equipmentMapper.map(it as HashMap<*, *>) }*/

@@ -67,7 +67,7 @@ class DeskRepository @Inject constructor(
         return deskDao.update(deskEntity)
     }
 
-    private fun createDummyData(dataCount: Int = 100): List<DeskEntity> {
+    /*private fun createDummyData(dataCount: Int = 100): List<DeskEntity> {
         val desks = mutableListOf<DeskEntity>()
         for (i in 0..dataCount) {
             val deskBarcode = Random.nextInt(0, dataCount * 2)
@@ -90,7 +90,7 @@ class DeskRepository @Inject constructor(
         }
 
         return desks
-    }
+    }*/
 
     //TODO remove
     companion object {

@@ -14,6 +14,7 @@ class DeskWithEquipmentsEntityMapper @Inject constructor(private val equipmentMa
         return model.run {
             Desk(
                 deskEntity.barcode,
+                deskEntity.odooId,
                 deskEntity.isScanned,
                 deskEntity.scanDate,
                 equipmentEntities.map(equipmentMapper::map)
@@ -24,7 +25,7 @@ class DeskWithEquipmentsEntityMapper @Inject constructor(private val equipmentMa
     override fun mapReverse(model: Desk): DeskWithEquipmentsEntity {
         return model.run {
             DeskWithEquipmentsEntity(
-                DeskEntity(barcode, isScanned, scanDate),
+                DeskEntity(barcode, odooId, isScanned, scanDate),
                 equipments.map(equipmentMapper::mapReverse)
             )
         }

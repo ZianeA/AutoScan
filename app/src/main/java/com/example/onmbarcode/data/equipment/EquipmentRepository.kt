@@ -39,7 +39,7 @@ class EquipmentRepository @Inject constructor(
 //        return local.update(equipmentEntityMapper.mapReverse(equipment))
     }
 
-    private fun createDummyData(dataCount: Int = 20, deskId: String): List<EquipmentEntity> {
+    /*private fun createDummyData(dataCount: Int = 20, deskId: String): List<EquipmentEntity> {
         val equipments = mutableListOf<EquipmentEntity>()
         val equipmentTypes = listOf("écran", "clavier", "souris", "chaise", "imprimante", "bureau")
         for (i in 0..dataCount) {
@@ -67,5 +67,5 @@ class EquipmentRepository @Inject constructor(
         }
 
         return equipments
-    }
+    }*/
 }
