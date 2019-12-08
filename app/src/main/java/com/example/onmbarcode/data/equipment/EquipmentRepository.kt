@@ -12,18 +12,20 @@ import kotlin.random.Random
 @Singleton
 class EquipmentRepository @Inject constructor(
     private val local: EquipmentDao,
+    private val remote: EquipmentService,
     private val equipmentEntityMapper: Mapper<EquipmentEntity, Equipment>
 ) {
-    fun getEquipments(deskId: String): Single<List<Equipment>> {
-        return local.getAll()
+    fun getEquipments(deskBarcode: String): Single<List<Equipment>> {
+        return remote.getByDesk(deskBarcode)
+        /*return local.getAll()
             .flatMap {
                 if (it.isEmpty()) {
-                    local.addAll(createDummyData(100, deskId))
+                    local.addAll(createDummyData(100, deskBarcode))
                         .andThen(local.getAll())
                 } else {
                     Single.just(it)
                 }
-            }.map { equipmentEntities -> equipmentEntities.map(equipmentEntityMapper::map) }
+            }.map { equipmentEntities -> equipmentEntities.map(equipmentEntityMapper::map) }*/
     }
 
     fun findEquipment(barcode: String): Single<Equipment> {

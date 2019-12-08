@@ -21,6 +21,12 @@ data class Equipment(
         companion object {
             private val values = values();
             fun getByValue(value: Int) = values.first { it.ordinal == value }
+            fun getByTranslation(value: String) = when (value) {
+                "bon" -> GOOD
+                "moyen" -> AVERAGE
+                "mauvais" -> BAD
+                else -> throw IllegalArgumentException("Unknown condition translation")
+            }
         }
     }
 

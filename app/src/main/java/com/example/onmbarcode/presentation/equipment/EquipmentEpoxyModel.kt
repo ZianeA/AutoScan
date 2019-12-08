@@ -32,7 +32,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
 
         holder.apply {
             equipmentType.text = equipment.type.capitalize(Locale.FRENCH)
-            equipmentBarcode.text = equipment.barcode.toString()
+            equipmentBarcode.text = equipment.barcode
 
             dropdownMenu.setAdapter(
                 ArrayAdapter(

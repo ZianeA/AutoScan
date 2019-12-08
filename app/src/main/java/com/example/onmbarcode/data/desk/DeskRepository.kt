@@ -44,14 +44,14 @@ class DeskRepository @Inject constructor(
             val scanCount = Random.nextInt(0, totalScanCount)
             desks.add(
                 DeskEntity(
-                    "@CNTM08",
+                    "CNTM08",
                     false,
                     System.currentTimeMillis() - YEAR_IN_MILLIS
                 )
             )
             desks.add(
                 DeskEntity(
-                    "@CNTM$deskBarcode",
+                    "CNTM$deskBarcode",
                     false,
                     System.currentTimeMillis() - YEAR_IN_MILLIS
                 )

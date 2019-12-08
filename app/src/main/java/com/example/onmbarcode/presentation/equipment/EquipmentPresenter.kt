@@ -10,7 +10,6 @@ import com.example.onmbarcode.presentation.util.applySchedulers
 import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import retrofit2.HttpException
 import java.io.IOException
 import java.lang.IllegalArgumentException
 import java.util.concurrent.TimeUnit
@@ -40,6 +39,7 @@ class EquipmentPresenter @Inject constructor(
 
     //TODO handle equipment not found
     private fun scanBarcode(barcode: String) {
+        // TODO i'm not sure if this works with a barcode 00001
         barcode.toIntOrNull()
             ?: throw IllegalArgumentException(
                 "Malformed equipment barcode. Equipment barcode must contain only numeric values"
@@ -79,9 +79,10 @@ class EquipmentPresenter @Inject constructor(
                     )
                 equipmentRepository.updateEquipment(updatedEquipment)
                     .andThen(Single.just(updatedEquipment))
+                        //TODO update errors since we are not using Retrofit anymore
                     .onErrorResumeNext {
                         when (it) {
-                            is HttpException, is IOException -> {
+                           is IOException -> {
                                 //handle network related errors
                                 val scannedButNotSyncedEquipment =
                                     updatedEquipment.copy(scanState = ScanState.ScannedButNotSynced)

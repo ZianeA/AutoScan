@@ -20,7 +20,7 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
     override fun bind(holder: DeskHolder) {
         super.bind(holder)
         holder.apply {
-            deskBarcode.text = desk.barcode.removePrefix(DESK_BARCODE_PREFIX)
+            deskBarcode.text = "$DESK_BARCODE_PREFIX{desk.barcode}"
             scanCount.text = view.context.getString(
                 R.string.scanned_equipment_count,
                 desk.scannedEquipmentCount,
