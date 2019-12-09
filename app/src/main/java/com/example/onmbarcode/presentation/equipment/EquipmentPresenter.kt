@@ -1,7 +1,6 @@
 package com.example.onmbarcode.presentation.equipment
 
 import com.example.onmbarcode.data.equipment.EquipmentRepository
-import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.desk.DeskUi
 import com.example.onmbarcode.presentation.di.FragmentScope
 import com.example.onmbarcode.presentation.equipment.Equipment.*
@@ -12,9 +11,7 @@ import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import java.io.IOException
 import java.lang.IllegalArgumentException
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlin.random.Random
 
 @FragmentScope
 class EquipmentPresenter @Inject constructor(
@@ -75,7 +72,7 @@ class EquipmentPresenter @Inject constructor(
                 val updatedEquipment =
                     holder.scannedEquipment.copy( //TODO be careful with equipment scan state
                         scanState = ScanState.ScannedAndSynced,
-                        scanDate = clock.currentTimeMillis
+                        scanDate = clock.currentTimeSeconds
                     )
                 equipmentRepository.updateEquipment(updatedEquipment)
                     .andThen(Single.just(updatedEquipment))

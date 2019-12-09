@@ -77,14 +77,14 @@ class DeskRepository @Inject constructor(
                 DeskEntity(
                     "CNTM08",
                     false,
-                    System.currentTimeMillis() - YEAR_IN_MILLIS
+                    System.currentTimeSeconds() - YEAR_IN_MILLIS
                 )
             )
             desks.add(
                 DeskEntity(
                     "CNTM$deskId",
                     false,
-                    System.currentTimeMillis() - YEAR_IN_MILLIS
+                    System.currentTimeSeconds() - YEAR_IN_MILLIS
                 )
             )
         }

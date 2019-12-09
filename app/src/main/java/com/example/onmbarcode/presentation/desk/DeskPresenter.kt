@@ -38,7 +38,7 @@ class DeskPresenter @Inject constructor(
                 deskRepository.updateDesk(
                     it.copy(
                         isScanned = true,
-                        scanDate = clock.currentTimeMillis
+                        scanDate = clock.currentTimeSeconds
                     )
                 ).andThen(Single.just(it))
             }

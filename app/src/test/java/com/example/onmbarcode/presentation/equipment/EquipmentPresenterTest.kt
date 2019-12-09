@@ -4,7 +4,6 @@ import com.example.onmbarcode.data.equipment.EquipmentRepository
 import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.Clock
 import com.example.onmbarcode.util.SyncSchedulerProvider
-import com.example.onmbarcode.util.createDesk
 import com.example.onmbarcode.util.createDeskUi
 import com.example.onmbarcode.util.createEquipment
 import io.mockk.*
@@ -124,7 +123,7 @@ internal class EquipmentPresenterTest {
             every { equipmentRepository.findEquipment(any()) } returns Single.just(
                 equipmentToBeScanned
             )
-            every { clock.currentTimeMillis } returns scanDate
+            every { clock.currentTimeSeconds } returns scanDate
             every { view.getProperty("equipments") } returns listOf(
                 createEquipment(barcode = "99999"),
                 equipmentToBeScanned
@@ -155,7 +154,7 @@ internal class EquipmentPresenterTest {
             every { equipmentRepository.findEquipment(any()) } returns Single.just(
                 equipmentToBeScanned
             )
-            every { clock.currentTimeMillis } returns scanDate
+            every { clock.currentTimeSeconds } returns scanDate
             every { view.clearBarcodeInputArea() } just runs
             every { view.scrollToTopAndDisplayEquipments() } just runs
             every { view.getProperty("equipments") } returns listOf(
