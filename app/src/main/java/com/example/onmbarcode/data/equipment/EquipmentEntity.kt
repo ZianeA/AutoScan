@@ -7,25 +7,24 @@ import androidx.room.TypeConverter
 import com.example.onmbarcode.data.desk.DeskEntity
 import com.example.onmbarcode.presentation.equipment.Equipment
 
-// TODO add lookup tables
-// TODO make odooId
+// TODO add unique constraint to barcode
 @Entity(
     foreignKeys = [ForeignKey(
         entity = DeskEntity::class,
-        parentColumns = ["barcode"],
-        childColumns = ["deskBarcode"],
+        parentColumns = ["id"],
+        childColumns = ["deskId"],
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.CASCADE
     )]
 )
 data class EquipmentEntity(
-    @PrimaryKey val barcode: String,
-    val odooId: Int,
+    @PrimaryKey val id: Int,
+    val barcode: String,
     val type: String,
     val scanState: Equipment.ScanState,
     val condition: Equipment.EquipmentCondition,
     val scanDate: Long,
-    val deskBarcode: String
+    val deskId: Int
 ){
     class EquipmentConditionConverter {
         @TypeConverter

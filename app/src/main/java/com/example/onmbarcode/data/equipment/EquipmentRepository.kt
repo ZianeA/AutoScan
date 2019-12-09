@@ -13,10 +13,11 @@ import javax.inject.Singleton
 class EquipmentRepository @Inject constructor(
     private val equipmentDao: EquipmentDao,
     private val equipmentService: EquipmentService,
-    private val equipmentEntityMapper: Mapper<EquipmentEntity, Equipment>
+    private val equipmentEntityMapper: Mapper<EquipmentEntity, Equipment>,
+    private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>
 ) {
-    fun getEquipments(deskBarcode: String): Single<List<Equipment>> {
-        return equipmentDao.getByDesk(deskBarcode)
+    fun getEquipments(deskId: Int): Single<List<Equipment>> {
+        return equipmentDao.getByDesk(deskId)
             .map { e -> e.map(equipmentEntityMapper::map) }
     }
 
@@ -29,7 +30,10 @@ class EquipmentRepository @Inject constructor(
     // Update the database regardless of the network state.
     fun updateEquipment(equipment: Equipment): Completable {
         val scannedAndSyncedEquipment = equipment.copy(scanState = ScanState.ScannedAndSynced)
-        return equipmentService.update(scannedAndSyncedEquipment)
+        return equipmentService.update(
+            equipment.id,
+            equipmentResponseMapper.mapReverse(scannedAndSyncedEquipment)
+        )
             .onErrorResumeNext {
                 equipmentDao.update(
                     equipmentEntityMapper.mapReverse(
@@ -37,7 +41,8 @@ class EquipmentRepository @Inject constructor(
                     )
                 ).andThen(Completable.defer { Completable.error(it) })
             }
-            .andThen(Completable.defer { //I'm getting unexpected behavior, I had to use defer.
+            .andThen(Completable.defer {
+                //I'm getting unexpected behavior, I had to use defer.
                 equipmentDao.update(equipmentEntityMapper.mapReverse(scannedAndSyncedEquipment))
             })
     }

@@ -9,15 +9,15 @@ import javax.inject.Inject
 class DeskUiMapper @Inject constructor() : Mapper<DeskUi, Desk> {
     override fun map(model: DeskUi): Desk {
         return model.run {
-            Desk(barcode, odooId, isScanned, scanDate, equipments)
+            Desk(id, barcode, isScanned, scanDate, equipments)
         }
     }
 
     override fun mapReverse(model: Desk): DeskUi {
         return model.run {
             DeskUi(
+                id,
                 barcode,
-                odooId,
                 isScanned,
                 scanDate,
                 equipments,

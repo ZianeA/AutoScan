@@ -8,13 +8,13 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Equipment(
+    val id: Int,
     val barcode: String,
-    val odooId: Int,
     val type: String,
     val scanState: ScanState,
     val condition: EquipmentCondition,
     val scanDate: Long,
-    val deskBarcode: String //TODO remove deskBarcode
+    val deskId: Int
 ) : Parcelable {
     enum class EquipmentCondition {
         GOOD, AVERAGE, BAD;
@@ -22,13 +22,6 @@ data class Equipment(
         companion object {
             private val values = values();
             fun getByValue(value: Int) = values.first { it.ordinal == value }
-            // TODO find a better way to handle this!!!!
-            fun getByTranslation(value: String) = when (value) {
-                "bon" -> GOOD
-                "moyen" -> AVERAGE
-                "mauvais" -> BAD
-                else -> throw IllegalArgumentException("Unknown condition translation")
-            }
         }
     }
 

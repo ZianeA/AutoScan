@@ -44,7 +44,7 @@ class DeskRepository @Inject constructor(
             .flatMap { isLocalCacheEmpty ->
                 if (isLocalCacheEmpty) {
                     deskService.getAll()
-                        .map { d -> d.map { deskResponseMapper.map(it as HashMap<*, *>) } }
+                        .map { list -> list.map { deskResponseMapper.map(it as HashMap<*, *>) } }
                         .flatMapCompletable { desks ->
                             equipmentService.getAll()
                                 .map { list -> list.map { equipmentResponseMapper.map(it as HashMap<*, *>) } }
@@ -70,7 +70,7 @@ class DeskRepository @Inject constructor(
     /*private fun createDummyData(dataCount: Int = 100): List<DeskEntity> {
         val desks = mutableListOf<DeskEntity>()
         for (i in 0..dataCount) {
-            val deskBarcode = Random.nextInt(0, dataCount * 2)
+            val deskId = Random.nextInt(0, dataCount * 2)
             val totalScanCount = Random.nextInt(2, 20)
             val scanCount = Random.nextInt(0, totalScanCount)
             desks.add(
@@ -82,7 +82,7 @@ class DeskRepository @Inject constructor(
             )
             desks.add(
                 DeskEntity(
-                    "CNTM$deskBarcode",
+                    "CNTM$deskId",
                     false,
                     System.currentTimeMillis() - YEAR_IN_MILLIS
                 )

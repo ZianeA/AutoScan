@@ -26,7 +26,7 @@ class EquipmentPresenter @Inject constructor(
     private val disposables = CompositeDisposable()
 
     fun start(desk: DeskUi) {
-        val disposable = equipmentRepository.getEquipments(desk.barcode)
+        val disposable = equipmentRepository.getEquipments(desk.id)
             .map { equipments -> equipments.sortedByDescending { it.scanDate } }
             .applySchedulers(schedulerProvider)
             .subscribe({
@@ -79,10 +79,10 @@ class EquipmentPresenter @Inject constructor(
                     )
                 equipmentRepository.updateEquipment(updatedEquipment)
                     .andThen(Single.just(updatedEquipment))
-                        //TODO update errors since we are not using Retrofit anymore
+                    //TODO update errors since we are not using Retrofit anymore
                     .onErrorResumeNext {
                         when (it) {
-                           is IOException -> {
+                            is IOException -> {
                                 //handle network related errors
                                 val scannedButNotSyncedEquipment =
                                     updatedEquipment.copy(scanState = ScanState.ScannedButNotSynced)

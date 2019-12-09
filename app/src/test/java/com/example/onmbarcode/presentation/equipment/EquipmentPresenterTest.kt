@@ -38,7 +38,7 @@ internal class EquipmentPresenterTest {
             //Arrange
             val desk = createDeskUi()
             val equipments = listOf(createEquipment())
-            every { equipmentRepository.getEquipments(desk.barcode) } returns Single.just(
+            every { equipmentRepository.getEquipments(desk.id) } returns Single.just(
                 equipments
             )
             every { view.displayEquipments() } just runs

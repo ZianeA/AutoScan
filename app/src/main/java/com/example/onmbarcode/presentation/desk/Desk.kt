@@ -7,8 +7,8 @@ import com.example.onmbarcode.presentation.equipment.Equipment
 import kotlinx.android.parcel.Parcelize
 
 data class Desk(
+    val id: Int,
     val barcode: String,
-    val odooId: Int,
     val isScanned: Boolean,
     val scanDate: Long,
     val equipments: List<Equipment>

@@ -8,6 +8,6 @@ data class DeskWithEquipmentsEntity(
     @Embedded val deskEntity: DeskEntity,
     @Relation(
         parentColumn = "barcode",
-        entityColumn = "deskBarcode"
+        entityColumn = "deskId"
     ) val equipmentEntities: List<EquipmentEntity>
 )

@@ -35,12 +35,16 @@ internal class EquipmentResponseMapperTest {
 
     @Test
     fun `map Equipment to HashMap`() {
-        //Arrange
-
         //Act
         val mappedEquipmentResponse = mapper.mapReverse(createEquipment())
 
         //Assert
-        Assertions.assertThat(mappedEquipmentResponse).isEqualTo(createEquipmentResponse())
+        val response = createEquipmentResponse()
+        val expectedEquipmentResponse = hashMapOf<Any, Any>(
+            "observation" to response["observation"] as String,
+            "date_de_scan" to response["date_de_scan"] as String,
+            "aff" to (response["aff"] as Array<*>)[0] as Int
+        )
+        Assertions.assertThat(mappedEquipmentResponse).isEqualTo(expectedEquipmentResponse)
     }
 }

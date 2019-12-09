@@ -8,7 +8,6 @@ import com.example.onmbarcode.util.createEquipmentEntity
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -20,8 +19,10 @@ import org.junit.jupiter.api.extension.ExtendWith
 internal class EquipmentRepositoryTest {
     private val equipmentDao: EquipmentDao = mockk()
     private val equipmentService: EquipmentService = mockk()
-    private val mapper: Mapper<EquipmentEntity, Equipment> = mockk()
-    private val repository = EquipmentRepository(equipmentDao, equipmentService, mapper)
+    private val entityMapper: Mapper<EquipmentEntity, Equipment> = mockk()
+    private val responseMapper: Mapper<HashMap<*, *>, Equipment> = mockk()
+    private val repository =
+        EquipmentRepository(equipmentDao, equipmentService, entityMapper, responseMapper)
 
     @BeforeEach
     internal fun setUp() {
@@ -37,17 +38,24 @@ internal class EquipmentRepositoryTest {
             val scannedAndSyncedEquipmentEntity =
                 createEquipmentEntity(scanState = ScanState.ScannedAndSynced)
             every {
-                mapper.mapReverse(createEquipment(scanState = ScanState.ScannedAndSynced))
+                entityMapper.mapReverse(scannedAndSyncedEquipment)
             } returns scannedAndSyncedEquipmentEntity
-            every { equipmentService.update(any()) } returns Completable.complete()
+            every { responseMapper.mapReverse(scannedAndSyncedEquipment) } returns hashMapOf<Any, Any>()
+            every { equipmentService.update(any(), any()) } returns Completable.complete()
             every { equipmentDao.update(any()) } returns Completable.complete()
 
             //Act
-            repository.updateEquipment(createEquipment(scanState = ScanState.NotScanned))
+            val equipment = createEquipment(scanState = ScanState.NotScanned)
+            repository.updateEquipment(equipment)
                 .test()
 
             //Assert
-            verify { equipmentService.update(scannedAndSyncedEquipment) }
+            verify {
+                equipmentService.update(
+                    equipment.id,
+                    hashMapOf<Any, Any>()
+                )
+            }
             verify { equipmentDao.update(scannedAndSyncedEquipmentEntity) }
         }
 
@@ -60,13 +68,14 @@ internal class EquipmentRepositoryTest {
                 createEquipmentEntity(scanState = ScanState.ScannedAndSynced)
 
             every {
-                mapper.mapReverse(createEquipment(scanState = ScanState.ScannedButNotSynced))
+                entityMapper.mapReverse(createEquipment(scanState = ScanState.ScannedButNotSynced))
             } returns scannedButNotSyncedEquipment
             every {
-                mapper.mapReverse(createEquipment(scanState = ScanState.ScannedAndSynced))
+                entityMapper.mapReverse(createEquipment(scanState = ScanState.ScannedAndSynced))
             } returns scannedAndSyncedEquipment
+            every { responseMapper.mapReverse(any()) } returns hashMapOf<Any, Any>()
 
-            every { equipmentService.update(any()) } returns Completable.error(Throwable())
+            every { equipmentService.update(any(), any()) } returns Completable.error(Throwable())
             every { equipmentDao.update(any()) } returns Completable.complete()
 
             //Act

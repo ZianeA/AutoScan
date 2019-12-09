@@ -2,18 +2,12 @@ package com.example.onmbarcode.data.equipment
 
 import com.example.onmbarcode.data.OdooService
 import com.example.onmbarcode.presentation.equipment.Equipment
-import com.example.onmbarcode.presentation.equipment.Equipment.*
 import dagger.Reusable
 import de.timroes.axmlrpc.XMLRPCClient
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import java.net.URL
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
-import kotlin.collections.HashMap
 
 @Reusable
 class EquipmentService @Inject constructor(private val odooService: OdooService) {
@@ -57,7 +51,7 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
             }.map { it as Array<*> }
     }
 
-    fun update(equipment: Equipment): Completable {
+    fun update(equipmentId: Int, equipment: HashMap<*, *>): Completable {
         return odooService.authenticate()
             .flatMapCompletable { uid ->
                 val client = XMLRPCClient(URL(OdooService.URL_OBJECT))
@@ -70,8 +64,8 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
                         MODEL_EQUIPMENT_NAME,
                         OdooService.METHOD_WRITE,
                         listOf(
-                            listOf(equipment.odooId),
-                            hashMapOf("libelle" to "Hello from Android")
+                            listOf(equipmentId),
+                            equipment
                         )
                     )
                 }

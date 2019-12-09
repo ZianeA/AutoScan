@@ -1,13 +1,8 @@
 package com.example.onmbarcode.data.desk
 
 import com.example.onmbarcode.data.mapper.Mapper
-import com.example.onmbarcode.data.OdooService
-import com.example.onmbarcode.data.mapper.OdooDatetimeToUnix
-import com.example.onmbarcode.presentation.desk.Desk
-import com.example.onmbarcode.presentation.equipment.Equipment
+import com.example.onmbarcode.data.mapper.odooDatetimeToUnix
 import dagger.Reusable
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 import kotlin.collections.HashMap
 
@@ -17,11 +12,10 @@ class DeskResponseMapper @Inject constructor() :
     //TODO add attribute name constants
     override fun map(model: HashMap<*, *>): DeskEntity {
         return DeskEntity(
-            model["code"] as String,
             model["id"] as Int,
+            model["code"] as String,
             false,
-            OdooDatetimeToUnix(model["date_de_scan"] as String)/*,
-            (model["equipments"] as Array<*>).map { equipmentMapper.map(it as HashMap<*, *>) }*/
+            odooDatetimeToUnix(model["date_de_scan"] as String)
         )
     }
 

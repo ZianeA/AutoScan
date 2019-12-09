@@ -10,13 +10,13 @@ class EquipmentEntityMapper @Inject constructor() :
     Mapper<EquipmentEntity, Equipment> {
     override fun map(model: EquipmentEntity): Equipment {
         return model.run {
-            Equipment(barcode, odooId, type, scanState, condition, scanDate, deskBarcode)
+            Equipment(id, barcode, type, scanState, condition, scanDate, deskId)
         }
     }
 
     override fun mapReverse(model: Equipment): EquipmentEntity {
         return model.run {
-            EquipmentEntity(barcode, odooId, type, scanState, condition, scanDate, deskBarcode)
+            EquipmentEntity(id, barcode, type, scanState, condition, scanDate, deskId)
         }
     }
 }
