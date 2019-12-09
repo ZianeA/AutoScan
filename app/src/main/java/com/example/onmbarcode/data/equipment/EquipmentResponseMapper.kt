@@ -20,13 +20,19 @@ class EquipmentResponseMapper @Inject constructor() :
             model[ATTRIBUTE_LIBELLE_NAME] as String,
             Equipment.ScanState.NotScanned, //TODO deal with this. It's probably correct.
             Equipment.EquipmentCondition.getByTranslation(model[ATTRIBUTE_OBSERVATION_NAME] as String),
-            OdooDatetimeToUnix(model["date_de_scan"] as String),
+            OdooDatetimeToUnix(model[ATTRIBUTE_DATE_DE_SCAN_NAME] as String),
             model[ATTRIBUTE_AFF_CODE_NAME] as String
         )
     }
 
     override fun mapReverse(model: Equipment): HashMap<*, *> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return model.run {
+            hashMapOf<Any, Any>(
+                ATTRIBUTE_LIBELLE_NAME to type,
+                ATTRIBUTE_OBSERVATION_NAME to condition,
+                ATTRIBUTE_DATE_DE_SCAN_NAME to scanDate
+            )
+        }
     }
 
     companion object {

@@ -14,7 +14,7 @@ data class Equipment(
     val scanState: ScanState,
     val condition: EquipmentCondition,
     val scanDate: Long,
-    val deskBarcode: String
+    val deskBarcode: String //TODO remove deskBarcode
 ) : Parcelable {
     enum class EquipmentCondition {
         GOOD, AVERAGE, BAD;

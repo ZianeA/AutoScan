@@ -5,6 +5,7 @@ import com.example.onmbarcode.presentation.equipment.Equipment
 import com.example.onmbarcode.presentation.equipment.Equipment.*
 import dagger.Reusable
 import de.timroes.axmlrpc.XMLRPCClient
+import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -54,6 +55,27 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
                     )
                 }
             }.map { it as Array<*> }
+    }
+
+    fun update(equipment: Equipment): Completable {
+        return odooService.authenticate()
+            .flatMapCompletable { uid ->
+                val client = XMLRPCClient(URL(OdooService.URL_OBJECT))
+                Completable.fromAction {
+                    client.call(
+                        OdooService.METHOD_MAIN,
+                        OdooService.DB_NAME,
+                        uid,
+                        OdooService.PASSWORD,
+                        MODEL_EQUIPMENT_NAME,
+                        OdooService.METHOD_WRITE,
+                        listOf(
+                            listOf(equipment.odooId),
+                            hashMapOf("libelle" to "Hello from Android")
+                        )
+                    )
+                }
+            }
     }
 
     companion object {

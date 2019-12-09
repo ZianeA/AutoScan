@@ -84,7 +84,7 @@ internal class EquipmentPresenterTest {
 
             //Act
             val barcode = "12345"
-            presenter.onBarcodeChange(barcode.toString())
+            presenter.onBarcodeChange(barcode)
 
             //Assert
             verify { equipmentRepository.findEquipment(barcode) }
@@ -170,7 +170,7 @@ internal class EquipmentPresenterTest {
 
 
             //Act
-            presenter.onBarcodeChange(equipmentToBeScanned.barcode.toString())
+            presenter.onBarcodeChange(equipmentToBeScanned.barcode)
 
             //Assert
             val expectedEquipments = listOf(

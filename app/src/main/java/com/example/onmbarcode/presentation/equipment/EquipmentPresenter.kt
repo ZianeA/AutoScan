@@ -94,11 +94,11 @@ class EquipmentPresenter @Inject constructor(
                             }
                         }
                     }
-            }.delay(
+            }/*.delay(
                 Random.nextLong(200, 1000),
                 TimeUnit.MILLISECONDS,
                 schedulerProvider.worker
-            ) //TODO remove this delay
+            ) //TODO remove this delay*/
             .observeOn(schedulerProvider.main)
             .map {
                 object {
