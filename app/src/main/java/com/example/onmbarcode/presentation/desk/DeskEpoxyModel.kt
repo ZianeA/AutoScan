@@ -20,7 +20,7 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
     override fun bind(holder: DeskHolder) {
         super.bind(holder)
         holder.apply {
-            deskBarcode.text = "$DESK_BARCODE_PREFIX${desk.barcode}"
+            deskBarcode.text = desk.barcode
             scanCount.text = view.context.getString(
                 R.string.scanned_equipment_count,
                 desk.scannedEquipmentCount,
@@ -40,9 +40,9 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
         holder.view.setOnClickListener(null)
     }
 
-    companion object {
+    /*companion object {
         private const val DESK_BARCODE_PREFIX = "@"
-    }
+    }*/
 }
 
 class DeskHolder : KotlinEpoxyHolder() {

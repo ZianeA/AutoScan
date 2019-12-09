@@ -7,7 +7,7 @@ import com.example.onmbarcode.data.equipment.EquipmentEntity
 data class DeskWithEquipmentsEntity(
     @Embedded val deskEntity: DeskEntity,
     @Relation(
-        parentColumn = "barcode",
+        parentColumn = "id",
         entityColumn = "deskId"
     ) val equipmentEntities: List<EquipmentEntity>
 )
