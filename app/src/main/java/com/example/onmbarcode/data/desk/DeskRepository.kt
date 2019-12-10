@@ -8,6 +8,7 @@ import com.example.onmbarcode.data.equipment.EquipmentService
 import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.equipment.Equipment
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -38,10 +39,9 @@ class DeskRepository @Inject constructor(
 
     // If local cache is empty, fetch desks from server. Save the fetched desks to the local cache.
     // Finally, find the desk in the local cache.
-    //TODO refactor
-    fun findDesk(barcode: String): Single<Desk> {
+    fun findDesk(barcode: String): Maybe<Desk> {
         return deskDao.isEmpty()
-            .flatMap { isLocalCacheEmpty ->
+            .flatMapMaybe { isLocalCacheEmpty ->
                 if (isLocalCacheEmpty) {
                     deskService.getAll()
                         .map { list -> list.map { deskResponseMapper.map(it as HashMap<*, *>) } }

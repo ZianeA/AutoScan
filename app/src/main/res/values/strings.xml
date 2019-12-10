@@ -20,6 +20,8 @@
     <string name="equipment_scanned_message">Scanné mais non synchronisé</string>
     <string name="equipment_not_scanned_message">Non scanné</string>
     <string name="equipment_pending_message">Scan en cours…</string>
+    <string name="unknown_error_message">Désolé, quelque chose s\'est mal passé.</string>
+    <string name="unknown_barcode_message">Code à barres non reconnu</string>
 
     <!--Items order is important!-->
     <string-array name="equipment_condition">

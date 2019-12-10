@@ -41,10 +41,13 @@ class DeskPresenter @Inject constructor(
                         scanDate = clock.currentTimeSeconds
                     )
                 ).andThen(Single.just(it))
+                    .toMaybe()
             }
             .map(DeskUiMapper::mapReverse)
             .applySchedulers(schedulerProvider)
-            .subscribe({ view.displayEquipmentsScreen(it) }, { /*onError*/ })
+            .subscribe({ view.displayEquipmentsScreen(it) }, { /*onError*/ }, {
+                view.showUnknownBarcodeMessage()
+            })
 
 
         disposables.add(disposable)

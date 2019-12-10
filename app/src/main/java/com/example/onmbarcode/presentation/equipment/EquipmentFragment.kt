@@ -24,6 +24,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_equipment.*
 import kotlinx.android.synthetic.main.fragment_equipment.view.*
+import kotlinx.android.synthetic.main.my_snackbar.*
 import javax.inject.Inject
 
 /**
@@ -152,23 +153,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     override fun showErrorMessage() {
-        mySnackbar.apply {
-            val (initialScaleX, initialScaleY) = Pair(scaleX, scaleY)
-
-            scaleX = initialScaleX / 2
-            scaleX = initialScaleY / 2
-            animate()
-                .alpha(1f)
-                .scaleX(initialScaleX)
-                .scaleY(initialScaleY)
-                .withEndAction {
-                    animate()
-                        .alpha(0f)
-                        .setStartDelay(4000)
-                        .start()
-                }
-                .start()
-        }
+        snackbar.showMessage(R.string.unknown_error_message)
     }
 
     companion object {

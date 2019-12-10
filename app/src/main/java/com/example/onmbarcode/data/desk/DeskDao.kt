@@ -3,6 +3,7 @@ package com.example.onmbarcode.data.desk
 import androidx.room.*
 import com.example.onmbarcode.data.equipment.EquipmentEntity
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 @Dao
@@ -21,7 +22,7 @@ interface DeskDao {
     fun getScanned(): Single<List<DeskWithEquipmentsEntity>>
 
     @Query("SELECT * FROM DeskEntity d WHERE d.barcode=:barcode")
-    fun getByBarcode(barcode: String): Single<DeskWithEquipmentsEntity>
+    fun getByBarcode(barcode: String): Maybe<DeskWithEquipmentsEntity>
 
     @Update
     fun update(desk: DeskEntity): Completable

@@ -2,4 +2,6 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="equipment_item_spacing">8dp</dimen>
     <dimen name="desk_item_spacing">8dp</dimen>
+    <dimen name="snackbar_corner_radius">6dp</dimen>
+    <dimen name="snackbar_elevation">4dp</dimen>
 </resources>

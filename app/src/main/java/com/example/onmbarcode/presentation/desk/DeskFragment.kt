@@ -14,8 +14,10 @@ import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.equipment.EquipmentFragment
 import com.example.onmbarcode.presentation.util.ItemDecoration
 import com.example.onmbarcode.presentation.station.Station
+import com.google.android.material.snackbar.Snackbar
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_desk.*
 import kotlinx.android.synthetic.main.fragment_desk.view.*
 import javax.inject.Inject
 
@@ -85,6 +87,10 @@ class DeskFragment : Fragment(), DeskView {
 
     override fun displayEquipmentsScreen(desk: DeskUi) {
         fragNavController.pushFragment(EquipmentFragment.newInstance(desk))
+    }
+
+    override fun showUnknownBarcodeMessage() {
+        snackbar.showMessage(R.string.unknown_barcode_message)
     }
 
     companion object {
