@@ -1,5 +1,6 @@
 package com.example.onmbarcode.presentation.equipment
 
+import androidx.room.EmptyResultSetException
 import com.example.onmbarcode.data.equipment.EquipmentRepository
 import com.example.onmbarcode.presentation.desk.DeskUi
 import com.example.onmbarcode.presentation.di.FragmentScope
@@ -35,7 +36,7 @@ class EquipmentPresenter @Inject constructor(
         disposables.add(disposable)
     }
 
-    //TODO handle equipment not found
+    // TODO add more unit tests, notably for error messages
     private fun scanBarcode(barcode: String) {
         // TODO i'm not sure if this works with a barcode 00001
         barcode.toIntOrNull()
@@ -46,6 +47,13 @@ class EquipmentPresenter @Inject constructor(
 
         val disposable = equipmentRepository.findEquipment(barcode)
             .observeOn(schedulerProvider.main)
+            .doOnEvent { e, t -> if (e == null && t == null) view.showUnknownBarcodeMessage() }
+            .flatMap {
+                if (it.scanState != ScanState.NotScanned) {
+                    view.showEquipmentAlreadyScannedMessage()
+                    Maybe.empty()
+                } else Maybe.just(it)
+            }
             .map {
                 object {
                     val scannedEquipment = it
@@ -125,8 +133,10 @@ class EquipmentPresenter @Inject constructor(
                     view.equipmentToAnimate = it.barcode
                     view.displayEquipmentsDelayed()
                 },
-                { view.showErrorMessage() },
-                { view.showUnknownBarcodeMessage() }
+                {
+                    view.showErrorMessage()
+                },
+                { /*onComplete*/ }
             )
 
         disposables.add(disposable)

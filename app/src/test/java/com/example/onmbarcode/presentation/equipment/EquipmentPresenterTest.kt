@@ -9,6 +9,7 @@ import com.example.onmbarcode.util.createEquipment
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -66,7 +67,7 @@ internal class EquipmentPresenterTest {
         fun `clear input area when barcode is 5 digits long`() {
             //Arrange
             every { view.clearBarcodeInputArea() } just runs
-            every { equipmentRepository.findEquipment(any()) } returns Single.just(createEquipment())
+            every { equipmentRepository.findEquipment(any()) } returns Maybe.just(createEquipment())
 
             //Act
             presenter.onBarcodeChange("12345")
@@ -79,7 +80,7 @@ internal class EquipmentPresenterTest {
         fun `verify if barcode is exists`() {
             //Arrange
             every { view.clearBarcodeInputArea() } just runs
-            every { equipmentRepository.findEquipment(any()) } returns Single.just(createEquipment())
+            every { equipmentRepository.findEquipment(any()) } returns Maybe.just(createEquipment())
 
             //Act
             val barcode = "12345"
@@ -95,8 +96,8 @@ internal class EquipmentPresenterTest {
             val equipmentToBeScanned = createEquipment(scanState = ScanState.PendingScan)
             val randomEquipment = createEquipment(barcode = "99999")
             every { view.clearBarcodeInputArea() } just runs
-            every { equipmentRepository.findEquipment(any()) } returns Single.just(
-                equipmentToBeScanned
+            every { equipmentRepository.findEquipment(any()) } returns Maybe.just(
+                createEquipment(scanState = ScanState.NotScanned)
             )
             every { view.getProperty("equipments") } returns listOf(
                 randomEquipment,
@@ -120,7 +121,7 @@ internal class EquipmentPresenterTest {
                 createEquipment(scanState = ScanState.NotScanned, scanDate = 101)
             val scanDate: Long = System.currentTimeMillis()
             every { view.clearBarcodeInputArea() } just runs
-            every { equipmentRepository.findEquipment(any()) } returns Single.just(
+            every { equipmentRepository.findEquipment(any()) } returns Maybe.just(
                 equipmentToBeScanned
             )
             every { clock.currentTimeSeconds } returns scanDate
@@ -151,7 +152,7 @@ internal class EquipmentPresenterTest {
                 createEquipment(barcode = "99999", scanState = ScanState.NotScanned, scanDate = 505)
             val randomEquipment = createEquipment(scanDate = 909)
             val scanDate: Long = System.currentTimeMillis()
-            every { equipmentRepository.findEquipment(any()) } returns Single.just(
+            every { equipmentRepository.findEquipment(any()) } returns Maybe.just(
                 equipmentToBeScanned
             )
             every { clock.currentTimeSeconds } returns scanDate

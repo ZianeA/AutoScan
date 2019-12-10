@@ -158,6 +158,11 @@ class EquipmentFragment : Fragment(), EquipmentView {
         snackbar.showMessage(R.string.unknown_barcode_message, MySnackbar.LENGTH_SHORT)
     }
 
+    override fun showEquipmentAlreadyScannedMessage() {
+        //TODO Translate message
+        snackbar.showMessage("Equipment already scanned", MySnackbar.LENGTH_SHORT)
+    }
+
     companion object {
         private const val ARG_SELECTED_DESK = "selected_desk"
         private const val MODEL_BUILD_DELAY = 200

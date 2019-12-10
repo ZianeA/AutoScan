@@ -9,6 +9,7 @@ interface EquipmentView {
     fun displayEquipmentConditionChangedMessage()
     fun showErrorMessage()
     fun showUnknownBarcodeMessage()
+    fun showEquipmentAlreadyScannedMessage()
 
     var equipments: List<Equipment>
     var equipmentToAnimate: String
