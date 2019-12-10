@@ -7,6 +7,7 @@ import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.Clock
 import com.example.onmbarcode.presentation.util.applySchedulers
 import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
+import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import java.io.IOException
@@ -76,18 +77,19 @@ class EquipmentPresenter @Inject constructor(
                     )
                 equipmentRepository.updateEquipment(updatedEquipment)
                     .andThen(Single.just(updatedEquipment))
+                    .toMaybe()
                     //TODO update errors since we are not using Retrofit anymore
-                    .onErrorResumeNext {
+                    .onErrorResumeNext { it: Throwable ->
                         when (it) {
                             is IOException -> {
                                 //handle network related errors
                                 val scannedButNotSyncedEquipment =
                                     updatedEquipment.copy(scanState = ScanState.ScannedButNotSynced)
-                                Single.just(scannedButNotSyncedEquipment)
+                                Maybe.just(scannedButNotSyncedEquipment)
                             }
                             else -> {
                                 // This is probably a serious error
-                                Single.error(it)
+                                Maybe.error(it)
                             }
                         }
                     }
@@ -122,7 +124,10 @@ class EquipmentPresenter @Inject constructor(
                     view.equipments = it.equipments
                     view.equipmentToAnimate = it.barcode
                     view.displayEquipmentsDelayed()
-                }, { view.showErrorMessage() })
+                },
+                { view.showErrorMessage() },
+                { view.showUnknownBarcodeMessage() }
+            )
 
         disposables.add(disposable)
     }

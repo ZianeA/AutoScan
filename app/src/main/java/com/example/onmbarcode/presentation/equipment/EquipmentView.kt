@@ -8,6 +8,7 @@ interface EquipmentView {
     fun clearBarcodeInputArea()
     fun displayEquipmentConditionChangedMessage()
     fun showErrorMessage()
+    fun showUnknownBarcodeMessage()
 
     var equipments: List<Equipment>
     var equipmentToAnimate: String

@@ -10,6 +10,9 @@ import com.example.onmbarcode.R
 import kotlinx.android.synthetic.main.my_snackbar.view.*
 
 class MySnackbar : CardView {
+    private var isAnimating = false
+    private var nextMessage: (() -> Unit)? = null
+
     constructor(context: Context) : super(context) {
         init(context, null, 0)
     }
@@ -44,10 +47,19 @@ class MySnackbar : CardView {
     }
 
     fun showMessage(message: String, duration: Long = LENGTH_LONG) {
+        if (isAnimating) {
+            nextMessage = { showMessage(message, duration) }
+            return
+        }
+
+        isAnimating = true
         alpha = 0f
         visibility = View.VISIBLE
         mySnackbarMessage.text = message
         val (initialScaleX, initialScaleY) = Pair(scaleX, scaleY)
+
+        scaleX = initialScaleX / 2
+        scaleX = initialScaleY / 2
 
         animate()
             .alpha(1f)
@@ -57,7 +69,12 @@ class MySnackbar : CardView {
                 animate()
                     .alpha(0f)
                     .setStartDelay(duration)
-                    .withEndAction { visibility = View.GONE }
+                    .withEndAction {
+                        visibility = View.GONE
+                        isAnimating = false
+                        nextMessage?.invoke()
+                        nextMessage = null
+                    }
                     .start()
             }
             .setStartDelay(0)

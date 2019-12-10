@@ -2,6 +2,7 @@ package com.example.onmbarcode.data.equipment
 
 import androidx.room.*
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 @Dao
@@ -11,7 +12,7 @@ interface EquipmentDao {
 
     //TODO this should probably return a maybe
     @Query("SELECT * FROM EquipmentEntity e WHERE e.barcode=:barcode")
-    fun getByBarcode(barcode: String): Single<EquipmentEntity>
+    fun getByBarcode(barcode: String): Maybe<EquipmentEntity>
 
     //TODO add index for deskId
     @Query("SELECT * FROM EquipmentEntity e WHERE e.deskId=:deskId")

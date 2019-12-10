@@ -4,6 +4,7 @@ import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.presentation.equipment.Equipment
 import com.example.onmbarcode.presentation.equipment.Equipment.*
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
@@ -21,7 +22,7 @@ class EquipmentRepository @Inject constructor(
             .map { e -> e.map(equipmentEntityMapper::map) }
     }
 
-    fun findEquipment(barcode: String): Single<Equipment> {
+    fun findEquipment(barcode: String): Maybe<Equipment> {
         return equipmentDao.getByBarcode(barcode)
             .map(equipmentEntityMapper::map)
     }

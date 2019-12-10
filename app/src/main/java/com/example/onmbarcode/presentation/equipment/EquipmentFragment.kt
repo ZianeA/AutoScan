@@ -20,9 +20,12 @@ import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.desk.DeskUi
 import com.example.onmbarcode.presentation.util.ItemDecoration
+import com.example.onmbarcode.presentation.util.MySnackbar
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_desk.*
 import kotlinx.android.synthetic.main.fragment_equipment.*
+import kotlinx.android.synthetic.main.fragment_equipment.snackbar
 import kotlinx.android.synthetic.main.fragment_equipment.view.*
 import kotlinx.android.synthetic.main.my_snackbar.*
 import javax.inject.Inject
@@ -143,17 +146,16 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     override fun displayEquipmentConditionChangedMessage() {
-        //TODO Reuse this snackbar
-        Snackbar.make(
-            mainContent,
-            "Equipment condition changed successfully",
-            Snackbar.LENGTH_SHORT
-        )
-            .show()
+        // TODO Translate message
+        snackbar.showMessage("Equipment condition changed successfully", MySnackbar.LENGTH_SHORT)
     }
 
     override fun showErrorMessage() {
         snackbar.showMessage(R.string.unknown_error_message)
+    }
+
+    override fun showUnknownBarcodeMessage() {
+        snackbar.showMessage(R.string.unknown_barcode_message, MySnackbar.LENGTH_SHORT)
     }
 
     companion object {
