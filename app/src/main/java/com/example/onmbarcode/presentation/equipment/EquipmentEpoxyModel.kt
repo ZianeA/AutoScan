@@ -59,6 +59,8 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                     indeterminateDrawable.setColorFilter(progressBarColor, PorterDuff.Mode.MULTIPLY)
                     visibility = View.VISIBLE
                 }
+            } else {
+                progressBar.visibility = View.INVISIBLE
             }
 
             // Set scan state message
