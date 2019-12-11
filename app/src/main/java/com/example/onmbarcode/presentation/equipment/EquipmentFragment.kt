@@ -7,11 +7,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
@@ -75,6 +77,12 @@ class EquipmentFragment : Fragment(), EquipmentView {
         rootView.barcodeInput.addTextChangedListener(afterTextChanged = {
             presenter.onBarcodeChange(it.toString())
         })
+
+        rootView.barcodeInput.apply {
+            requestFocus()
+            getSystemService(context, InputMethodManager::class.java)
+                ?.hideSoftInputFromWindow(windowToken, 0)
+        }
 
         return rootView
     }

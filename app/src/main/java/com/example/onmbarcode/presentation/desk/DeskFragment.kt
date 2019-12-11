@@ -1,13 +1,20 @@
 package com.example.onmbarcode.presentation.desk
 
 
+import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.text.InputType
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.airbnb.epoxy.EpoxyRecyclerView
 
 import com.example.onmbarcode.R
@@ -56,6 +63,13 @@ class DeskFragment : Fragment(), DeskView {
 
         rootView.barcodeSubmitButton.setOnClickListener {
             presenter.onBarcodeEntered(rootView.barcodeInput.text.toString())
+        }
+
+
+        rootView.barcodeInput.apply {
+            (activity as AppCompatActivity).window
+                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+            requestFocus()
         }
 
         return rootView
