@@ -17,11 +17,11 @@
             android:id="@+id/revealView"
             android:layout_width="-1dp"
             android:layout_height="0dp"
+            android:tint="@color/scanned_and_synced"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            android:tint="@color/scanned_and_synced"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/rounded_corners_8dp" />
 
@@ -30,6 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/rectangle_outlined"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -37,7 +38,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/equipmentType"
             app:layout_constraintEnd_toStartOf="@+id/progressBar"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@id/equipmentType"
+            app:layout_constraintStart_toEndOf="@+id/equipmentType"
             app:layout_constraintTop_toTopOf="@+id/equipmentType"
             app:layout_constraintVertical_bias="0.7"
             tools:text="25860" />
@@ -48,18 +49,24 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@android:color/white"
+            android:textSize="20sp"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@+id/equipmentBarcode"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Clavier" />
+            tools:text="STATION DE TRAVAIL ROUGE" />
 
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyle"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:visibility="invisible"
@@ -74,13 +81,13 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            tools:text="@string/equipment_synced_message"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/equipmentType" />
+            app:layout_constraintTop_toBottomOf="@+id/equipmentType"
+            tools:text="@string/equipment_synced_message" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"
