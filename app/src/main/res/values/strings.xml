@@ -22,6 +22,7 @@
     <string name="equipment_pending_message">Scan en cours…</string>
     <string name="unknown_error_message">Désolé, quelque chose s\'est mal passé.</string>
     <string name="unknown_barcode_message">Code à barres non reconnu</string>
+    <string name="equipment_already_scanned_message">Équipement déjà scanné</string>
 
     <!--Items order is important!-->
     <string-array name="equipment_condition">

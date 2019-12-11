@@ -24,12 +24,12 @@
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
         android:background="@color/lightGray"
-        app:layout_constraintBottom_toTopOf="@+id/barcodeEditText"
+        app:layout_constraintBottom_toTopOf="@+id/barcodeInput"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <EditText
-        android:id="@+id/barcodeEditText"
+        android:id="@+id/barcodeInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -42,11 +42,11 @@
         android:inputType='textEmailAddress|textCapCharacters'
         android:maxLines="1"
         android:padding="8dp"
-        android:text="CNTM08"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/barcodeSubmitButton"
         app:layout_constraintStart_toStartOf="parent" />
+        <!--android:text="CNTM08"-->
 
     <ImageButton
         android:id="@+id/barcodeSubmitButton"
@@ -56,10 +56,10 @@
         android:background="@drawable/ripple_circle"
         android:elevation="2dp"
         app:backgroundTint="@color/colorAccent"
-        app:layout_constraintBottom_toBottomOf="@+id/barcodeEditText"
+        app:layout_constraintBottom_toBottomOf="@+id/barcodeInput"
         app:layout_constraintDimensionRatio="h,1:1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/barcodeEditText"
+        app:layout_constraintTop_toTopOf="@+id/barcodeInput"
         app:srcCompat="@drawable/ic_send_24dp" />
 
     <com.example.onmbarcode.presentation.util.MySnackbar

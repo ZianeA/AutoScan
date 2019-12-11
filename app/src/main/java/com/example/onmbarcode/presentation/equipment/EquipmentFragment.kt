@@ -23,7 +23,6 @@ import com.example.onmbarcode.presentation.util.ItemDecoration
 import com.example.onmbarcode.presentation.util.MySnackbar
 import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_desk.*
 import kotlinx.android.synthetic.main.fragment_equipment.*
 import kotlinx.android.synthetic.main.fragment_equipment.snackbar
 import kotlinx.android.synthetic.main.fragment_equipment.view.*
@@ -159,8 +158,10 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     override fun showEquipmentAlreadyScannedMessage() {
-        //TODO Translate message
-        snackbar.showMessage("Equipment already scanned", MySnackbar.LENGTH_SHORT)
+        snackbar.showMessage(
+            getString(R.string.equipment_already_scanned_message),
+            MySnackbar.LENGTH_SHORT
+        )
     }
 
     companion object {

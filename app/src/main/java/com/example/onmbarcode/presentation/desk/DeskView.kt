@@ -4,4 +4,6 @@ interface DeskView {
     fun displayDesks(desks: List<DeskUi>)
     fun displayEquipmentsScreen(desk: DeskUi)
     fun showUnknownBarcodeMessage()
+    fun showErrorMessage()
+    fun clearBarcodeInputArea()
 }

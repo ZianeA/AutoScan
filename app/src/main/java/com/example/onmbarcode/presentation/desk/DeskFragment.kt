@@ -13,8 +13,6 @@ import com.airbnb.epoxy.EpoxyRecyclerView
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.equipment.EquipmentFragment
 import com.example.onmbarcode.presentation.util.ItemDecoration
-import com.example.onmbarcode.presentation.station.Station
-import com.google.android.material.snackbar.Snackbar
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_desk.*
@@ -57,7 +55,7 @@ class DeskFragment : Fragment(), DeskView {
         )
 
         rootView.barcodeSubmitButton.setOnClickListener {
-            presenter.onBarcodeEntered(rootView.barcodeEditText.text.toString())
+            presenter.onBarcodeEntered(rootView.barcodeInput.text.toString())
         }
 
         return rootView
@@ -91,6 +89,14 @@ class DeskFragment : Fragment(), DeskView {
 
     override fun showUnknownBarcodeMessage() {
         snackbar.showMessage(R.string.unknown_barcode_message)
+    }
+
+    override fun showErrorMessage() {
+        snackbar.showMessage(R.string.unknown_error_message)
+    }
+
+    override fun clearBarcodeInputArea() {
+        barcodeInput.text.clear()
     }
 
     companion object {

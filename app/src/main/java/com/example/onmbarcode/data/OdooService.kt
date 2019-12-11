@@ -22,7 +22,7 @@ class OdooService @Inject constructor() {
     }
 
     companion object {
-        private const val URL_BASE = "http://10.0.2.2:8069/xmlrpc/2"
+        private const val URL_BASE = "http://192.168.4.94:8069/xmlrpc/2"
         const val URL_COMMON = "$URL_BASE/common"
         const val URL_OBJECT = "$URL_BASE/object"
         const val METHOD_MAIN = "execute_kw"

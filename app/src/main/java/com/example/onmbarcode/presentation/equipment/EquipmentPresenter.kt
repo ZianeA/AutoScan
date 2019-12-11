@@ -8,12 +8,15 @@ import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.Clock
 import com.example.onmbarcode.presentation.util.applySchedulers
 import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
+import de.timroes.axmlrpc.XMLRPCException
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import java.io.IOException
 import java.lang.IllegalArgumentException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.random.Random
 
 @FragmentScope
 class EquipmentPresenter @Inject constructor(
@@ -89,7 +92,7 @@ class EquipmentPresenter @Inject constructor(
                     //TODO update errors since we are not using Retrofit anymore
                     .onErrorResumeNext { it: Throwable ->
                         when (it) {
-                            is IOException -> {
+                            is XMLRPCException -> {
                                 //handle network related errors
                                 val scannedButNotSyncedEquipment =
                                     updatedEquipment.copy(scanState = ScanState.ScannedButNotSynced)
@@ -102,7 +105,7 @@ class EquipmentPresenter @Inject constructor(
                         }
                     }
             }/*.delay(
-                Random.nextLong(200, 1000),
+                Random.nextLong(1000, 2000),
                 TimeUnit.MILLISECONDS,
                 schedulerProvider.worker
             ) //TODO remove this delay*/

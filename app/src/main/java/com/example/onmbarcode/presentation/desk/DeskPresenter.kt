@@ -19,6 +19,7 @@ class DeskPresenter @Inject constructor(
     private val DeskUiMapper: Mapper<DeskUi, Desk>
 ) {
     private val disposables = CompositeDisposable()
+    private var isBarcodeScanInProgress = false
 
     fun start() {
         val disposable = deskRepository.getScannedDesks()
@@ -33,7 +34,12 @@ class DeskPresenter @Inject constructor(
     // maybe not because...
     // maybe yes when the user navigates back
     fun onBarcodeEntered(barcode: String) {
+        if (isBarcodeScanInProgress) return
+
         val disposable = deskRepository.findDesk(barcode)
+            .observeOn(schedulerProvider.main)
+            .doOnSuccess { view.clearBarcodeInputArea() }
+            .observeOn(schedulerProvider.worker)
             .flatMap {
                 deskRepository.updateDesk(
                     it.copy(
@@ -45,9 +51,12 @@ class DeskPresenter @Inject constructor(
             }
             .map(DeskUiMapper::mapReverse)
             .applySchedulers(schedulerProvider)
-            .subscribe({ view.displayEquipmentsScreen(it) }, { /*onError*/ }, {
-                view.showUnknownBarcodeMessage()
-            })
+            .doFinally { isBarcodeScanInProgress = false }
+            .subscribe(
+                { view.displayEquipmentsScreen(it) },
+                { view.showErrorMessage() },
+                { view.showUnknownBarcodeMessage() }
+            )
 
 
         disposables.add(disposable)
