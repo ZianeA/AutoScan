@@ -15,7 +15,7 @@
 
         <ImageView
             android:id="@+id/revealView"
-            android:layout_width="-1dp"
+            android:layout_width="1dp"
             android:layout_height="0dp"
             android:tint="@color/scanned_and_synced"
             app:layout_constraintBottom_toBottomOf="parent"

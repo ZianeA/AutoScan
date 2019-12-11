@@ -100,20 +100,23 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
     override fun unbind(holder: EquipmentHolder) {
         super.unbind(holder)
         holder.apply {
-            revealView.scaleX = -1f
+            revealView.scaleX = 1f
+            revealView.visibility = View.INVISIBLE
             progressBar.visibility = View.INVISIBLE
         }
     }
 
     private fun animateEquipmentColor(holder: EquipmentHolder, endColor: Int, endMessage: String) {
         holder.apply {
+            revealView.visibility = View.VISIBLE
             progressBar.visibility = View.INVISIBLE
             ImageViewCompat.setImageTintList(revealView, ColorStateList.valueOf(endColor))
             revealView.animate()
-                .scaleXBy(cardView.width * 2f)
+                .scaleXBy(cardView.width.toFloat())
                 .setDuration(ANIMATION_DURATION)
                 .withEndAction {
-                    revealView.scaleX = -1f
+                    revealView.visibility = View.INVISIBLE
+                    revealView.scaleX = 1f
                     cardView.setCardBackgroundColor(endColor)
                     scanStateMessage.text = endMessage
                 }

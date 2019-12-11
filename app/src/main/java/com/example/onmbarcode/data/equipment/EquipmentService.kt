@@ -7,7 +7,9 @@ import de.timroes.axmlrpc.XMLRPCClient
 import io.reactivex.Completable
 import io.reactivex.Single
 import java.net.URL
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.random.Random
 
 @Reusable
 class EquipmentService @Inject constructor(private val odooService: OdooService) {
@@ -69,7 +71,10 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
                         )
                     )
                 }
-            }
+            }.delay(
+                Random.nextLong(3000, 5000),
+                TimeUnit.MILLISECONDS
+            ) //TODO remove this delay
     }
 
     companion object {
