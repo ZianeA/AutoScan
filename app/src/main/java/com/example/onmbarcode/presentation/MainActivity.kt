@@ -18,9 +18,14 @@ import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
-    FragNavController.RootFragmentListener {
+    FragNavController.RootFragmentListener, MainView {
     @Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Fragment>
+
+    @Inject
+    lateinit var presenter: MainPresenter
+
+    var savedInstanceState: Bundle? = null
 
     val fragNavController: FragNavController =
         FragNavController(supportFragmentManager, R.id.fragmentContainer)
@@ -30,7 +35,18 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         fragNavController.rootFragmentListener = this
-        fragNavController.initialize(FragNavController.TAB1, savedInstanceState)
+        this.savedInstanceState = savedInstanceState
+//        fragNavController.initialize(FragNavController.TAB1, savedInstanceState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        presenter.start()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        presenter.stop()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -52,12 +68,21 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
         return super.onOptionsItemSelected(item)
     }
 
+    override fun displayLoginScreen() {
+        fragNavController.initialize(FragNavController.TAB1, savedInstanceState)
+    }
+
+    override fun displayDeskScreen() {
+        fragNavController.initialize(FragNavController.TAB2, savedInstanceState)
+    }
+
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = androidInjector
 
-    override val numberOfRootFragments: Int = 1
+    override val numberOfRootFragments: Int = 2
 
     override fun getRootFragment(index: Int): Fragment {
         if (index == FragNavController.TAB1) return LoginFragment.newInstance()
+        if (index == FragNavController.TAB2) return DeskFragment.newInstance()
         else throw IllegalArgumentException("Unknown index")
     }
 }

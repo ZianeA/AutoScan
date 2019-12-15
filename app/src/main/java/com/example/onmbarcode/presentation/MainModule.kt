@@ -21,6 +21,10 @@ class MainModule {
     @Provides
     fun provideFragNavController(mainActivity: MainActivity) = mainActivity.fragNavController
 
+    @ActivityScope
+    @Provides
+    fun provideMainView(mainActivity: MainActivity): MainView = mainActivity
+
     @Module
     interface FragmentBindingModule {
         @FragmentScope

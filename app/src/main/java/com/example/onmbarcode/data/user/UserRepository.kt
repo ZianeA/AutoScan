@@ -3,6 +3,7 @@ package com.example.onmbarcode.data.user
 import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.presentation.login.User
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,8 +22,11 @@ class UserRepository @Inject constructor(
         return userDao.remove(mapper.mapReverse(user))
     }*/
 
-    fun getUserById(uid: Int): Single<User> {
-        return userDao.get(uid).map(mapper::map)
+    fun getUser(): Maybe<User> {
+        return userDao.getAll()
+            .flatMap { if (it.isEmpty()) Maybe.empty() else Maybe.just(it) }
+            .map { it.single() } //There should be only one user in the database
+            .map(mapper::map)
     }
 
     /*fun getAllUsers(): Single<List<User>> {
