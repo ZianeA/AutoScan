@@ -72,6 +72,11 @@ class LoginFragment : Fragment(), LoginView {
         super.onAttach(context)
     }
 
+    override fun onStop() {
+        super.onStop()
+        presenter.stop()
+    }
+
     override fun displayDeskScreen() {
         fragNavController.replaceFragment(DeskFragment.newInstance())
     }

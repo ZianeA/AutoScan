@@ -38,8 +38,8 @@ class DeskPresenter @Inject constructor(
     fun onBarcodeEntered(barcode: String) {
         if (isBarcodeScanInProgress) return
 
+        isBarcodeScanInProgress = true
         view.disableBarcodeInput()
-
         val disposable = deskRepository.findDesk(barcode.replace("\\s+".toRegex(),""))
             .observeOn(schedulerProvider.main)
             .doOnSuccess { view.clearBarcodeInputArea() }

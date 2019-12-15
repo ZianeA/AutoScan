@@ -18,8 +18,13 @@ class LoginPresenter @Inject constructor(
     private val userRepository: UserRepository
 ) {
     private val disposables = CompositeDisposable()
+    private var isLoginInProgress = false
 
     fun onLogin(username: String, password: String) {
+        if (isLoginInProgress) return
+
+        isLoginInProgress = true
+        view.disableLogin()
         val disposable = odooService.authenticate(username, password)
             .flatMap {
                 userRepository.addUser(User(it, username, password))
@@ -28,8 +33,16 @@ class LoginPresenter @Inject constructor(
             .applySchedulers(schedulerProvider)
             .subscribe(
                 { view.displayDeskScreen() },
-                { view.displayLoginFailedMessage() },
-                { view.displayWrongCredentialsMessage() })
+                {
+                    view.enableLogin()
+                    isLoginInProgress = false
+                    view.displayLoginFailedMessage()
+                },
+                {
+                    view.enableLogin()
+                    isLoginInProgress = false
+                    view.displayWrongCredentialsMessage()
+                })
 
         disposables.add(disposable)
     }
