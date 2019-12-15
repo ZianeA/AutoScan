@@ -113,6 +113,14 @@ class DeskFragment : Fragment(), DeskView {
         barcodeInput.text.clear()
     }
 
+    override fun disableBarcodeInput() {
+        barcodeSubmitButton.isEnabled = false
+    }
+
+    override fun enableBarcodeInput() {
+        barcodeSubmitButton.isEnabled = true
+    }
+
     companion object {
         /**
          * Use this factory method to create a new instance of

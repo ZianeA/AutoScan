@@ -6,4 +6,6 @@ interface DeskView {
     fun showUnknownBarcodeMessage()
     fun showErrorMessage()
     fun clearBarcodeInputArea()
+    fun disableBarcodeInput()
+    fun enableBarcodeInput()
 }

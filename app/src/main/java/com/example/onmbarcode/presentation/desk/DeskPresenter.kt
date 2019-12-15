@@ -36,6 +36,8 @@ class DeskPresenter @Inject constructor(
     fun onBarcodeEntered(barcode: String) {
         if (isBarcodeScanInProgress) return
 
+        view.disableBarcodeInput()
+
         val disposable = deskRepository.findDesk(barcode)
             .observeOn(schedulerProvider.main)
             .doOnSuccess { view.clearBarcodeInputArea() }
@@ -51,11 +53,18 @@ class DeskPresenter @Inject constructor(
             }
             .map(DeskUiMapper::mapReverse)
             .applySchedulers(schedulerProvider)
-            .doFinally { isBarcodeScanInProgress = false }
             .subscribe(
                 { view.displayEquipmentsScreen(it) },
-                { view.showErrorMessage() },
-                { view.showUnknownBarcodeMessage() }
+                {
+                    isBarcodeScanInProgress = false
+                    view.enableBarcodeInput()
+                    view.showErrorMessage()
+                },
+                {
+                    isBarcodeScanInProgress = false
+                    view.enableBarcodeInput()
+                    view.showUnknownBarcodeMessage()
+                }
             )
 
 
