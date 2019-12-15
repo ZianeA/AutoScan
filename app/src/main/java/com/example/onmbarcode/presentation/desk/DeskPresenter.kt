@@ -40,7 +40,7 @@ class DeskPresenter @Inject constructor(
 
         view.disableBarcodeInput()
 
-        val disposable = deskRepository.findDesk(barcode)
+        val disposable = deskRepository.findDesk(barcode.replace("\\s+".toRegex(),""))
             .observeOn(schedulerProvider.main)
             .doOnSuccess { view.clearBarcodeInputArea() }
             .observeOn(schedulerProvider.worker)
