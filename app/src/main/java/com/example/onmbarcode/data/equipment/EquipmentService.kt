@@ -17,6 +17,7 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
     fun getByDesk(deskBarcode: String): Single<Array<*>> {
         //Get user id
         return odooService.authenticate()
+            .toSingle()
             .flatMap { uid ->
                 val client = XMLRPCClient(URL(OdooService.URL_OBJECT))
                 Single.fromCallable {
@@ -37,6 +38,7 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
 
     fun getAll(): Single<Array<*>> {
         return odooService.authenticate()
+            .toSingle()
             .flatMap { uid ->
                 val client = XMLRPCClient(URL(OdooService.URL_OBJECT))
                 Single.fromCallable {

@@ -16,6 +16,7 @@ import kotlin.collections.HashMap
 class DeskService @Inject constructor(private val odooService: OdooService) {
     fun getAll(): Single<Array<*>> {
         return odooService.authenticate()
+            .toSingle()
             .flatMap { uid ->
                 val client = XMLRPCClient(URL(OdooService.URL_OBJECT))
                 Single.fromCallable {

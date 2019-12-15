@@ -24,10 +24,22 @@
     <string name="unknown_barcode_message">Code à barres non reconnu</string>
     <string name="equipment_already_scanned_message">Équipement déjà scanné</string>
 
+    <string name="toolbar_title_login">Connexion</string>
+    <string name="prompt_email">Adresse e-mail</string>
+    <string name="prompt_password">Mot de passe</string>
+    <string name="welcome">"Bienvenu !"</string>
+    <string name="invalid_credentials">Nom d\'utilisateur ou mot de passe incorrect</string>
+    <string name="login_failed">"Connexion échoué."</string>
+    <string name="action_sign_in">Connexion</string>
+    <string name="action_retry">RÉESSAYER</string>
+
     <!--Items order is important!-->
     <string-array name="equipment_condition">
         <item>Bon</item>
         <item>Moyen</item>
         <item>Mauvais</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -2,22 +2,29 @@ package com.example.onmbarcode.data
 
 import dagger.Reusable
 import de.timroes.axmlrpc.XMLRPCClient
+import io.reactivex.Maybe
 import io.reactivex.Single
 import java.net.URL
+import java.util.*
 import javax.inject.Inject
 
+//TODO should authenticate only once by storing the UID
+//TODO remove hardcoded password and username
 @Reusable
 class OdooService @Inject constructor() {
-    fun authenticate(): Single<Int> {
-        return Single.fromCallable {
+    fun authenticate(username: String = USERNAME, password: String = PASSWORD): Maybe<Int> {
+        return Maybe.fromCallable {
             val client = XMLRPCClient(URL(URL_COMMON))
             client.call(
                 METHOD_AUTHENTICATE,
                 DB_NAME,
-                USERNAME,
-                PASSWORD,
+                username,
+                password,
                 emptyMap<Any, Any>()
-            ) as Int
+            )
+        }.flatMap {
+            if (it is Int) Maybe.just(it)
+            else Maybe.empty<Int>()
         }
     }
 

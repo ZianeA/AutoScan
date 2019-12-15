@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.desk.DeskFragment
+import com.example.onmbarcode.presentation.login.LoginFragment
 import com.example.onmbarcode.presentation.region.RegionFragment
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.AndroidInjection
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
     override val numberOfRootFragments: Int = 1
 
     override fun getRootFragment(index: Int): Fragment {
-        if (index == FragNavController.TAB1) return DeskFragment.newInstance()
+        if (index == FragNavController.TAB1) return LoginFragment.newInstance()
         else throw IllegalArgumentException("Unknown index")
     }
 }
