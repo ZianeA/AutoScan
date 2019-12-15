@@ -6,11 +6,8 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +16,7 @@ import com.airbnb.epoxy.EpoxyRecyclerView
 
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.equipment.EquipmentFragment
+import com.example.onmbarcode.presentation.login.LoginFragment
 import com.example.onmbarcode.presentation.util.ItemDecoration
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.support.AndroidSupportInjection
@@ -72,6 +70,8 @@ class DeskFragment : Fragment(), DeskView {
             requestFocus()
         }
 
+        setHasOptionsMenu(true);
+
         return rootView
     }
 
@@ -90,6 +90,20 @@ class DeskFragment : Fragment(), DeskView {
         super.onAttach(context)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_desk, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_logout -> {
+                presenter.onLogout()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun displayDesks(desks: List<DeskUi>) {
         if (recyclerView.adapter == null) {
             recyclerView.setController(epoxyController)
@@ -101,11 +115,11 @@ class DeskFragment : Fragment(), DeskView {
         fragNavController.pushFragment(EquipmentFragment.newInstance(desk))
     }
 
-    override fun showUnknownBarcodeMessage() {
+    override fun displayUnknownBarcodeMessage() {
         snackbar.showMessage(R.string.unknown_barcode_message)
     }
 
-    override fun showErrorMessage() {
+    override fun displayGenericErrorMessage() {
         snackbar.showMessage(R.string.unknown_error_message)
     }
 
@@ -119,6 +133,10 @@ class DeskFragment : Fragment(), DeskView {
 
     override fun enableBarcodeInput() {
         barcodeSubmitButton.isEnabled = true
+    }
+
+    override fun displayLoginScreen() {
+        fragNavController.replaceFragment(LoginFragment.newInstance())
     }
 
     companion object {

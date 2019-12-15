@@ -18,9 +18,9 @@ class UserRepository @Inject constructor(
             .andThen(userDao.add(mapper.mapReverse(user)))
     }
 
-    /*fun removeUser(user: User): Completable {
-        return userDao.remove(mapper.mapReverse(user))
-    }*/
+    fun removeUser(): Completable {
+        return userDao.removeAll()
+    }
 
     fun getUser(): Maybe<User> {
         return userDao.getAll()

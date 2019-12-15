@@ -73,7 +73,7 @@ class LoginFragment : Fragment(), LoginView {
     }
 
     override fun displayDeskScreen() {
-        fragNavController.pushFragment(DeskFragment.newInstance())
+        fragNavController.replaceFragment(DeskFragment.newInstance())
     }
 
     override fun enableLogin() {
