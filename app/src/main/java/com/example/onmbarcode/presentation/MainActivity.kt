@@ -55,8 +55,9 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
     }
 
     override fun onBackPressed() {
-        if (!fragNavController.popFragment()) {
-            super.onBackPressed()
+        when {
+            fragNavController.isRootFragment.not() -> fragNavController.popFragment()
+            else -> super.onBackPressed()
         }
     }
 
