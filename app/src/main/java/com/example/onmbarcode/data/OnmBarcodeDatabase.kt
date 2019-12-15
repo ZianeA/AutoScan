@@ -7,8 +7,10 @@ import com.example.onmbarcode.data.desk.DeskEntity
 import com.example.onmbarcode.data.equipment.EquipmentEntity
 import com.example.onmbarcode.data.desk.DeskDao
 import com.example.onmbarcode.data.equipment.EquipmentDao
+import com.example.onmbarcode.data.user.UserDao
+import com.example.onmbarcode.data.user.UserEntity
 
-@Database(entities = [EquipmentEntity::class, DeskEntity::class], version = 1)
+@Database(entities = [EquipmentEntity::class, DeskEntity::class, UserEntity::class], version = 1)
 @TypeConverters(
     EquipmentEntity.EquipmentConditionConverter::class,
     EquipmentEntity.ScanStateConverter::class
@@ -16,4 +18,5 @@ import com.example.onmbarcode.data.equipment.EquipmentDao
 abstract class OnmBarcodeDatabase : RoomDatabase() {
     abstract fun equipmentDao(): EquipmentDao
     abstract fun deskDao(): DeskDao
+    abstract fun userDao(): UserDao
 }
