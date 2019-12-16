@@ -17,6 +17,9 @@ class MainPresenter @Inject constructor(
 ) {
     private val disposables = CompositeDisposable()
 
+    // If there's a user and no internet connexion, we grant access without verifying if user credentials are still valid
+    // If there's no user and no internet connexion, access is denied.
+    // Access is denied if there's a user and internet connexion but credentials are not valid anymore.
     fun start() {
         val disposable = userRepository.getUser()
             .flatMap { odooService.authenticate(it.username, it.password) }

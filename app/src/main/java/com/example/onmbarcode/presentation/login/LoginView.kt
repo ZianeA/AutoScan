@@ -7,4 +7,5 @@ interface LoginView {
     fun displayWrongCredentialsMessage()
     fun hideErrorMessage()
     fun displayLoginFailedMessage()
+    fun displaySettingsScreen()
 }

@@ -1,5 +1,7 @@
 package com.example.onmbarcode.presentation
 
+import com.example.onmbarcode.presentation.settings.SettingsFragment
+import com.example.onmbarcode.presentation.settings.SettingsModule
 import com.example.onmbarcode.presentation.desk.DeskFragment
 import com.example.onmbarcode.presentation.desk.DeskModule
 import com.example.onmbarcode.presentation.di.ActivityScope
@@ -38,6 +40,10 @@ class MainModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [LoginModule::class])
         fun loginFragment(): LoginFragment
+
+        @FragmentScope
+        @ContributesAndroidInjector(modules = [SettingsModule::class])
+        fun settingsFragment(): SettingsFragment
 
         @FragmentScope
         @ContributesAndroidInjector(modules = [EquipmentModule::class])

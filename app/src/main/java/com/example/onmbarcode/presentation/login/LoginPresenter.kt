@@ -62,4 +62,8 @@ class LoginPresenter @Inject constructor(
     fun stop() {
         disposables.clear()
     }
+
+    fun onSettings() {
+        view.displaySettingsScreen()
+    }
 }

@@ -5,6 +5,8 @@ import com.example.onmbarcode.data.equipment.EquipmentDao
 import com.example.onmbarcode.data.equipment.EquipmentEntity
 import com.example.onmbarcode.data.equipment.EquipmentResponseMapper
 import com.example.onmbarcode.data.equipment.EquipmentService
+import com.example.onmbarcode.data.user.UserDao
+import com.example.onmbarcode.data.user.UserRepository
 import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.equipment.Equipment
 import io.reactivex.Completable
@@ -17,7 +19,7 @@ import kotlin.random.Random
 @Singleton
 class DeskRepository @Inject constructor(
     private val deskDao: DeskDao,
-    private val equipmentDao: EquipmentDao,
+    private val userRepository: UserRepository, //Should probably use userDao instead
     private val deskService: DeskService,
     private val equipmentService: EquipmentService,
     private val deskEntityMapper: Mapper<DeskWithEquipmentsEntity, Desk>,
@@ -43,18 +45,33 @@ class DeskRepository @Inject constructor(
         return deskDao.isEmpty()
             .flatMapMaybe { isLocalCacheEmpty ->
                 if (isLocalCacheEmpty) {
-                    deskService.getAll()
-                        .map { list -> list.map { deskResponseMapper.map(it as HashMap<*, *>) } }
-                        .flatMapCompletable { desks ->
-                            equipmentService.getAll()
-                                .map { list -> list.map { equipmentResponseMapper.map(it as HashMap<*, *>) } }
-                                .map { list -> list.map { equipmentEntityMapper.mapReverse(it) } }
-                                .flatMapCompletable { equipments ->
-                                    Completable.fromAction { deskDao.addAll(desks, equipments) }
+                    userRepository.getUser()
+                        .toSingle() // Should error if there's no user.
+                        .flatMapMaybe { user ->
+                            deskService.getAll(user)
+                                .map { list -> list.map { deskResponseMapper.map(it as HashMap<*, *>) } }
+                                .flatMapCompletable { desks ->
+                                    equipmentService.getAll(user)
+                                        .map { list -> list.map { equipmentResponseMapper.map(it as HashMap<*, *>) } }
+                                        .map { list ->
+                                            list.map {
+                                                equipmentEntityMapper.mapReverse(
+                                                    it
+                                                )
+                                            }
+                                        }
+                                        .flatMapCompletable { equipments ->
+                                            Completable.fromAction {
+                                                deskDao.addAll(
+                                                    desks,
+                                                    equipments
+                                                )
+                                            }
+                                        }
                                 }
+                                .andThen(deskDao.getByBarcode(barcode))
+                                .map(deskEntityMapper::map)
                         }
-                        .andThen(deskDao.getByBarcode(barcode))
-                        .map(deskEntityMapper::map)
                 } else {
                     deskDao.getByBarcode(barcode)
                         .map(deskEntityMapper::map)

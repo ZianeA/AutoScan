@@ -70,7 +70,7 @@ class DeskFragment : Fragment(), DeskView {
             requestFocus()
         }
 
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(true)
 
         return rootView
     }

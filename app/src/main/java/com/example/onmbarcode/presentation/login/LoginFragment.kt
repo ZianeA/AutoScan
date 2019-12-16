@@ -3,20 +3,21 @@ package com.example.onmbarcode.presentation.login
 
 import android.content.Context
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 
 import com.example.onmbarcode.R
+import com.example.onmbarcode.presentation.settings.SettingsFragment
 import com.example.onmbarcode.presentation.desk.DeskFragment
 import com.google.android.material.snackbar.Snackbar
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
+import kotlinx.android.synthetic.main.fragment_login.view.toolbar
 import javax.inject.Inject
 
 /**
@@ -35,6 +36,11 @@ class LoginFragment : Fragment(), LoginView {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
+
+        (activity as AppCompatActivity).apply {
+            setSupportActionBar(rootView.toolbar)
+            setHasOptionsMenu(true);
+        }
 
         rootView.loginButton.setOnClickListener {
             presenter.onLogin(username.text.toString(), password.text.toString())
@@ -72,6 +78,20 @@ class LoginFragment : Fragment(), LoginView {
         super.onAttach(context)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_main, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                presenter.onSettings()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onStop() {
         super.onStop()
         presenter.stop()
@@ -105,6 +125,10 @@ class LoginFragment : Fragment(), LoginView {
 
     override fun hideErrorMessage() {
         passwordLayout.isErrorEnabled = false
+    }
+
+    override fun displaySettingsScreen() {
+        fragNavController.pushFragment(SettingsFragment.newInstance())
     }
 
     companion object {

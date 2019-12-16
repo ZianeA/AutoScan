@@ -1,6 +1,7 @@
 package com.example.onmbarcode.data.equipment
 
 import com.example.onmbarcode.data.mapper.Mapper
+import com.example.onmbarcode.data.user.UserRepository
 import com.example.onmbarcode.presentation.equipment.Equipment
 import com.example.onmbarcode.presentation.equipment.Equipment.*
 import io.reactivex.Completable
@@ -14,6 +15,7 @@ import javax.inject.Singleton
 class EquipmentRepository @Inject constructor(
     private val equipmentDao: EquipmentDao,
     private val equipmentService: EquipmentService,
+    private val userRepository: UserRepository, //Should probably use userDao instead
     private val equipmentEntityMapper: Mapper<EquipmentEntity, Equipment>,
     private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>
 ) {
@@ -31,10 +33,15 @@ class EquipmentRepository @Inject constructor(
     // Update the database regardless of the network state.
     fun updateEquipment(equipment: Equipment): Completable {
         val scannedAndSyncedEquipment = equipment.copy(scanState = ScanState.ScannedAndSynced)
-        return equipmentService.update(
-            equipment.id,
-            equipmentResponseMapper.mapReverse(scannedAndSyncedEquipment)
-        )
+        return userRepository.getUser()
+            .toSingle() //This Throws an exception if there's no user.
+            .flatMapCompletable { user ->
+                equipmentService.update(
+                    user,
+                    equipment.id,
+                    equipmentResponseMapper.mapReverse(scannedAndSyncedEquipment)
+                )
+            }
             .onErrorResumeNext {
                 equipmentDao.update(
                     equipmentEntityMapper.mapReverse(
