@@ -8,6 +8,7 @@ import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.Clock
 import com.example.onmbarcode.presentation.util.applySchedulers
 import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
+import com.example.onmbarcode.service.SyncBackgroundService
 import de.timroes.axmlrpc.XMLRPCException
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -22,6 +23,7 @@ import kotlin.random.Random
 class EquipmentPresenter @Inject constructor(
     private val view: EquipmentView,
     private val equipmentRepository: EquipmentRepository,
+    private val syncService: SyncBackgroundService,
     private val schedulerProvider: SchedulerProvider,
     private val clock: Clock
 ) {
@@ -93,6 +95,9 @@ class EquipmentPresenter @Inject constructor(
                     .onErrorResumeNext { it: Throwable ->
                         when (it) {
                             is XMLRPCException -> {
+                                //TODO should probably do this only if it's a no internet connexion exception
+                                syncService.syncEquipments()
+
                                 //handle network related errors
                                 val scannedButNotSyncedEquipment =
                                     updatedEquipment.copy(scanState = ScanState.ScannedButNotSynced)

@@ -1,13 +1,16 @@
 package com.example.onmbarcode.presentation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.work.WorkManager
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.desk.DeskFragment
 import com.example.onmbarcode.presentation.login.LoginFragment
-import com.example.onmbarcode.presentation.region.RegionFragment
+import com.example.onmbarcode.service.SyncWorkManager
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -42,6 +45,8 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
     override fun onStart() {
         super.onStart()
         presenter.start()
+        WorkManager.getInstance(application).getWorkInfosByTagLiveData(SyncWorkManager.TAG_SYNC)
+            .observe(this, Observer { Log.d("iPhone", it.firstOrNull()?.state?.name ?: "Nothing") })
     }
 
     override fun onStop() {

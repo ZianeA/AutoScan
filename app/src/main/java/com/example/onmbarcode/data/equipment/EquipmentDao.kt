@@ -1,6 +1,7 @@
 package com.example.onmbarcode.data.equipment
 
 import androidx.room.*
+import com.example.onmbarcode.presentation.equipment.Equipment
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -24,4 +25,7 @@ interface EquipmentDao {
 
     @Update
     fun update(equipment: EquipmentEntity): Completable
+
+    @Query("SELECT * FROM EquipmentEntity e WHERE e.scanState=:scanState")
+    fun getByScanState(scanState: Equipment.ScanState): Single<List<EquipmentEntity>>
 }

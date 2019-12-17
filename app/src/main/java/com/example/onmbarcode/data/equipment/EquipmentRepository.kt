@@ -29,12 +29,17 @@ class EquipmentRepository @Inject constructor(
             .map(equipmentEntityMapper::map)
     }
 
+    fun getUnsyncedEquipments(): Single<List<Equipment>> {
+        return equipmentDao.getByScanState(Equipment.ScanState.ScannedButNotSynced)
+            .map { e -> e.map(equipmentEntityMapper::map) }
+    }
+
     // Update network before database to handle scan state
     // Update the database regardless of the network state.
     fun updateEquipment(equipment: Equipment): Completable {
         val scannedAndSyncedEquipment = equipment.copy(scanState = ScanState.ScannedAndSynced)
         return userRepository.getUser()
-            .toSingle() //This Throws an exception if there's no user.
+            .toSingle() //To throw an exception if there's no user.
             .flatMapCompletable { user ->
                 equipmentService.update(
                     user,
@@ -53,5 +58,11 @@ class EquipmentRepository @Inject constructor(
                 //I'm getting unexpected behavior, I had to use defer.
                 equipmentDao.update(equipmentEntityMapper.mapReverse(scannedAndSyncedEquipment))
             })
+    }
+
+    //TODO should update multiple equipments at once instead of passing one equipment at a time
+    fun updateEquipments(equipments: List<Equipment>): Completable {
+        return Observable.fromIterable(equipments)
+            .flatMapCompletable { updateEquipment(it) }
     }
 }

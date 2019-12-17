@@ -2,15 +2,22 @@ package com.example.onmbarcode.presentation
 
 import android.app.Activity
 import android.app.Application
+import androidx.work.Configuration
+import com.example.onmbarcode.data.equipment.EquipmentRepository
 import com.example.onmbarcode.presentation.di.DaggerAppComponent
+import com.example.onmbarcode.service.MyWorkerFactory
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import javax.inject.Inject
 
-class OnmBarCodeApp : Application(), HasActivityInjector {
+class OnmBarCodeApp : Application(), HasActivityInjector, Configuration.Provider {
+
     @Inject
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
+
+    @Inject
+    lateinit var equipmentRepository: EquipmentRepository
 
     override fun onCreate() {
         DaggerAppComponent.factory()
@@ -19,6 +26,12 @@ class OnmBarCodeApp : Application(), HasActivityInjector {
 
         super.onCreate()
 
+    }
+
+    override fun getWorkManagerConfiguration(): Configuration {
+        return Configuration.Builder()
+            .setWorkerFactory(MyWorkerFactory(equipmentRepository))
+            .build()
     }
 
     override fun activityInjector(): AndroidInjector<Activity> = dispatchingAndroidInjector
