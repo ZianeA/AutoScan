@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 
 import com.example.onmbarcode.R
@@ -32,6 +33,11 @@ class SettingsFragment : Fragment(), SettingsView {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_settings, container, false)
+
+        (activity as AppCompatActivity).apply {
+            setSupportActionBar(rootView.toolbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
 
         rootView.editServerButton.setOnClickListener {
             inputDialog = InputTextDialogFragment.newInstance()

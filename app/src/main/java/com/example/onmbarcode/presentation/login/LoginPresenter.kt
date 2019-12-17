@@ -61,6 +61,7 @@ class LoginPresenter @Inject constructor(
 
     fun stop() {
         disposables.clear()
+        isLoginInProgress = false
     }
 
     fun onSettings() {

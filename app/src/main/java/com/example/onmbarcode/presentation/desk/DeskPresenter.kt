@@ -83,5 +83,6 @@ class DeskPresenter @Inject constructor(
 
     fun stop() {
         disposables.clear()
+        isBarcodeScanInProgress = false
     }
 }
