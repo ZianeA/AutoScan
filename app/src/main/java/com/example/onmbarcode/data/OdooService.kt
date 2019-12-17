@@ -27,12 +27,12 @@ class OdooService @Inject constructor(private val urlStore: KeyValueStore<String
     val baseUrl: String
         get() {
             val serverUrl =
-                urlStore.get(PreferencesKeyValueStore.SERVER_URL_KEY, URL_SERVER_DEFAULT)
+                urlStore.get(PreferencesStringStore.SERVER_URL_KEY, URL_SERVER_DEFAULT)
             return "$serverUrl/$PATH_BASE"
         }
 
-    val commonUrl: String = "$baseUrl/$PATH_COMMON"
-    val objectUrl: String = "$baseUrl/$PATH_OBJECT"
+    val commonUrl: String get() = "$baseUrl/$PATH_COMMON"
+    val objectUrl: String get() = "$baseUrl/$PATH_OBJECT"
 
     companion object {
         const val URL_SERVER_DEFAULT = "http://192.168.4.94:8069"

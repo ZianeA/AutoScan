@@ -1,12 +1,15 @@
 package com.example.onmbarcode.data
 
 import android.app.Application
+import androidx.preference.PreferenceManager
 import dagger.Reusable
 import javax.inject.Inject
 
 @Reusable
-class PreferencesKeyValueStore @Inject constructor(app: Application) : KeyValueStore<String> {
-    private val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(app)
+class PreferencesStringStore @Inject constructor(private val app: Application) :
+    KeyValueStore<String> {
+    private val preferences
+        get() = PreferenceManager.getDefaultSharedPreferences(app)
 
     override fun get(key: String, defaultValue: String): String {
         return preferences.getString(key, defaultValue)!!
