@@ -20,7 +20,7 @@ class EquipmentResponseMapper @Inject constructor() :
             Equipment.ScanState.NotScanned, //TODO deal with this. It's probably correct.
             translateCondition(model[ATTRIBUTE_OBSERVATION_NAME] as String),
             odooDatetimeToUnix(model[ATTRIBUTE_DATE_DE_SCAN_NAME] as String),
-            (model[ATTRIBUTE_AFF_NAME] as Array<*>)[0] as Int
+            (model[ATTRIBUTE_CODE_AFF_NAME] as Array<*>)[0] as Int
         )
     }
 
@@ -29,18 +29,18 @@ class EquipmentResponseMapper @Inject constructor() :
             hashMapOf<Any, Any>(
                 ATTRIBUTE_OBSERVATION_NAME to translateCondition(condition),
                 ATTRIBUTE_DATE_DE_SCAN_NAME to unixToOdooDatetime(scanDate),
-                ATTRIBUTE_AFF_NAME to deskId
+                ATTRIBUTE_CODE_AFF_NAME to deskId
             )
         }
     }
 
     companion object {
-        private const val ATTRIBUTE_ID_NAME = "id"
-        private const val ATTRIBUTE_CODE_NAME = "code"
-        private const val ATTRIBUTE_LIBELLE_NAME = "libelle"
-        private const val ATTRIBUTE_OBSERVATION_NAME = "observation"
-        private const val ATTRIBUTE_DATE_DE_SCAN_NAME = "date_de_scan"
-        private const val ATTRIBUTE_AFF_NAME = "aff"
+        const val ATTRIBUTE_ID_NAME = "id"
+        const val ATTRIBUTE_CODE_NAME = "code"
+        const val ATTRIBUTE_LIBELLE_NAME = "libelle"
+        const val ATTRIBUTE_OBSERVATION_NAME = "observation"
+        const val ATTRIBUTE_DATE_DE_SCAN_NAME = "date_scan"
+        const val ATTRIBUTE_CODE_AFF_NAME = "code_aff"
     }
 
     fun translateCondition(condition: String) = when (condition.toUpperCase(Locale.FRENCH)) {

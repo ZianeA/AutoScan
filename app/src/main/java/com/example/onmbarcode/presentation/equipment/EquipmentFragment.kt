@@ -8,27 +8,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
 
 import com.example.onmbarcode.R
-import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.desk.DeskUi
 import com.example.onmbarcode.presentation.util.ItemDecoration
 import com.example.onmbarcode.presentation.util.MySnackbar
-import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_equipment.*
 import kotlinx.android.synthetic.main.fragment_equipment.snackbar
 import kotlinx.android.synthetic.main.fragment_equipment.view.*
-import kotlinx.android.synthetic.main.my_snackbar.*
 import javax.inject.Inject
 
 /**
@@ -42,10 +35,10 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     private lateinit var epoxyController: EquipmentEpoxyController
     private lateinit var recyclerView: EpoxyRecyclerView
-    override var equipments: List<Equipment> = emptyList()
-    override var equipmentToAnimate = ""
-    private var shouldScrollToTop = false
+    var equipment: List<Equipment> = emptyList()
+    private var scrollToTop = false
     private var isUiUpdating = false
+    override var isScrolling = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,15 +60,16 @@ class EquipmentFragment : Fragment(), EquipmentView {
         )
         epoxyController = EquipmentEpoxyController(presenter::onEquipmentConditionPicked)
         epoxyController.addModelBuildListener {
-            if (shouldScrollToTop) {
+            if (scrollToTop) {
                 recyclerView.scrollToPosition(0)
-                shouldScrollToTop = false
+                isScrolling = false
+                scrollToTop = false
                 isUiUpdating = false
             }
         }
 
         rootView.barcodeInput.addTextChangedListener(afterTextChanged = {
-            presenter.onBarcodeChange(it.toString())
+            presenter.onBarcodeChange(it.toString(), selectedDesk.id)
         })
 
         rootView.barcodeInput.apply {
@@ -89,8 +83,6 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     override fun onStart() {
         super.onStart()
-        val selectedDesk = arguments?.getParcelable<DeskUi>(ARG_SELECTED_DESK)
-            ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
         presenter.start(selectedDesk)
     }
 
@@ -104,48 +96,49 @@ class EquipmentFragment : Fragment(), EquipmentView {
         super.onAttach(context)
     }
 
-    override fun displayEquipments() {
+    override fun displayEquipments(equipment: List<Equipment>) {
         if (recyclerView.adapter == null) {
             recyclerView.setController(epoxyController)
         }
 
-        epoxyController.equipments = equipments
-        EquipmentEpoxyModel.equipmentToAnimateBarcode = equipmentToAnimate
+        epoxyController.equipments = equipment
         epoxyController.requestModelBuild()
     }
 
-    override fun displayEquipmentsDelayed() {
-        if (!isUiUpdating) {
-            epoxyController.equipments = equipments
-            EquipmentEpoxyModel.equipmentToAnimateBarcode = equipmentToAnimate
-            epoxyController.requestDelayedModelBuild(MODEL_BUILD_DELAY)
-        }
-    }
+    // Smooth scroll to top -> display equipment with the new order
+    // After displaying equipment, the first element will be hidden so we scroll to the top again
 
+    // While smoothing scroll to top, equipment list could change. So, we store the newest equipment list
+    // and we display it at the end of scrolling
     //TODO Disable user scrolling while scrolling
-    override fun scrollToTopAndDisplayEquipments() {
-        shouldScrollToTop = true
+    override fun scrollToTop() {
+        scrollToTop = true
 
         if (recyclerView.computeVerticalScrollOffset() == 0) {
-            displayEquipments()
+            isScrolling = false
+            presenter.onScrollEnded(selectedDesk.id)
             return
         }
 
+        isScrolling = true
         recyclerView.smoothScrollToPosition(0)
-        isUiUpdating = true
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (recyclerView.computeVerticalScrollOffset() == 0) {
-                    displayEquipments()
+                    isScrolling = false
+                    presenter.onScrollEnded(selectedDesk.id)
                     recyclerView.removeOnScrollListener(this)
                 }
             }
         })
     }
 
-    override fun scrollToTop() {
-        recyclerView.scrollToPosition(0)
+    override fun animateEquipment(equipmentId: Int) {
+        /*EquipmentEpoxyModel.equipmentToAnimateId = equipmentId
+        if (!isUiUpdating) {
+            epoxyController.requestDelayedModelBuild(MODEL_BUILD_DELAY)
+        }*/
     }
 
     override fun clearBarcodeInputArea() {
@@ -171,6 +164,10 @@ class EquipmentFragment : Fragment(), EquipmentView {
             MySnackbar.LENGTH_SHORT
         )
     }
+
+    private val selectedDesk
+        get() = arguments?.getParcelable<DeskUi>(ARG_SELECTED_DESK)
+            ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
 
     companion object {
         private const val ARG_SELECTED_DESK = "selected_desk"

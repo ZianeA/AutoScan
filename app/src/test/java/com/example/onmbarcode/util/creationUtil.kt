@@ -92,7 +92,7 @@ fun createDeskResponse(
         "id" to id,
         "code" to barcode,
         "date_de_scan" to scanDate,
-        "equipments" to equipments
+        "equipment" to equipments
     )
 }
 

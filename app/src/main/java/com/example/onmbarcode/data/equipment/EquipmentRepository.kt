@@ -19,7 +19,7 @@ class EquipmentRepository @Inject constructor(
     private val equipmentEntityMapper: Mapper<EquipmentEntity, Equipment>,
     private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>
 ) {
-    fun getEquipments(deskId: Int): Single<List<Equipment>> {
+    fun getAllEquipmentForDesk(deskId: Int): Observable<List<Equipment>> {
         return equipmentDao.getByDesk(deskId)
             .map { e -> e.map(equipmentEntityMapper::map) }
     }
@@ -29,8 +29,8 @@ class EquipmentRepository @Inject constructor(
             .map(equipmentEntityMapper::map)
     }
 
-    fun getUnsyncedEquipments(): Single<List<Equipment>> {
-        return equipmentDao.getByScanState(Equipment.ScanState.ScannedButNotSynced)
+    fun getAllUnsyncedEquipment(): Single<List<Equipment>> {
+        return equipmentDao.getByScanState(ScanState.ScannedButNotSynced)
             .map { e -> e.map(equipmentEntityMapper::map) }
     }
 
@@ -38,7 +38,8 @@ class EquipmentRepository @Inject constructor(
     // Update the database regardless of the network state.
     fun updateEquipment(equipment: Equipment): Completable {
         val scannedAndSyncedEquipment = equipment.copy(scanState = ScanState.ScannedAndSynced)
-        return userRepository.getUser()
+        return equipmentDao.update(equipmentEntityMapper.mapReverse(equipment.copy(scanState = ScanState.PendingScan)))
+            .andThen(userRepository.getUser())
             .toSingle() //To throw an exception if there's no user.
             .flatMapCompletable { user ->
                 equipmentService.update(
@@ -60,8 +61,8 @@ class EquipmentRepository @Inject constructor(
             })
     }
 
-    //TODO should update multiple equipments at once instead of passing one equipment at a time
-    fun updateEquipments(equipments: List<Equipment>): Completable {
+    //TODO should update multiple equipment at once instead of passing one equipment at a time
+    fun updateAllEquipment(equipments: List<Equipment>): Completable {
         return Observable.fromIterable(equipments)
             .flatMapCompletable { updateEquipment(it) }
     }

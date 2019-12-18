@@ -1,16 +1,13 @@
 package com.example.onmbarcode.presentation.equipment
 
 interface EquipmentView {
-    fun displayEquipments()
-    fun displayEquipmentsDelayed()
+    fun displayEquipments(equipment: List<Equipment>)
     fun scrollToTop()
-    fun scrollToTopAndDisplayEquipments()
     fun clearBarcodeInputArea()
     fun displayEquipmentConditionChangedMessage()
     fun showErrorMessage()
     fun showUnknownBarcodeMessage()
     fun showEquipmentAlreadyScannedMessage()
-
-    var equipments: List<Equipment>
-    var equipmentToAnimate: String
+    fun animateEquipment(equipmentId: Int)
+    var isScrolling: Boolean
 }

@@ -1,6 +1,5 @@
 package com.example.onmbarcode.presentation.equipment
 
-import androidx.room.EmptyResultSetException
 import com.example.onmbarcode.data.equipment.EquipmentRepository
 import com.example.onmbarcode.presentation.desk.DeskUi
 import com.example.onmbarcode.presentation.di.FragmentScope
@@ -11,13 +10,9 @@ import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
 import com.example.onmbarcode.service.SyncBackgroundService
 import de.timroes.axmlrpc.XMLRPCException
 import io.reactivex.Maybe
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import java.io.IOException
 import java.lang.IllegalArgumentException
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlin.random.Random
 
 @FragmentScope
 class EquipmentPresenter @Inject constructor(
@@ -30,19 +25,27 @@ class EquipmentPresenter @Inject constructor(
     private val disposables = CompositeDisposable()
 
     fun start(desk: DeskUi) {
-        val disposable = equipmentRepository.getEquipments(desk.id)
+        val disposable = equipmentRepository.getAllEquipmentForDesk(desk.id)
             .map { equipments -> equipments.sortedByDescending { it.scanDate } }
             .applySchedulers(schedulerProvider)
-            .subscribe({
-                view.equipments = it
-                view.displayEquipments()
-            }, { /*onError*/ })
+            .subscribe({ if (view.isScrolling.not()) view.displayEquipments(it) }, { /*onError*/ })
 
         disposables.add(disposable)
     }
 
+    fun onScrollEnded(deskId: Int) {
+        val disposable = equipmentRepository.getAllEquipmentForDesk(deskId)
+            .first(emptyList()) //Unsubscribe after the first emitted item
+            .map { equipments -> equipments.sortedByDescending { it.scanDate } }
+            .applySchedulers(schedulerProvider)
+            .subscribe({ view.displayEquipments(it) }, { /*onError*/ })
+
+        disposables.add(disposable)
+    }
+
+    // TODO fix bug: when an already scanned equipment is scanned, scroll to the top does not work.
     // TODO add more unit tests, notably for error messages
-    private fun scanBarcode(barcode: String) {
+    private fun scanBarcode(barcode: String, deskId: Int) {
         // TODO i'm not sure if this works with a barcode 00001
         barcode.toIntOrNull()
             ?: throw IllegalArgumentException(
@@ -57,51 +60,25 @@ class EquipmentPresenter @Inject constructor(
                 if (it.scanState != ScanState.NotScanned) {
                     view.showEquipmentAlreadyScannedMessage()
                     Maybe.empty()
-                } else Maybe.just(it)
-            }
-            .map {
-                object {
-                    val scannedEquipment = it
-                    val equipments = view.equipments.toMutableList()
+                } else {
+                    if (view.isScrolling.not()) {
+                        view.scrollToTop()
+                    }
+                    Maybe.just(it)
                 }
             }
             .observeOn(schedulerProvider.worker)
-            .map {
-                val scannedEquipmentIndex =
-                    it.equipments.indexOfFirst { e -> e.barcode == it.scannedEquipment.barcode }
-                it.equipments.apply {
-                    removeAt(scannedEquipmentIndex)
-                    add(0, it.scannedEquipment.copy(scanState = ScanState.PendingScan))
-                }
-
-                it
-            }
-            .observeOn(schedulerProvider.main)
-            .doOnSuccess {
-                view.equipments = it.equipments
-                view.scrollToTopAndDisplayEquipments()
-            }
-            .observeOn(schedulerProvider.worker)
-            .flatMap { holder ->
+            .flatMap { scannedEquipment ->
                 val updatedEquipment =
-                    holder.scannedEquipment.copy( //TODO be careful with equipment scan state
-                        scanState = ScanState.ScannedAndSynced,
-                        scanDate = clock.currentTimeSeconds
-                    )
+                    scannedEquipment.copy(scanDate = clock.currentTimeSeconds, deskId = deskId)
                 equipmentRepository.updateEquipment(updatedEquipment)
-                    .andThen(Single.just(updatedEquipment))
-                    .toMaybe()
-                    //TODO update errors since we are not using Retrofit anymore
+                    .andThen(Maybe.just(updatedEquipment.id))
                     .onErrorResumeNext { it: Throwable ->
                         when (it) {
                             is XMLRPCException -> {
                                 //TODO should probably do this only if it's a no internet connexion exception
                                 syncService.syncEquipments()
-
-                                //handle network related errors
-                                val scannedButNotSyncedEquipment =
-                                    updatedEquipment.copy(scanState = ScanState.ScannedButNotSynced)
-                                Maybe.just(scannedButNotSyncedEquipment)
+                                Maybe.just(updatedEquipment.id)
                             }
                             else -> {
                                 // This is probably a serious error
@@ -109,37 +86,11 @@ class EquipmentPresenter @Inject constructor(
                             }
                         }
                     }
-            }/*.delay(
-                Random.nextLong(1000, 2000),
-                TimeUnit.MILLISECONDS,
-                schedulerProvider.worker
-            ) //TODO remove this delay*/
-            .observeOn(schedulerProvider.main)
-            .map {
-                object {
-                    val updatedEquipment = it
-                    // Get fresh equipments.
-                    // Remember this runs asynchronously, equipments could have changed
-                    val equipments = view.equipments
-                }
-            }
-            .observeOn(schedulerProvider.worker)
-            .map {
-                val equipments = it.equipments.toMutableList()
-                val scannedEquipmentIndex =
-                    equipments.indexOfFirst { e -> e.barcode == it.updatedEquipment.barcode }
-                equipments[scannedEquipmentIndex] = it.updatedEquipment
-                object {
-                    val barcode = it.updatedEquipment.barcode;
-                    val equipments = equipments
-                }
             }
             .applySchedulers(schedulerProvider)
             .subscribe(
                 {
-                    view.equipments = it.equipments
-                    view.equipmentToAnimate = it.barcode
-                    view.displayEquipmentsDelayed()
+                    view.animateEquipment(it)
                 },
                 {
                     view.showErrorMessage()
@@ -150,10 +101,10 @@ class EquipmentPresenter @Inject constructor(
         disposables.add(disposable)
     }
 
-    fun onBarcodeChange(barcode: String) {
+    fun onBarcodeChange(barcode: String, deskId: Int) {
         when {
             barcode.length < 5 -> return
-            barcode.length == EQUIPMENT_BARCODE_LENGTH -> scanBarcode(barcode)
+            barcode.length == EQUIPMENT_BARCODE_LENGTH -> scanBarcode(barcode, deskId)
             else -> throw IllegalArgumentException("Equipment barcode must not be more than 5 digits long")
         }
     }

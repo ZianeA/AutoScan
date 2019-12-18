@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
     override fun onStart() {
         super.onStart()
         presenter.start()
+        //TODO remove
         WorkManager.getInstance(application).getWorkInfosByTagLiveData(SyncWorkManager.TAG_SYNC)
             .observe(this, Observer { Log.d("iPhone", it.firstOrNull()?.state?.name ?: "Nothing") })
     }

@@ -24,7 +24,11 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
                 user.password,
                 MODEL_EQUIPMENT_NAME,
                 OdooService.METHOD_SEARCH_READ,
-                listOf(listOf(listOf("aff_code", "=", deskBarcode)))
+                listOf(
+                    listOf(
+                        listOf(EquipmentResponseMapper.ATTRIBUTE_CODE_AFF_NAME, "=", deskBarcode)
+                    )
+                )
             )
         }
             .map { it as Array<*> }
@@ -69,6 +73,6 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
     }
 
     companion object {
-        private const val MODEL_EQUIPMENT_NAME = "actif.equipment"
+        private const val MODEL_EQUIPMENT_NAME = "gestact.equipement"
     }
 }

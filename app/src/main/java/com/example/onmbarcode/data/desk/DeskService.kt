@@ -27,6 +27,6 @@ class DeskService @Inject constructor(private val odooService: OdooService) {
     }
 
     companion object {
-        private const val MODEL_DESK_NAME = "actif.bureau"
+        private const val MODEL_DESK_NAME = "gestact.bureau"
     }
 }

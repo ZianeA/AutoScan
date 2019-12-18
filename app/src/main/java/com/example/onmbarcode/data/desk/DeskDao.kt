@@ -18,7 +18,7 @@ interface DeskDao {
     @Query("SELECT * FROM DeskEntity")
     fun getAll(): Single<List<DeskWithEquipmentsEntity>>
 
-    @Query("SELECT * FROM DeskEntity e WHERE e.isScanned = 1 ORDER BY e.scanDate")
+    @Query("SELECT * FROM DeskEntity e WHERE e.isScanned = 1 ORDER BY e.scanDate Desc")
     fun getScanned(): Single<List<DeskWithEquipmentsEntity>>
 
     @Query("SELECT * FROM DeskEntity d WHERE d.barcode=:barcode")

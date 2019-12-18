@@ -4,6 +4,7 @@ import androidx.room.*
 import com.example.onmbarcode.presentation.equipment.Equipment
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 
 @Dao
@@ -17,7 +18,7 @@ interface EquipmentDao {
 
     //TODO add index for deskId
     @Query("SELECT * FROM EquipmentEntity e WHERE e.deskId=:deskId")
-    fun getByDesk(deskId: Int): Single<List<EquipmentEntity>>
+    fun getByDesk(deskId: Int): Observable<List<EquipmentEntity>>
 
     //TODO is this right? Probably not. I think I was using to insert dummy data without conflict
     @Insert(onConflict = OnConflictStrategy.REPLACE)

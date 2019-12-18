@@ -5,7 +5,6 @@ import androidx.work.RxWorker
 import androidx.work.WorkerParameters
 import com.example.onmbarcode.data.equipment.EquipmentRepository
 import io.reactivex.Single
-import javax.inject.Inject
 
 class SyncWorker(
     private val equipmentRepo: EquipmentRepository,
@@ -14,8 +13,8 @@ class SyncWorker(
 ) :
     RxWorker(context, workerParams) {
     override fun createWork(): Single<Result> {
-        return equipmentRepo.getUnsyncedEquipments()
-            .flatMapCompletable { equipmentRepo.updateEquipments(it) }
+        return equipmentRepo.getAllUnsyncedEquipment()
+            .flatMapCompletable { equipmentRepo.updateAllEquipment(it) }
             .andThen(Single.just(Result.success()))
             .doOnError { println(it.message) }
     }

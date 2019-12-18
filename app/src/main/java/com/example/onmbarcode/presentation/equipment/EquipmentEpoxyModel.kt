@@ -82,11 +82,11 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                     else -> notScannedColor
                 }
 
-            if (equipmentToAnimateBarcode == equipment.barcode
+            if (equipmentToAnimateId == equipment.id
                 && equipment.scanState != ScanState.PendingScan
             ) {
                 animateEquipmentColor(this, equipmentColor, message)
-                equipmentToAnimateBarcode = ""
+                equipmentToAnimateId = null
 
             } else {
                 cardView.setCardBackgroundColor(equipmentColor)
@@ -128,7 +128,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
 
     companion object {
         private const val ANIMATION_DURATION: Long = 1000
-        var equipmentToAnimateBarcode: String = ""
+        var equipmentToAnimateId: Int? = null
     }
 }
 

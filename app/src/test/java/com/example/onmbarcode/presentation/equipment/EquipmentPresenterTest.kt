@@ -38,7 +38,7 @@ internal class EquipmentPresenterTest {
             //Arrange
             val desk = createDeskUi()
             val equipments = listOf(createEquipment())
-            every { equipmentRepository.getEquipments(desk.id) } returns Single.just(
+            every { equipmentRepository.getAllEquipmentForDesk(desk.id) } returns Single.just(
                 equipments
             )
             every { view.displayEquipments() } just runs
@@ -47,7 +47,7 @@ internal class EquipmentPresenterTest {
             presenter.start(desk)
 
             //Assert
-            verify { view.setProperty("equipments") value equipments }
+            verify { view.setProperty("equipment") value equipments }
             verify { view.displayEquipments() }
         }
     }
@@ -99,7 +99,7 @@ internal class EquipmentPresenterTest {
             every { equipmentRepository.findEquipment(any()) } returns Maybe.just(
                 createEquipment(scanState = ScanState.NotScanned)
             )
-            every { view.getProperty("equipments") } returns listOf(
+            every { view.getProperty("equipment") } returns listOf(
                 randomEquipment,
                 equipmentToBeScanned
             )
@@ -110,7 +110,7 @@ internal class EquipmentPresenterTest {
 
             //Assert
             val expectedEquipments = listOf(equipmentToBeScanned, randomEquipment)
-            verify { view.setProperty("equipments") value expectedEquipments }
+            verify { view.setProperty("equipment") value expectedEquipments }
             verify { view.scrollToTopAndDisplayEquipments() }
         }
 
@@ -125,7 +125,7 @@ internal class EquipmentPresenterTest {
                 equipmentToBeScanned
             )
             every { clock.currentTimeSeconds } returns scanDate
-            every { view.getProperty("equipments") } returns listOf(
+            every { view.getProperty("equipment") } returns listOf(
                 createEquipment(barcode = "99999"),
                 equipmentToBeScanned
             )
@@ -158,7 +158,7 @@ internal class EquipmentPresenterTest {
             every { clock.currentTimeSeconds } returns scanDate
             every { view.clearBarcodeInputArea() } just runs
             every { view.scrollToTopAndDisplayEquipments() } just runs
-            every { view.getProperty("equipments") } returns listOf(
+            every { view.getProperty("equipment") } returns listOf(
                 randomEquipment,
                 equipmentToBeScanned
             ) andThen listOf(
@@ -180,7 +180,7 @@ internal class EquipmentPresenterTest {
                 ),
                 randomEquipment
             )
-            verify { view.setProperty("equipments") value expectedEquipments }
+            verify { view.setProperty("equipment") value expectedEquipments }
             verify { view.setProperty("equipmentToAnimate") value equipmentToBeScanned.barcode }
             verify { view.displayEquipmentsDelayed() }
         }
