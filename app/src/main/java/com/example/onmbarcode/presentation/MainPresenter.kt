@@ -20,7 +20,9 @@ class MainPresenter @Inject constructor(
     // If there's a user and no internet connexion, we grant access without verifying if user credentials are still valid
     // If there's no user and no internet connexion, access is denied.
     // Access is denied if there's a user and internet connexion but credentials are not valid anymore.
-    fun start() {
+    fun start(refresh: Boolean) {
+        if (refresh.not()) return
+
         val disposable = userRepository.getUser()
             .flatMap { odooService.authenticate(it.username, it.password) }
             .applySchedulers(schedulerProvider)
