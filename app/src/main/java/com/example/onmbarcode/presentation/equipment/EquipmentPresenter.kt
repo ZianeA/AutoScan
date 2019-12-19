@@ -38,7 +38,7 @@ class EquipmentPresenter @Inject constructor(
             .first(emptyList()) //Unsubscribe after the first emitted item
             .map { equipments -> equipments.sortedByDescending { it.scanDate } }
             .applySchedulers(schedulerProvider)
-            .subscribe({ view.displayEquipments(it) }, { /*onError*/ })
+            .subscribe({ if (view.isScrolling.not()) view.displayEquipments(it) }, { /*onError*/ })
 
         disposables.add(disposable)
     }

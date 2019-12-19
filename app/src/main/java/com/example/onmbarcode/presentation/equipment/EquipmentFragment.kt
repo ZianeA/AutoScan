@@ -62,7 +62,6 @@ class EquipmentFragment : Fragment(), EquipmentView {
         epoxyController.addModelBuildListener {
             if (scrollToTop) {
                 recyclerView.scrollToPosition(0)
-                isScrolling = false
                 scrollToTop = false
                 isUiUpdating = false
             }
@@ -112,15 +111,15 @@ class EquipmentFragment : Fragment(), EquipmentView {
     // and we display it at the end of scrolling
     //TODO Disable user scrolling while scrolling
     override fun scrollToTop() {
-        scrollToTop = true
+        isScrolling = true
 
         if (recyclerView.computeVerticalScrollOffset() == 0) {
             isScrolling = false
-            presenter.onScrollEnded(selectedDesk.id)
+//            presenter.onScrollEnded(selectedDesk.id)
+            scrollToTop = true
             return
         }
 
-        isScrolling = true
         recyclerView.smoothScrollToPosition(0)
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -128,6 +127,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
                 if (recyclerView.computeVerticalScrollOffset() == 0) {
                     isScrolling = false
                     presenter.onScrollEnded(selectedDesk.id)
+                    scrollToTop = true
                     recyclerView.removeOnScrollListener(this)
                 }
             }

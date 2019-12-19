@@ -12,7 +12,6 @@ interface EquipmentDao {
     @Query("SELECT * FROM EquipmentEntity")
     fun getAll(): Single<List<EquipmentEntity>>
 
-    //TODO this should probably return a maybe
     @Query("SELECT * FROM EquipmentEntity e WHERE e.barcode=:barcode")
     fun getByBarcode(barcode: String): Maybe<EquipmentEntity>
 
