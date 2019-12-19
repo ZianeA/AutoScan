@@ -35,10 +35,11 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     private lateinit var epoxyController: EquipmentEpoxyController
     private lateinit var recyclerView: EpoxyRecyclerView
-    var equipment: List<Equipment> = emptyList()
+
+    override var isScrolling = false
+
     private var scrollToTop = false
     private var isUiUpdating = false
-    override var isScrolling = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -115,12 +116,12 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
         if (recyclerView.computeVerticalScrollOffset() == 0) {
             isScrolling = false
-//            presenter.onScrollEnded(selectedDesk.id)
             scrollToTop = true
             return
         }
 
         recyclerView.smoothScrollToPosition(0)
+        isUiUpdating = true
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -135,10 +136,10 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     override fun animateEquipment(equipmentId: Int) {
-        /*EquipmentEpoxyModel.equipmentToAnimateId = equipmentId
+        EquipmentEpoxyModel.equipmentToAnimateId = equipmentId
         if (!isUiUpdating) {
             epoxyController.requestDelayedModelBuild(MODEL_BUILD_DELAY)
-        }*/
+        }
     }
 
     override fun clearBarcodeInputArea() {
