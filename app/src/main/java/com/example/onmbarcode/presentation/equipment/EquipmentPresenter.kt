@@ -25,8 +25,16 @@ class EquipmentPresenter @Inject constructor(
     private val disposables = CompositeDisposable()
 
     fun start(desk: DeskUi) {
+        var resumePendingScan = true
         val disposable = equipmentRepository.getAllEquipmentForDesk(desk.id)
             .map { equipments -> equipments.sortedByDescending { it.scanDate } }
+            .doOnNext { equipment ->
+                if (resumePendingScan) {
+                    equipment.filter { it.scanState == ScanState.PendingScan }
+                        .forEach { resumeScan(it) }
+                    resumePendingScan = false
+                }
+            }
             .applySchedulers(schedulerProvider)
             .subscribe({ if (view.isScrolling.not()) view.displayEquipments(it) }, { /*onError*/ })
 
@@ -74,17 +82,7 @@ class EquipmentPresenter @Inject constructor(
                 equipmentRepository.updateEquipment(updatedEquipment)
                     .andThen(Maybe.just(updatedEquipment.id))
                     .onErrorResumeNext { it: Throwable ->
-                        when (it) {
-                            is XMLRPCException -> {
-                                //TODO should probably do this only if it's a no internet connexion exception
-                                syncService.syncEquipments()
-                                Maybe.just(updatedEquipment.id)
-                            }
-                            else -> {
-                                // This is probably a serious error
-                                Maybe.error(it)
-                            }
-                        }
+                        onErrorResumeNext(updatedEquipment.id, it)
                     }
             }
             .applySchedulers(schedulerProvider)
@@ -99,6 +97,37 @@ class EquipmentPresenter @Inject constructor(
             )
 
         disposables.add(disposable)
+    }
+
+    // TODO refactor duplicate code
+    private fun resumeScan(pendingEquipment: Equipment) {
+        val disposable = equipmentRepository.updateEquipment(pendingEquipment)
+            .andThen(Maybe.just(pendingEquipment.id))
+            .onErrorResumeNext { it: Throwable -> onErrorResumeNext(pendingEquipment.id, it) }
+            .applySchedulers(schedulerProvider)
+            .subscribe(
+                {
+                    view.animateEquipment(it)
+                },
+                {
+                    view.showErrorMessage()
+                },
+                { /*onComplete*/ }
+            )
+
+        disposables.add(disposable)
+    }
+
+    private fun onErrorResumeNext(equipmentId: Int, throwable: Throwable) = when (throwable) {
+        is XMLRPCException -> {
+            //TODO should probably do this only if it's a no internet connexion exception
+            syncService.syncEquipments()
+            Maybe.just(equipmentId)
+        }
+        else -> {
+            // This is probably a serious error
+            Maybe.error(throwable)
+        }
     }
 
     fun onBarcodeChange(barcode: String, deskId: Int) {

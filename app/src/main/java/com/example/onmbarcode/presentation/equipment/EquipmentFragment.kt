@@ -35,11 +35,10 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     private lateinit var epoxyController: EquipmentEpoxyController
     private lateinit var recyclerView: EpoxyRecyclerView
-
-    override var isScrolling = false
-
     private var scrollToTop = false
     private var isUiUpdating = false
+
+    override var isScrolling = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
