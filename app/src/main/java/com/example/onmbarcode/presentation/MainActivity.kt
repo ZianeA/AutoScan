@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
     lateinit var presenter: MainPresenter
 
     var savedInstanceState: Bundle? = null
-
     val fragNavController: FragNavController =
         FragNavController(supportFragmentManager, R.id.fragmentContainer)
 
@@ -44,7 +43,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
 
     override fun onStart() {
         super.onStart()
-        presenter.start()
+        presenter.start(savedInstanceState == null)
         //TODO remove
         WorkManager.getInstance(application).getWorkInfosByTagLiveData(SyncWorkManager.TAG_SYNC)
             .observe(this, Observer { Log.d("iPhone", it.firstOrNull()?.state?.name ?: "Nothing") })
@@ -57,6 +56,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        savedInstanceState = outState
         fragNavController.onSaveInstanceState(outState)
     }
 

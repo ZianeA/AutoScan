@@ -36,10 +36,10 @@ class DeskFragment : Fragment(), DeskView {
     @Inject
     lateinit var fragNavController: FragNavController
 
-    //TODO move to presenter
-    private val epoxyController =
-        DeskEpoxyController { fragNavController.pushFragment(EquipmentFragment.newInstance(it)) }
     private lateinit var recyclerView: EpoxyRecyclerView
+
+    private val epoxyController =
+        DeskEpoxyController { presenter.onDeskClicked(it) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

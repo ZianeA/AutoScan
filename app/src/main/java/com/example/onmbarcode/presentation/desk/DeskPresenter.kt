@@ -85,4 +85,8 @@ class DeskPresenter @Inject constructor(
         disposables.clear()
         isBarcodeScanInProgress = false
     }
+
+    fun onDeskClicked(desk: DeskUi) {
+        view.displayEquipmentsScreen(desk)
+    }
 }
