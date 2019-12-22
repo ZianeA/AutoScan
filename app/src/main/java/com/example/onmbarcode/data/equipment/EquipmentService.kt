@@ -79,10 +79,7 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
                     )
                 }
             }
-            .map {
-                val t = it as Array<*>
-                t
-            }
+            .map { it as Array<*> }
     }
 
     fun update(user: User, equipmentId: Int, equipment: HashMap<*, *>): Completable {
@@ -120,10 +117,7 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
                 listOf(emptyList<String>())
             )
         }
-            .map {
-                val t = it as Int
-                t
-            }
+            .map { it as Int }
     }
 
     companion object {

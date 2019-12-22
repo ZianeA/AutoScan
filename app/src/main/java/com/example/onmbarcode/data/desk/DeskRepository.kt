@@ -1,5 +1,6 @@
 package com.example.onmbarcode.data.desk
 
+import android.util.Log
 import com.example.onmbarcode.data.OdooService
 import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.data.equipment.EquipmentDao
@@ -58,6 +59,7 @@ class DeskRepository @Inject constructor(
                         Observable.range(0, ceil(count.toDouble() / PAGE_SIZE).toInt() + 1)
                     }
                     .map { it * PAGE_SIZE }
+                    .doAfterNext { Log.d("No Tag","Equipment: $it - ${it + PAGE_SIZE}") }
                     .flatMapSingle { equipmentService.get(user, it, PAGE_SIZE) }
                     .map { list -> list.map { equipmentResponseMapper.map(it as HashMap<*, *>) } }
                     .map { list -> list.map { equipmentEntityMapper.mapReverse(it) } }
@@ -103,6 +105,6 @@ class DeskRepository @Inject constructor(
     //TODO remove
     companion object {
         private const val YEAR_IN_MILLIS = 31556952000
-        private const val PAGE_SIZE = 1000
+        private const val PAGE_SIZE = 500
     }
 }

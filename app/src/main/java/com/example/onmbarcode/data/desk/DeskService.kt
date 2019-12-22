@@ -23,10 +23,7 @@ class DeskService @Inject constructor(private val odooService: OdooService) {
                 listOf(emptyList<String>())
             )
         }
-            .map {
-                val t = it as Array<*>
-                t
-            }
+            .map { it as Array<*> }
     }
 
     companion object {

@@ -3,6 +3,9 @@ package com.example.onmbarcode.presentation.desk
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
@@ -12,6 +15,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.ViewCompat
 import com.airbnb.epoxy.EpoxyRecyclerView
 
 import com.example.onmbarcode.R
@@ -128,11 +133,23 @@ class DeskFragment : Fragment(), DeskView {
     }
 
     override fun disableBarcodeInput() {
-        barcodeSubmitButton.isEnabled = false
+        barcodeSubmitButton.apply {
+            isEnabled = false
+            ViewCompat.setBackgroundTintList(
+                this,
+                ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.darker_gray))
+            )
+        }
     }
 
     override fun enableBarcodeInput() {
-        barcodeSubmitButton.isEnabled = true
+        barcodeSubmitButton.apply {
+            isEnabled = true
+            ViewCompat.setBackgroundTintList(
+                this,
+                ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorAccent))
+            )
+        }
     }
 
     override fun displayLoginScreen() {
