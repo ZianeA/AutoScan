@@ -4,9 +4,24 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
+import com.example.onmbarcode.data.equipment.EquipmentDao
+import com.example.onmbarcode.data.equipment.EquipmentEntityMapper
 import com.example.onmbarcode.data.equipment.EquipmentRepository
+import com.example.onmbarcode.data.equipment.EquipmentService
+import com.example.onmbarcode.data.mapper.Mapper
+import com.example.onmbarcode.data.user.UserRepository
+import com.example.onmbarcode.presentation.equipment.Equipment
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class MyWorkerFactory(private val equipmentRepository: EquipmentRepository) : WorkerFactory() {
+@Singleton
+class MyWorkerFactory @Inject constructor(
+    private val equipmentDao: EquipmentDao,
+    private val equipmentService: EquipmentService,
+    private val userRepository: UserRepository,
+    private val equipmentEntityMapper: EquipmentEntityMapper,
+    private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>
+) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
@@ -15,7 +30,11 @@ class MyWorkerFactory(private val equipmentRepository: EquipmentRepository) : Wo
         val workerClass = Class.forName(workerClassName)
         return when {
             workerClass.isAssignableFrom(SyncWorker::class.java) -> SyncWorker(
-                equipmentRepository,
+                equipmentDao,
+                equipmentService,
+                userRepository,
+                equipmentEntityMapper,
+                equipmentResponseMapper,
                 appContext,
                 workerParameters
             )

@@ -60,10 +60,4 @@ class EquipmentRepository @Inject constructor(
                 equipmentDao.update(equipmentEntityMapper.mapReverse(scannedAndSyncedEquipment))
             })
     }
-
-    //TODO should update multiple equipment at once instead of passing one equipment at a time
-    fun updateAllEquipment(equipments: List<Equipment>): Completable {
-        return Observable.fromIterable(equipments)
-            .flatMapCompletable { updateEquipment(it) }
-    }
 }

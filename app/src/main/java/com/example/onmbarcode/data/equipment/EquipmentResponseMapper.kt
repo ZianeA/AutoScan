@@ -29,7 +29,9 @@ class EquipmentResponseMapper @Inject constructor() :
             hashMapOf<Any, Any>(
                 ATTRIBUTE_OBSERVATION_NAME to translateCondition(condition),
                 ATTRIBUTE_DATE_DE_SCAN_NAME to unixToOdooDatetime(scanDate),
-                ATTRIBUTE_CODE_AFF_NAME to deskId
+                ATTRIBUTE_CODE_AFF_NAME to deskId,
+                ATTRIBUTE_SCANNE to if (scanState == Equipment.ScanState.ScannedAndSynced) true
+                else throw IllegalArgumentException("Can't send unscanned equipment to server") // TODO is this correct?
             )
         }
     }
@@ -41,6 +43,7 @@ class EquipmentResponseMapper @Inject constructor() :
         const val ATTRIBUTE_OBSERVATION_NAME = "observation"
         const val ATTRIBUTE_DATE_DE_SCAN_NAME = "date_scan"
         const val ATTRIBUTE_CODE_AFF_NAME = "code_aff"
+        const val ATTRIBUTE_SCANNE = "scanne"
     }
 
     fun translateCondition(condition: String) = when (condition.toUpperCase(Locale.FRENCH)) {

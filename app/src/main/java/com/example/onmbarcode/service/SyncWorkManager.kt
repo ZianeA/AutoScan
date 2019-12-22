@@ -7,10 +7,7 @@ import dagger.Reusable
 import javax.inject.Inject
 
 @Reusable
-class SyncWorkManager @Inject constructor(
-    private val app: Application,
-    private val equipmentRepository: EquipmentRepository
-) : SyncBackgroundService {
+class SyncWorkManager @Inject constructor(private val app: Application) : SyncBackgroundService {
     override fun syncEquipments() {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
