@@ -53,7 +53,8 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             dropdownLayout.isEndIconVisible = dropdownMenu.isEnabled
 
             // Show progress bar
-            if (equipment.scanState == ScanState.PendingScan) {
+            val isLoading = loadingEquipments.find { it == equipment.id } != null
+            if (isLoading) {
                 val progressBarColor = ContextCompat.getColor(view.context, android.R.color.white)
                 progressBar.apply {
                     indeterminateDrawable.setColorFilter(progressBarColor, PorterDuff.Mode.MULTIPLY)
@@ -64,27 +65,33 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             }
 
             // Set scan state message
-            val messageResource = when (equipment.scanState) {
-                ScanState.ScannedAndSynced -> R.string.equipment_synced_message
-                ScanState.ScannedButNotSynced -> R.string.equipment_scanned_message
-                ScanState.NotScanned -> R.string.equipment_not_scanned_message
-                ScanState.PendingScan -> R.string.equipment_pending_message
+            val messageResource: Int
+            val equipmentColor: Int
+
+            when {
+                equipment.scanState == ScanState.ScannedAndSynced -> {
+                    messageResource = R.string.equipment_synced_message
+                    equipmentColor = syncedColor
+                }
+                isLoading && equipment.scanState == ScanState.ScannedButNotSynced -> {
+                    messageResource = R.string.equipment_pending_message
+                    equipmentColor = notScannedColor
+                }
+                equipment.scanState == ScanState.ScannedButNotSynced  -> {
+                    messageResource = R.string.equipment_scanned_message
+                    equipmentColor = scannedColor
+                }
+                else -> {
+                    messageResource = R.string.equipment_not_scanned_message
+                    equipmentColor = notScannedColor
+                }
             }
 
             val message = view.context.getString(messageResource)
             scanStateMessage.text = message
 
             // Set cardview background color
-            val equipmentColor =
-                when (equipment.scanState) {
-                    ScanState.ScannedAndSynced -> syncedColor
-                    ScanState.ScannedButNotSynced -> scannedColor
-                    else -> notScannedColor
-                }
-
-            if (equipmentToAnimateId == equipment.id
-                && equipment.scanState != ScanState.PendingScan
-            ) {
+            if (equipmentToAnimateId == equipment.id) {
                 animateEquipmentColor(this, equipmentColor, message)
                 equipmentToAnimateId = null
 
@@ -129,6 +136,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
     companion object {
         private const val ANIMATION_DURATION: Long = 1000
         var equipmentToAnimateId: Int? = null
+        var loadingEquipments: MutableList<Int> = mutableListOf()
     }
 }
 

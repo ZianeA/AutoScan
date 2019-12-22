@@ -25,5 +25,5 @@ data class Equipment(
         }
     }
 
-    enum class ScanState { ScannedAndSynced, ScannedButNotSynced, NotScanned, PendingScan }
+    enum class ScanState { ScannedAndSynced, ScannedButNotSynced, NotScanned }
 }

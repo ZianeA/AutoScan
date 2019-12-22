@@ -34,26 +34,24 @@ class EquipmentRepository @Inject constructor(
             .map { e -> e.map(equipmentEntityMapper::map) }
     }
 
-    // Update network before database to handle scan state
-    // Update the database regardless of the network state.
     fun updateEquipment(equipment: Equipment): Completable {
         val scannedAndSyncedEquipment = equipment.copy(scanState = ScanState.ScannedAndSynced)
-        return equipmentDao.update(equipmentEntityMapper.mapReverse(equipment.copy(scanState = ScanState.PendingScan)))
-            .andThen(userRepository.getUser())
+        return userRepository.getUser()
             .toSingle() //To throw an exception if there's no user.
             .flatMapCompletable { user ->
-                equipmentService.update(
-                    user,
-                    equipment.id,
-                    equipmentResponseMapper.mapReverse(scannedAndSyncedEquipment)
-                )
-            }
-            .onErrorResumeNext {
                 equipmentDao.update(
                     equipmentEntityMapper.mapReverse(
-                        equipment.copy(scanState = ScanState.ScannedButNotSynced)
+                        equipment.copy(
+                            scanState = ScanState.ScannedButNotSynced
+                        )
                     )
-                ).andThen(Completable.defer { Completable.error(it) })
+                ).andThen(
+                    equipmentService.update(
+                        user,
+                        equipment.id,
+                        equipmentResponseMapper.mapReverse(scannedAndSyncedEquipment)
+                    )
+                )
             }
             .andThen(Completable.defer {
                 //I'm getting unexpected behavior, I had to use defer.

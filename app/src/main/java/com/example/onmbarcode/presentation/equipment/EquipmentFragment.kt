@@ -141,6 +141,14 @@ class EquipmentFragment : Fragment(), EquipmentView {
         }
     }
 
+    override fun displayProgressBarForEquipment(equipmentId: Int) {
+        EquipmentEpoxyModel.loadingEquipments.add(equipmentId)
+    }
+
+    override fun hideProgressBarForEquipment(equipmentId: Int) {
+        EquipmentEpoxyModel.loadingEquipments.remove(equipmentId)
+    }
+
     override fun clearBarcodeInputArea() {
         barcodeInput.text.clear()
     }

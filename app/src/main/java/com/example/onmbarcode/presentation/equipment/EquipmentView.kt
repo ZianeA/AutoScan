@@ -10,4 +10,6 @@ interface EquipmentView {
     fun showEquipmentAlreadyScannedMessage()
     fun animateEquipment(equipmentId: Int)
     var isScrolling: Boolean
+    fun displayProgressBarForEquipment(equipmentId: Int)
+    fun hideProgressBarForEquipment(equipmentId: Int)
 }
