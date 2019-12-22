@@ -7,6 +7,7 @@ import com.example.onmbarcode.presentation.di.FragmentScope
 import com.example.onmbarcode.presentation.util.Clock
 import com.example.onmbarcode.presentation.util.applySchedulers
 import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
+import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
@@ -24,10 +25,17 @@ class DeskPresenter @Inject constructor(
     private var isBarcodeScanInProgress = false
 
     fun start() {
-        val disposable = deskRepository.getScannedDesks()
+        view.disableBarcodeInput()
+
+        val disposable = deskRepository.isDatabaseEmpty()
+            .flatMapCompletable { if (it) deskRepository.downloadDatabase() else Completable.complete() }
+            .andThen(deskRepository.getScannedDesks())
             .map { it.map(DeskUiMapper::mapReverse) }
             .applySchedulers(schedulerProvider)
-            .subscribe({ view.displayDesks(it) }, { /*onError*/ })
+            .subscribe({
+                view.displayDesks(it)
+                view.enableBarcodeInput()
+            }, { /*onError*/ })
 
         disposables.add(disposable)
     }
@@ -40,7 +48,7 @@ class DeskPresenter @Inject constructor(
 
         isBarcodeScanInProgress = true
         view.disableBarcodeInput()
-        val disposable = deskRepository.findDesk(barcode.replace("\\s+".toRegex(),""))
+        val disposable = deskRepository.findDesk(barcode.replace("\\s+".toRegex(), ""))
             .observeOn(schedulerProvider.main)
             .doOnSuccess { view.clearBarcodeInputArea() }
             .observeOn(schedulerProvider.worker)

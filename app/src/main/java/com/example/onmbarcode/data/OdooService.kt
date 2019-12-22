@@ -42,6 +42,7 @@ class OdooService @Inject constructor(private val urlStore: KeyValueStore<String
         const val METHOD_MAIN = "execute_kw"
         const val METHOD_READ = "read"
         const val METHOD_SEARCH = "search"
+        const val METHOD_COUNT = "search_count"
         const val METHOD_SEARCH_READ = "search_read"
         const val METHOD_WRITE = "write"
         const val DB_NAME = "ali"

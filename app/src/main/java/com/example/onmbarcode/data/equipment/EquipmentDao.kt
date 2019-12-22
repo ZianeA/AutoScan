@@ -20,7 +20,7 @@ interface EquipmentDao {
     fun getByDesk(deskId: Int): Observable<List<EquipmentEntity>>
 
     //TODO is this right? Probably not. I think I was using to insert dummy data without conflict
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(/*onConflict = OnConflictStrategy.REPLACE*/)
     fun addAll(equipments: List<EquipmentEntity>): Completable
 
     @Update

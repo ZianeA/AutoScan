@@ -1,5 +1,6 @@
 package com.example.onmbarcode.data.desk
 
+import com.example.onmbarcode.data.OdooService
 import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.data.equipment.EquipmentDao
 import com.example.onmbarcode.data.equipment.EquipmentEntity
@@ -11,14 +12,17 @@ import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.equipment.Equipment
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.ceil
 import kotlin.random.Random
 
 @Singleton
 class DeskRepository @Inject constructor(
     private val deskDao: DeskDao,
+    private val equipmentDao: EquipmentDao,
     private val userRepository: UserRepository, //Should probably use userDao instead
     private val deskService: DeskService,
     private val equipmentService: EquipmentService,
@@ -39,44 +43,31 @@ class DeskRepository @Inject constructor(
             .map { deskEntities -> deskEntities.map { deskEntityMapper.map(it) } }
     }
 
-    // If local cache is empty, fetch desks from server. Save the fetched desks to the local cache.
-    // Finally, find the desk in the local cache.
-    fun findDesk(barcode: String): Maybe<Desk> {
-        return deskDao.isEmpty()
-            .flatMapMaybe { isLocalCacheEmpty ->
-                if (isLocalCacheEmpty) {
-                    userRepository.getUser()
-                        .toSingle() // Should error if there's no user.
-                        .flatMapMaybe { user ->
-                            deskService.getAll(user)
-                                .map { list -> list.map { deskResponseMapper.map(it as HashMap<*, *>) } }
-                                .flatMapCompletable { desks ->
-                                    equipmentService.getAll(user)
-                                        .map { list -> list.map { equipmentResponseMapper.map(it as HashMap<*, *>) } }
-                                        .map { list ->
-                                            list.map {
-                                                equipmentEntityMapper.mapReverse(
-                                                    it
-                                                )
-                                            }
-                                        }
-                                        .flatMapCompletable { equipments ->
-                                            Completable.fromAction {
-                                                deskDao.addAll(
-                                                    desks,
-                                                    equipments
-                                                )
-                                            }
-                                        }
-                                }
-                                .andThen(deskDao.getByBarcode(barcode))
-                                .map(deskEntityMapper::map)
-                        }
-                } else {
-                    deskDao.getByBarcode(barcode)
-                        .map(deskEntityMapper::map)
-                }
+    fun isDatabaseEmpty(): Single<Boolean> = deskDao.isEmpty()
+
+    fun downloadDatabase(): Completable {
+        return userRepository.getUser()
+            .toSingle()
+            .flatMapCompletable { user ->
+                deskService.getAll(user)
+                    .doOnError { val message = it.message }
+                    .map { list -> list.map { deskResponseMapper.map(it as HashMap<*, *>) } }
+                    .flatMapCompletable { deskDao.addAll(it) }
+                    .andThen(equipmentService.getEquipmentCount(user))
+                    .flatMapObservable { count ->
+                        Observable.range(0, ceil(count.toDouble() / PAGE_SIZE).toInt() + 1)
+                    }
+                    .map { it * PAGE_SIZE }
+                    .flatMapSingle { equipmentService.get(user, it, PAGE_SIZE) }
+                    .map { list -> list.map { equipmentResponseMapper.map(it as HashMap<*, *>) } }
+                    .map { list -> list.map { equipmentEntityMapper.mapReverse(it) } }
+                    .flatMapCompletable { equipmentDao.addAll(it) }
             }
+    }
+
+    fun findDesk(barcode: String): Maybe<Desk> {
+        return deskDao.getByBarcode(barcode)
+            .map(deskEntityMapper::map)
     }
 
     fun updateDesk(desk: Desk): Completable {
@@ -112,5 +103,6 @@ class DeskRepository @Inject constructor(
     //TODO remove
     companion object {
         private const val YEAR_IN_MILLIS = 31556952000
+        private const val PAGE_SIZE = 1000
     }
 }
