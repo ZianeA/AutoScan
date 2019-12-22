@@ -112,12 +112,17 @@ class EquipmentPresenter @Inject constructor(
     }
 
     fun onEquipmentConditionPicked(conditionIndex: Int, equipment: Equipment) {
+        view.displayProgressBarForEquipment(equipment.id)
+
         val disposable = equipmentRepository.updateEquipment(
             equipment.copy(
                 condition = EquipmentCondition.getByValue(conditionIndex)
             )
         ).applySchedulers(schedulerProvider)
-            .subscribe({ view.displayEquipmentConditionChangedMessage() }, {})
+            .subscribe({
+                view.hideProgressBarForEquipment(equipment.id)
+                view.displayEquipmentConditionChangedMessage()
+            }, {})
 
         disposables.add(disposable)
     }

@@ -154,8 +154,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     override fun displayEquipmentConditionChangedMessage() {
-        // TODO Translate message
-        snackbar.showMessage("Equipment condition changed successfully", MySnackbar.LENGTH_SHORT)
+        snackbar.showMessage(getString(R.string.equipment_condition_changed_message), MySnackbar.LENGTH_SHORT)
     }
 
     override fun showErrorMessage() {
