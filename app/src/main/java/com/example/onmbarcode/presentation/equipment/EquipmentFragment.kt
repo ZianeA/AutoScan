@@ -39,6 +39,12 @@ class EquipmentFragment : Fragment(), EquipmentView {
     private var isUiUpdating = false
 
     override var isScrolling = false
+        set(value) {
+            if (value) scrollDisabler.visibility = View.VISIBLE
+            else scrollDisabler.visibility = View.GONE
+
+            field = value
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +64,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
                 resources.getDimension(R.dimen.equipment_item_spacing).toInt()
             )
         )
+        rootView.scrollDisabler.setOnClickListener {  }
         epoxyController = EquipmentEpoxyController(presenter::onEquipmentConditionPicked)
         epoxyController.addModelBuildListener {
             if (scrollToTop) {
@@ -154,7 +161,10 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     override fun displayEquipmentConditionChangedMessage() {
-        snackbar.showMessage(getString(R.string.equipment_condition_changed_message), MySnackbar.LENGTH_SHORT)
+        snackbar.showMessage(
+            getString(R.string.equipment_condition_changed_message),
+            MySnackbar.LENGTH_SHORT
+        )
     }
 
     override fun showErrorMessage() {

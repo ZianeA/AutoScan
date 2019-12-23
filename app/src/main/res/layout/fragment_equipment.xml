@@ -30,6 +30,16 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
         tools:background="@color/scanned_and_synced" />
 
+    <ImageView
+        android:id="@+id/scrollDisabler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/barcodeInput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
     <EditText
         android:id="@+id/barcodeInput"
         android:layout_width="200dp"
