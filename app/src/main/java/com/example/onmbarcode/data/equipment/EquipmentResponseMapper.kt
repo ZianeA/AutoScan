@@ -4,6 +4,7 @@ import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.data.mapper.odooDatetimeToUnix
 import com.example.onmbarcode.data.mapper.unixToOdooDatetime
 import com.example.onmbarcode.presentation.equipment.Equipment
+import com.example.onmbarcode.presentation.equipment.Equipment.*
 import dagger.Reusable
 import java.util.*
 import javax.inject.Inject
@@ -17,7 +18,7 @@ class EquipmentResponseMapper @Inject constructor() :
             model[ATTRIBUTE_ID_NAME] as Int,
             model[ATTRIBUTE_CODE_NAME] as String,
             model[ATTRIBUTE_LIBELLE_NAME] as String,
-            Equipment.ScanState.NotScanned, //TODO deal with this. It's probably correct.
+            if (model[ATTRIBUTE_SCANNE] as Boolean) ScanState.ScannedAndSynced else ScanState.NotScanned,
             translateCondition(model[ATTRIBUTE_OBSERVATION_NAME] as String),
             odooDatetimeToUnix(model[ATTRIBUTE_DATE_DE_SCAN_NAME] as String),
             (model[ATTRIBUTE_CODE_AFF_NAME] as Array<*>)[0] as Int,
@@ -31,7 +32,7 @@ class EquipmentResponseMapper @Inject constructor() :
                 ATTRIBUTE_OBSERVATION_NAME to translateCondition(condition),
                 ATTRIBUTE_DATE_DE_SCAN_NAME to unixToOdooDatetime(scanDate),
                 ATTRIBUTE_CODE_AFF_NAME to deskId,
-                ATTRIBUTE_SCANNE to if (scanState == Equipment.ScanState.ScannedAndSynced) true
+                ATTRIBUTE_SCANNE to if (scanState == ScanState.ScannedAndSynced) true
                 else throw IllegalArgumentException("Can't send unscanned equipment to server") // TODO is this correct?
             )
         }
@@ -48,15 +49,15 @@ class EquipmentResponseMapper @Inject constructor() :
     }
 
     fun translateCondition(condition: String) = when (condition.toUpperCase(Locale.FRENCH)) {
-        "BON" -> Equipment.EquipmentCondition.GOOD
-        "MOYEN" -> Equipment.EquipmentCondition.AVERAGE
-        "MAUVAIS" -> Equipment.EquipmentCondition.BAD
+        "BON" -> EquipmentCondition.GOOD
+        "MOYEN" -> EquipmentCondition.AVERAGE
+        "MAUVAIS" -> EquipmentCondition.BAD
         else -> throw IllegalArgumentException("Unknown equipment condition")
     }
 
-    fun translateCondition(condition: Equipment.EquipmentCondition) = when (condition) {
-        Equipment.EquipmentCondition.GOOD -> "bon"
-        Equipment.EquipmentCondition.AVERAGE -> "moyen"
-        Equipment.EquipmentCondition.BAD -> "mauvais"
+    fun translateCondition(condition: EquipmentCondition) = when (condition) {
+        EquipmentCondition.GOOD -> "bon"
+        EquipmentCondition.AVERAGE -> "moyen"
+        EquipmentCondition.BAD -> "mauvais"
     }
 }

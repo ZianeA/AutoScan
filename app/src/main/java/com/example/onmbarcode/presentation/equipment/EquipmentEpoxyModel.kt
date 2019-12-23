@@ -65,13 +65,11 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                     indeterminateDrawable.setColorFilter(progressBarColor, PorterDuff.Mode.MULTIPLY)
                     visibility = View.VISIBLE
                 }
-            } else {
-                progressBar.visibility = View.GONE
+            } else progressBar.visibility = View.GONE
 
-                if (equipment.deskId != equipment.previousDeskId) warningIcon.visibility =
-                    View.VISIBLE
-                else warningIcon.visibility = View.GONE
-            }
+            if (!isLoading && equipment.deskId != equipment.previousDeskId) {
+                warningIcon.visibility = View.VISIBLE
+            } else warningIcon.visibility = View.GONE
 
             // Pick scan state message and background color
             val messageResource: Int
