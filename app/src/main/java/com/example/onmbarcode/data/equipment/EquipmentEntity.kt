@@ -1,13 +1,9 @@
 package com.example.onmbarcode.data.equipment
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
+import androidx.room.*
 import com.example.onmbarcode.data.desk.DeskEntity
 import com.example.onmbarcode.presentation.equipment.Equipment
 
-// TODO add unique constraint and index to barcode
 @Entity(
     foreignKeys = [ForeignKey(
         entity = DeskEntity::class,
@@ -19,7 +15,8 @@ import com.example.onmbarcode.presentation.equipment.Equipment
         entity = DeskEntity::class,
         parentColumns = ["id"],
         childColumns = ["previousDeskId"]
-    )]
+    )],
+    indices = [Index(value = ["deskId"]), Index(value = ["barcode"], unique = true)]
 )
 data class EquipmentEntity(
     @PrimaryKey val id: Int,

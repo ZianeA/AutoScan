@@ -1,10 +1,10 @@
 package com.example.onmbarcode.data.desk
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-// TODO add unique constraint to barcode
-@Entity
+@Entity(indices = [Index(value = ["barcode"], unique = true)])
 data class DeskEntity(
     @PrimaryKey val id: Int,
     val barcode: String,

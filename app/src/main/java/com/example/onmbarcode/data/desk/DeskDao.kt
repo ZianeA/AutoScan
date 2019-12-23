@@ -8,19 +8,21 @@ import io.reactivex.Single
 
 @Dao
 interface DeskDao {
-    //TODO update conflict strategy
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAll(desk: List<DeskEntity>): Completable
 
     @Insert
     fun addAll(desk: List<DeskEntity>, equipments: List<EquipmentEntity>)
 
+    @Transaction
     @Query("SELECT * FROM DeskEntity")
     fun getAll(): Single<List<DeskWithEquipmentsEntity>>
 
+    @Transaction
     @Query("SELECT * FROM DeskEntity e WHERE e.isScanned = 1 ORDER BY e.scanDate Desc")
     fun getScanned(): Single<List<DeskWithEquipmentsEntity>>
 
+    @Transaction
     @Query("SELECT * FROM DeskEntity d WHERE d.barcode=:barcode")
     fun getByBarcode(barcode: String): Maybe<DeskWithEquipmentsEntity>
 

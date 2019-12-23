@@ -10,7 +10,6 @@ import kotlin.collections.HashMap
 @Reusable
 class DeskResponseMapper @Inject constructor(private val clock: Clock) :
     Mapper<HashMap<*, *>, DeskEntity> {
-    //TODO add attribute name constants
     override fun map(model: HashMap<*, *>): DeskEntity {
         return DeskEntity(
             model[ATTRIBUTE_ID_NAME] as Int,

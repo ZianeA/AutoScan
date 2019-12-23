@@ -43,10 +43,8 @@ class EquipmentPresenter @Inject constructor(
         disposables.add(disposable)
     }
 
-    // TODO fix bug: when an already scanned equipment is scanned, scroll to the top does not work.
     // TODO add more unit tests, notably for error messages
     private fun scanBarcode(barcode: String, deskId: Int) {
-        // TODO i'm not sure if this works with a barcode 00001
         barcode.toIntOrNull()
             ?: throw IllegalArgumentException(
                 "Malformed equipment barcode. Equipment barcode must contain only numeric values"

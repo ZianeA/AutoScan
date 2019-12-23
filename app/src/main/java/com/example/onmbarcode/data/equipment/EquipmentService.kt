@@ -13,27 +13,6 @@ import kotlin.random.Random
 
 @Reusable
 class EquipmentService @Inject constructor(private val odooService: OdooService) {
-    //TODO refactor
-    fun getByDesk(user: User, deskBarcode: String): Single<Array<*>> {
-        val client = XMLRPCClient(URL(odooService.objectUrl))
-        return Single.fromCallable {
-            client.call(
-                OdooService.METHOD_MAIN,
-                OdooService.DB_NAME,
-                user.id,
-                user.password,
-                MODEL_EQUIPMENT_NAME,
-                OdooService.METHOD_SEARCH_READ,
-                listOf(
-                    listOf(
-                        listOf(EquipmentResponseMapper.ATTRIBUTE_CODE_AFF_NAME, "=", deskBarcode)
-                    )
-                )
-            )
-        }
-            .map { it as Array<*> }
-    }
-
     fun getAll(user: User): Single<Array<*>> {
         val client = XMLRPCClient(URL(odooService.objectUrl))
         return Single.fromCallable {
