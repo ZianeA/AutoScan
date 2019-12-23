@@ -54,12 +54,36 @@
         app:srcCompat="@drawable/ic_edit" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/serverDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="L'adresse IP du serveur Odoo."
         app:layout_constraintStart_toStartOf="@+id/serverTitle"
         app:layout_constraintTop_toBottomOf="@+id/server" />
+
+    <TextView
+        android:id="@+id/aboutTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="À propos"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/serverTitle"
+        app:layout_constraintTop_toBottomOf="@+id/serverDescription" />
+
+    <TextView
+        android:id="@+id/about"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/aboutTitle"
+        app:layout_constraintTop_toBottomOf="@+id/aboutTitle"
+        android:text='Développée par Ali Ziane' />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
