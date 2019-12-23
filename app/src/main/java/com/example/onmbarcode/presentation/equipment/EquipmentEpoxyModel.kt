@@ -32,7 +32,12 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
 
         holder.apply {
             equipmentType.text = equipment.type.capitalize(Locale.FRENCH)
-            equipmentBarcode.text = equipment.barcode
+
+            equipmentBarcode.apply {
+                text = equipment.barcode
+                visibility =
+                    if (equipment.scanState == ScanState.NotScanned) View.GONE else View.VISIBLE
+            }
 
             dropdownMenu.setAdapter(
                 ArrayAdapter(
@@ -61,10 +66,11 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                     visibility = View.VISIBLE
                 }
             } else {
-                progressBar.visibility = View.INVISIBLE
+                progressBar.visibility = View.GONE
 
-                if (equipment.deskId != equipment.previousDeskId) warningIcon.visibility = View.VISIBLE
-                else warningIcon.visibility = View.INVISIBLE
+                if (equipment.deskId != equipment.previousDeskId) warningIcon.visibility =
+                    View.VISIBLE
+                else warningIcon.visibility = View.GONE
             }
 
             // Pick scan state message and background color
@@ -115,15 +121,15 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
         holder.apply {
             revealView.scaleX = 1f
             revealView.visibility = View.INVISIBLE
-            progressBar.visibility = View.INVISIBLE
-            warningIcon.visibility = View.INVISIBLE
+            progressBar.visibility = View.GONE
+            warningIcon.visibility = View.GONE
         }
     }
 
     private fun animateEquipmentColor(holder: EquipmentHolder, endColor: Int, endMessage: String) {
         holder.apply {
             revealView.visibility = View.VISIBLE
-            progressBar.visibility = View.INVISIBLE
+            progressBar.visibility = View.GONE
             ImageViewCompat.setImageTintList(revealView, ColorStateList.valueOf(endColor))
             revealView.animate()
                 .scaleXBy(cardView.width.toFloat())

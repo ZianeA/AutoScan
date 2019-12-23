@@ -116,7 +116,6 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     // While smoothing scroll to top, equipment list could change. So, we store the newest equipment list
     // and we display it at the end of scrolling
-    //TODO Disable user scrolling while scrolling
     override fun scrollToTop() {
         isScrolling = true
 
