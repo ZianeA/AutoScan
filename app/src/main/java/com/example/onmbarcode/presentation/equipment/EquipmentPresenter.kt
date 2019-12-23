@@ -73,13 +73,13 @@ class EquipmentPresenter @Inject constructor(
                 val updatedEquipment =
                     scannedEquipment.copy(scanDate = clock.currentTimeSeconds, deskId = deskId)
                 equipmentRepository.updateEquipment(updatedEquipment)
-                    .andThen(Maybe.just(updatedEquipment.id))
+                    .andThen(Maybe.just(updatedEquipment))
                     .onErrorResumeNext { it: Throwable ->
                         when (it) {
                             is XMLRPCException -> {
                                 //TODO should probably do this only if it's a no internet connexion exception
                                 syncService.syncEquipments()
-                                Maybe.just(updatedEquipment.id)
+                                Maybe.just(updatedEquipment)
                             }
                             else -> {
                                 // This is probably a serious error
@@ -91,8 +91,9 @@ class EquipmentPresenter @Inject constructor(
             .applySchedulers(schedulerProvider)
             .subscribe(
                 {
-                    view.hideProgressBarForEquipment(it)
-                    view.animateEquipment(it)
+                    view.hideProgressBarForEquipment(it.id)
+                    view.animateEquipment(it.id)
+                    if(it.deskId != it.previousDeskId) view.showEquipmentMovedMessage()
                 },
                 {
                     view.showErrorMessage()

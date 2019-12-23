@@ -20,6 +20,7 @@ class EquipmentResponseMapper @Inject constructor() :
             Equipment.ScanState.NotScanned, //TODO deal with this. It's probably correct.
             translateCondition(model[ATTRIBUTE_OBSERVATION_NAME] as String),
             odooDatetimeToUnix(model[ATTRIBUTE_DATE_DE_SCAN_NAME] as String),
+            (model[ATTRIBUTE_CODE_AFF_NAME] as Array<*>)[0] as Int,
             (model[ATTRIBUTE_CODE_AFF_NAME] as Array<*>)[0] as Int
         )
     }

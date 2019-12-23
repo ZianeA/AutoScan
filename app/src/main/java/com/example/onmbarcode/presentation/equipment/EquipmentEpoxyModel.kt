@@ -52,7 +52,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             }
             dropdownLayout.isEndIconVisible = dropdownMenu.isEnabled
 
-            // Show progress bar
+            // Show progress bar and warning icon
             val isLoading = loadingEquipments.find { it == equipment.id } != null
             if (isLoading) {
                 val progressBarColor = ContextCompat.getColor(view.context, android.R.color.white)
@@ -62,9 +62,12 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                 }
             } else {
                 progressBar.visibility = View.INVISIBLE
+
+                if (equipment.deskId != equipment.previousDeskId) warningIcon.visibility = View.VISIBLE
+                else warningIcon.visibility = View.INVISIBLE
             }
 
-            // Set scan state message
+            // Pick scan state message and background color
             val messageResource: Int
             val equipmentColor: Int
 
@@ -77,7 +80,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                     messageResource = R.string.equipment_pending_message
                     equipmentColor = notScannedColor
                 }
-                equipment.scanState == ScanState.ScannedButNotSynced  -> {
+                equipment.scanState == ScanState.ScannedButNotSynced -> {
                     messageResource = R.string.equipment_scanned_message
                     equipmentColor = scannedColor
                 }
@@ -87,6 +90,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                 }
             }
 
+            // Set scan state message
             val message = view.context.getString(messageResource)
             scanStateMessage.text = message
 
@@ -112,6 +116,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             revealView.scaleX = 1f
             revealView.visibility = View.INVISIBLE
             progressBar.visibility = View.INVISIBLE
+            warningIcon.visibility = View.INVISIBLE
         }
     }
 
@@ -164,4 +169,5 @@ class EquipmentHolder : KotlinEpoxyHolder() {
     val dropdownMenu by bind<AutoCompleteTextView>(R.id.dropdownMenu)
     val dropdownLayout by bind<TextInputLayout>(R.id.textInputLayout)
     val scanStateMessage by bind<TextView>(R.id.scanStateMessage)
+    val warningIcon by bind<ImageView>(R.id.warningIcon)
 }

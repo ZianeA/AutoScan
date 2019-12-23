@@ -12,4 +12,5 @@ interface EquipmentView {
     var isScrolling: Boolean
     fun displayProgressBarForEquipment(equipmentId: Int)
     fun hideProgressBarForEquipment(equipmentId: Int)
+    fun showEquipmentMovedMessage()
 }

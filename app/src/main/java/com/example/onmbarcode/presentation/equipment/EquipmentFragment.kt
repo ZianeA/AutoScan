@@ -172,6 +172,10 @@ class EquipmentFragment : Fragment(), EquipmentView {
         )
     }
 
+    override fun showEquipmentMovedMessage() {
+        snackbar.showMessage(R.string.equipment_moved_message, MySnackbar.LENGTH_SHORT)
+    }
+
     private val selectedDesk
         get() = arguments?.getParcelable<DeskUi>(ARG_SELECTED_DESK)
             ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")

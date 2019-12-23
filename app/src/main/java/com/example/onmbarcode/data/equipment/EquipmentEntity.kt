@@ -7,7 +7,7 @@ import androidx.room.TypeConverter
 import com.example.onmbarcode.data.desk.DeskEntity
 import com.example.onmbarcode.presentation.equipment.Equipment
 
-// TODO add unique constraint to barcode
+// TODO add unique constraint and index to barcode
 @Entity(
     foreignKeys = [ForeignKey(
         entity = DeskEntity::class,
@@ -15,6 +15,10 @@ import com.example.onmbarcode.presentation.equipment.Equipment
         childColumns = ["deskId"],
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.CASCADE
+    ), ForeignKey(
+        entity = DeskEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["previousDeskId"]
     )]
 )
 data class EquipmentEntity(
@@ -24,8 +28,9 @@ data class EquipmentEntity(
     val scanState: Equipment.ScanState,
     val condition: Equipment.EquipmentCondition,
     val scanDate: Long,
-    val deskId: Int
-){
+    val deskId: Int,
+    val previousDeskId: Int
+) {
     class EquipmentConditionConverter {
         @TypeConverter
         fun fromEquipmentConditionToString(condition: Equipment.EquipmentCondition) = condition.name
