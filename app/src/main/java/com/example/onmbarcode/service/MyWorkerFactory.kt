@@ -38,7 +38,7 @@ class MyWorkerFactory @Inject constructor(
                 appContext,
                 workerParameters
             )
-            else -> workerClass.newInstance() as ListenableWorker
+            else -> null //Use default workerFactory
         }
     }
 }

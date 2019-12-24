@@ -2,29 +2,30 @@ package com.example.onmbarcode.service
 
 import android.app.Application
 import androidx.work.*
-import com.example.onmbarcode.data.equipment.EquipmentRepository
 import dagger.Reusable
 import javax.inject.Inject
 
 @Reusable
 class SyncWorkManager @Inject constructor(private val app: Application) : SyncBackgroundService {
     override fun syncEquipments() {
-        val constraints = Constraints.Builder()
+        val syncConstraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val workRequest = OneTimeWorkRequestBuilder<SyncWorker>()
-            .setConstraints(constraints)
-            .addTag(TAG_SYNC)
+        val syncWorkRequest = OneTimeWorkRequestBuilder<SyncWorker>()
+            .setConstraints(syncConstraints)
+            .build()
+
+        val notificationWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
             .build()
 
         WorkManager.getInstance(app)
-            .beginUniqueWork(WORK_NAME_SYNC, ExistingWorkPolicy.KEEP, workRequest)
+            .beginUniqueWork(WORK_NAME_SYNC, ExistingWorkPolicy.KEEP, syncWorkRequest)
+            .then(notificationWorkRequest)
             .enqueue()
     }
 
     companion object {
-        const val TAG_SYNC = "TAG_SYNC"
-        private const val WORK_NAME_SYNC = "WORK_NAME_SYNC"
+        const val WORK_NAME_SYNC = "WORK_NAME_SYNC"
     }
 }

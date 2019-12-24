@@ -1,6 +1,7 @@
 package com.example.onmbarcode.presentation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -41,27 +42,11 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
         setContentView(R.layout.activity_main)
         fragNavController.rootFragmentListener = this
         this.savedInstanceState = savedInstanceState
-//        fragNavController.initialize(FragNavController.TAB1, savedInstanceState)
     }
 
     override fun onStart() {
         super.onStart()
         presenter.start(savedInstanceState == null)
-        //TODO remove
-        WorkManager.getInstance(application).getWorkInfosByTagLiveData(SyncWorkManager.TAG_SYNC)
-            .observe(this, Observer {
-                val workInfo = it.firstOrNull()
-                if (workInfo != null && workInfo.state == WorkInfo.State.SUCCEEDED) {
-                    val builder = NotificationCompat.Builder(this, OnmBarCodeApp.CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_cloud_done) //TODO change icon
-                        .setContentTitle("Synchronisation terminée")
-                        .setColor(ContextCompat.getColor(this, R.color.notification_icon_color))
-                        .setContentText("Tous les équipements ont été synchronisés.")
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-                    NotificationManagerCompat.from(this).notify(405, builder.build())
-                }
-            })
     }
 
     override fun onStop() {

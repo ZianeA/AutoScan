@@ -28,7 +28,7 @@ class SyncWorker(
     override fun createWork(): Single<Result> {
         return userRepository.getUser()
             .toSingle()
-            .flatMapCompletable { user ->
+            .flatMap { user ->
                 equipmentDao.getByScanState(ScanState.ScannedButNotSynced)
                     .flatMapObservable { Observable.fromIterable(it) }
                     .map {
@@ -46,7 +46,9 @@ class SyncWorker(
                     .flatMapCompletable {
                         equipmentService.update(user, it.id, it.equipmentResponse)
                             .andThen(Completable.defer { equipmentDao.update(it.equipmentEntity) })
-                    }
-            }.andThen(Single.just(Result.success()))
+                    }.toSingle { }
+            }
+            .flatMap { Single.just(Result.success()) }
+            .onErrorReturnItem(Result.retry())
     }
 }
