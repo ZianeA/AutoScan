@@ -77,10 +77,10 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
                 )
             )
         }
-            .delay(
+            /*.delay(
                 Random.nextLong(3000, 5000),
                 TimeUnit.MILLISECONDS
-            ) //TODO remove this delay
+            ) //TODO remove this delay*/
     }
 
     fun getEquipmentCount(user: User): Single<Int> {

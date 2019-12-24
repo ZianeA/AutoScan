@@ -1,11 +1,14 @@
 package com.example.onmbarcode.presentation
 
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.desk.DeskFragment
@@ -46,7 +49,19 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
         presenter.start(savedInstanceState == null)
         //TODO remove
         WorkManager.getInstance(application).getWorkInfosByTagLiveData(SyncWorkManager.TAG_SYNC)
-            .observe(this, Observer { Log.d("iPhone", it.firstOrNull()?.state?.name ?: "Nothing") })
+            .observe(this, Observer {
+                val workInfo = it.firstOrNull()
+                if (workInfo != null && workInfo.state == WorkInfo.State.SUCCEEDED) {
+                    val builder = NotificationCompat.Builder(this, OnmBarCodeApp.CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_cloud_done) //TODO change icon
+                        .setContentTitle("Synchronisation terminée")
+                        .setColor(ContextCompat.getColor(this, R.color.notification_icon_color))
+                        .setContentText("Tous les équipements ont été synchronisés.")
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+                    NotificationManagerCompat.from(this).notify(405, builder.build())
+                }
+            })
     }
 
     override fun onStop() {

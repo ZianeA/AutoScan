@@ -64,7 +64,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
                 resources.getDimension(R.dimen.equipment_item_spacing).toInt()
             )
         )
-        rootView.scrollDisabler.setOnClickListener {  }
+        rootView.scrollDisabler.setOnClickListener { }
         epoxyController = EquipmentEpoxyController(presenter::onEquipmentConditionPicked)
         epoxyController.addModelBuildListener {
             if (scrollToTop) {
