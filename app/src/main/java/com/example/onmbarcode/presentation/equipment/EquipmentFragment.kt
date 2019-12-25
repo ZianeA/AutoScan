@@ -59,12 +59,35 @@ class EquipmentFragment : Fragment(), EquipmentView {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
-        recyclerView = rootView.equipmentRecyclerView
-        recyclerView.addItemDecoration(
-            ItemDecoration(
-                resources.getDimension(R.dimen.equipment_item_spacing).toInt()
+        rootView.scrollUpButton.apply {
+            hide()
+            setOnClickListener { smoothScrollToTop() }
+        }
+
+        rootView.equipmentRecyclerView.apply {
+            recyclerView = this
+            addItemDecoration(
+                ItemDecoration(
+                    resources.getDimension(R.dimen.equipment_item_spacing).toInt()
+                )
             )
-        )
+
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    if (dy < 0) {
+                        val topItem =
+                            (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+
+                        if (topItem > MAX_MANUAL_SCROLL) rootView.scrollUpButton.show()
+                        else rootView.scrollUpButton.hide()
+
+                    } else rootView.scrollUpButton.hide()
+                }
+            })
+        }
+
+
         rootView.scrollDisabler.setOnClickListener { }
         epoxyController = EquipmentEpoxyController(presenter::onEquipmentConditionPicked)
         epoxyController.addModelBuildListener {
@@ -75,11 +98,11 @@ class EquipmentFragment : Fragment(), EquipmentView {
             }
         }
 
-        rootView.barcodeInput.addTextChangedListener(afterTextChanged = {
-            presenter.onBarcodeChange(it.toString(), selectedDesk.id)
-        })
-
         rootView.barcodeInput.apply {
+            addTextChangedListener(afterTextChanged = {
+                presenter.onBarcodeChange(it.toString(), selectedDesk.id)
+            })
+
             requestFocus()
             getSystemService(context, InputMethodManager::class.java)
                 ?.hideSoftInputFromWindow(windowToken, 0)
@@ -142,14 +165,13 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     private fun smoothScrollToTop() {
-        val maxScroll = 15
         val targetItem = 0
         val topItem =
             (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
         val distance = topItem - targetItem
         val anchorItem = when {
-            distance > maxScroll -> targetItem + maxScroll
-            distance < -maxScroll -> targetItem - maxScroll
+            distance > MAX_SMOOTH_SCROLL -> targetItem + MAX_SMOOTH_SCROLL
+            distance < -MAX_SMOOTH_SCROLL -> targetItem - MAX_SMOOTH_SCROLL
             else -> topItem
         }
 
@@ -209,6 +231,8 @@ class EquipmentFragment : Fragment(), EquipmentView {
     companion object {
         private const val ARG_SELECTED_DESK = "selected_desk"
         private const val MODEL_BUILD_DELAY = 200
+        private const val MAX_SMOOTH_SCROLL = 15
+        private const val MAX_MANUAL_SCROLL = 30
 
         /**
          * Use this factory method to create a new instance of

@@ -49,4 +49,5 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Annuler</string>
     <string name="error_Invalid_url">URL mal formée</string>
+    <string name="return_to_top">Aller en haut</string>
 </resources>
