@@ -29,7 +29,7 @@ interface DeskDao {
             ON d.id = e.deskId
             AND d.isScanned = 1
         GROUP BY d.id, d.barcode, d.isScanned, d.scanDate
-        ORDER BY e.scanDate Desc
+        ORDER BY d.scanDate Desc
         """
     )
     fun getScanned(): Single<List<DeskWithStatsEntity>>
