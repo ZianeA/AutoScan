@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
 
@@ -125,7 +126,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
             return
         }
 
-        recyclerView.smoothScrollToPosition(0)
+        smoothScrollToTop()
         isUiUpdating = true
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -138,6 +139,22 @@ class EquipmentFragment : Fragment(), EquipmentView {
                 }
             }
         })
+    }
+
+    private fun smoothScrollToTop() {
+        val maxScroll = 15
+        val targetItem = 0
+        val topItem =
+            (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+        val distance = topItem - targetItem
+        val anchorItem = when {
+            distance > maxScroll -> targetItem + maxScroll
+            distance < -maxScroll -> targetItem - maxScroll
+            else -> topItem
+        }
+
+        if (anchorItem != topItem) recyclerView.scrollToPosition(anchorItem)
+        recyclerView.smoothScrollToPosition(targetItem)
     }
 
     override fun animateEquipment(equipmentId: Int) {
