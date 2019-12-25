@@ -109,14 +109,14 @@ class DeskFragment : Fragment(), DeskView {
         }
     }
 
-    override fun displayDesks(desks: List<DeskUi>) {
+    override fun displayDesks(desks: List<Desk>) {
         if (recyclerView.adapter == null) {
             recyclerView.setController(epoxyController)
         }
         epoxyController.desks = desks
     }
 
-    override fun displayEquipmentsScreen(desk: DeskUi) {
+    override fun displayEquipmentsScreen(desk: Desk) {
         fragNavController.pushFragment(EquipmentFragment.newInstance(desk))
     }
 

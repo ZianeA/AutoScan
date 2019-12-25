@@ -14,17 +14,44 @@ interface DeskDao {
     @Insert
     fun addAll(desk: List<DeskEntity>, equipments: List<EquipmentEntity>)
 
-    @Transaction
-    @Query("SELECT * FROM DeskEntity")
-    fun getAll(): Single<List<DeskWithEquipmentsEntity>>
+    @Query(
+        """
+        SELECT 
+            COUNT(e.id) AS equipmentCount,
+            SUM(CASE WHEN e.scanState = 'ScannedAndSynced' THEN 1 ELSE 0 END) AS syncedEquipmentCount,
+            SUM(CASE WHEN e.scanState != 'NotScanned' THEN 1 ELSE 0 END) AS scannedEquipmentCount,
+            d.id,
+            d.barcode,
+            d.isScanned,
+            d.scanDate
+        FROM DeskEntity d
+        INNER JOIN EquipmentEntity e
+            ON d.id = e.deskId
+            AND d.isScanned = 1
+        GROUP BY d.id, d.barcode, d.isScanned, d.scanDate
+        ORDER BY e.scanDate Desc
+        """
+    )
+    fun getScanned(): Single<List<DeskWithStatsEntity>>
 
-    @Transaction
-    @Query("SELECT * FROM DeskEntity e WHERE e.isScanned = 1 ORDER BY e.scanDate Desc")
-    fun getScanned(): Single<List<DeskWithEquipmentsEntity>>
-
-    @Transaction
-    @Query("SELECT * FROM DeskEntity d WHERE d.barcode=:barcode")
-    fun getByBarcode(barcode: String): Maybe<DeskWithEquipmentsEntity>
+    @Query(
+        """
+        SELECT 
+            COUNT(e.id) AS equipmentCount,
+            SUM(CASE WHEN e.scanState = 'ScannedAndSynced' THEN 1 ELSE 0 END) AS syncedEquipmentCount,
+            SUM(CASE WHEN e.scanState = 'ScannedButNotSynced' THEN 1 ELSE 0 END) AS scannedEquipmentCount,
+            d.id,
+            d.barcode,
+            d.isScanned,
+            d.scanDate
+        FROM DeskEntity d
+        INNER JOIN EquipmentEntity e
+            ON d.id = e.deskId
+            AND d.barcode=:barcode
+        GROUP BY d.id, d.barcode, d.isScanned, d.scanDate
+        """
+    )
+    fun getByBarcode(barcode: String): Maybe<DeskWithStatsEntity>
 
     @Update
     fun update(desk: DeskEntity): Completable

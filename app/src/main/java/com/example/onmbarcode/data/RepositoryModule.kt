@@ -2,8 +2,8 @@ package com.example.onmbarcode.data
 
 import com.example.onmbarcode.data.desk.DeskEntity
 import com.example.onmbarcode.data.desk.DeskResponseMapper
-import com.example.onmbarcode.data.desk.DeskWithEquipmentsEntity
-import com.example.onmbarcode.data.desk.DeskWithEquipmentsEntityMapper
+import com.example.onmbarcode.data.desk.DeskWithStatsEntity
+import com.example.onmbarcode.data.desk.DeskWithStatsEntityMapper
 import com.example.onmbarcode.data.equipment.EquipmentEntity
 import com.example.onmbarcode.data.equipment.EquipmentEntityMapper
 import com.example.onmbarcode.data.equipment.EquipmentResponseMapper
@@ -19,7 +19,7 @@ import dagger.Module
 @Module
 interface RepositoryModule {
     @Binds
-    fun provideDeskWithEquipmentsEntityMapper(mapper: DeskWithEquipmentsEntityMapper): Mapper<DeskWithEquipmentsEntity, Desk>
+    fun provideDeskWithStatsEntityMapper(mapper: DeskWithStatsEntityMapper): Mapper<DeskWithStatsEntity, Desk>
 
     @Binds
     fun provideEquipmentEntityMapper(mapper: EquipmentEntityMapper): Mapper<EquipmentEntity, Equipment>

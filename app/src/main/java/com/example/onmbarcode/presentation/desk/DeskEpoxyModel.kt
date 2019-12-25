@@ -7,12 +7,11 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.util.KotlinEpoxyHolder
-import kotlinx.android.synthetic.main.item_desk.view.*
 
 @EpoxyModelClass(layout = R.layout.item_desk)
 abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
     @EpoxyAttribute
-    lateinit var desk: DeskUi
+    lateinit var desk: Desk
 
     @EpoxyAttribute
     lateinit var clickListener: View.OnClickListener
@@ -24,12 +23,12 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
             scanCount.text = view.context.getString(
                 R.string.scanned_equipment_count,
                 desk.scannedEquipmentCount,
-                desk.equipmentsCount
+                desk.equipmentCount
             )
             syncedCount.text = view.context.getString(
                 R.string.synced_equipment_count,
                 desk.syncedEquipmentCount,
-                desk.equipmentsCount
+                desk.equipmentCount
             )
             view.setOnClickListener(clickListener)
         }

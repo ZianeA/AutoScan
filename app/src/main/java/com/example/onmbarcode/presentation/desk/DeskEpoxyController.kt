@@ -3,9 +3,9 @@ package com.example.onmbarcode.presentation.desk
 import android.view.View
 import com.airbnb.epoxy.AsyncEpoxyController
 
-class DeskEpoxyController(private val onDeskClickListener: ((clickedDesk: DeskUi) -> Unit)) :
+class DeskEpoxyController(private val onDeskClickListener: ((clickedDesk: Desk) -> Unit)) :
     AsyncEpoxyController() {
-    var desks: List<DeskUi> = emptyList()
+    var desks: List<Desk> = emptyList()
         set(value) {
             field = value
             requestModelBuild()

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
 
 import com.example.onmbarcode.R
-import com.example.onmbarcode.presentation.desk.DeskUi
+import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.util.ItemDecoration
 import com.example.onmbarcode.presentation.util.MySnackbar
 import dagger.android.support.AndroidSupportInjection
@@ -186,7 +186,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     private val selectedDesk
-        get() = arguments?.getParcelable<DeskUi>(ARG_SELECTED_DESK)
+        get() = arguments?.getParcelable<Desk>(ARG_SELECTED_DESK)
             ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
 
     companion object {
@@ -200,7 +200,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
          * @return A new instance of fragment EquipmentFragment.
          */
         @JvmStatic
-        fun newInstance(selectedDesk: DeskUi) =
+        fun newInstance(selectedDesk: Desk) =
             EquipmentFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(ARG_SELECTED_DESK, selectedDesk)

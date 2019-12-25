@@ -1,8 +1,8 @@
 package com.example.onmbarcode.presentation.desk
 
 interface DeskView {
-    fun displayDesks(desks: List<DeskUi>)
-    fun displayEquipmentsScreen(desk: DeskUi)
+    fun displayDesks(desks: List<Desk>)
+    fun displayEquipmentsScreen(desk: Desk)
     fun displayUnknownBarcodeMessage()
     fun displayGenericErrorMessage()
     fun clearBarcodeInputArea()

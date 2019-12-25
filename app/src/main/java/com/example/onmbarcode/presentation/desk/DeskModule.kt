@@ -8,7 +8,4 @@ import dagger.Module
 interface DeskModule {
     @Binds
     fun provideDeskView(fragment: DeskFragment): DeskView
-
-    @Binds
-    fun provideDeskUiMapper(mapper: DeskUiMapper): Mapper<DeskUi, Desk>
 }

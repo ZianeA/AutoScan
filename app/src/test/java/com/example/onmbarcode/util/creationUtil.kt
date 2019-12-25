@@ -1,10 +1,8 @@
 package com.example.onmbarcode.util
 
 import com.example.onmbarcode.data.desk.DeskEntity
-import com.example.onmbarcode.data.desk.DeskWithEquipmentsEntity
 import com.example.onmbarcode.data.equipment.EquipmentEntity
 import com.example.onmbarcode.presentation.desk.Desk
-import com.example.onmbarcode.presentation.desk.DeskUi
 import com.example.onmbarcode.presentation.equipment.Equipment
 import kotlin.collections.HashMap
 

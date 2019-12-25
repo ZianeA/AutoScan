@@ -6,10 +6,13 @@ import androidx.room.PrimaryKey
 import com.example.onmbarcode.presentation.equipment.Equipment
 import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Desk(
     val id: Int,
     val barcode: String,
     val isScanned: Boolean,
     val scanDate: Long,
-    val equipments: List<Equipment>
-)
+    val equipmentCount: Int,
+    val scannedEquipmentCount: Int,
+    val syncedEquipmentCount: Int
+) : Parcelable

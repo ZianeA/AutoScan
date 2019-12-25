@@ -18,8 +18,7 @@ class DeskPresenter @Inject constructor(
     private val deskRepository: DeskRepository,
     private val userRepository: UserRepository,
     private val schedulerProvider: SchedulerProvider,
-    private val clock: Clock,
-    private val DeskUiMapper: Mapper<DeskUi, Desk>
+    private val clock: Clock
 ) {
     private val disposables = CompositeDisposable()
     private var isBarcodeScanInProgress = false
@@ -30,7 +29,6 @@ class DeskPresenter @Inject constructor(
         val disposable = deskRepository.isDatabaseEmpty()
             .flatMapCompletable { if (it) deskRepository.downloadDatabase() else Completable.complete() }
             .andThen(deskRepository.getScannedDesks())
-            .map { it.map(DeskUiMapper::mapReverse) }
             .applySchedulers(schedulerProvider)
             .subscribe({
                 view.displayDesks(it)
@@ -62,7 +60,6 @@ class DeskPresenter @Inject constructor(
                 ).andThen(Single.just(it))
                     .toMaybe()
             }
-            .map(DeskUiMapper::mapReverse)
             .applySchedulers(schedulerProvider)
             .subscribe(
                 { view.displayEquipmentsScreen(it) },
@@ -95,7 +92,7 @@ class DeskPresenter @Inject constructor(
         isBarcodeScanInProgress = false
     }
 
-    fun onDeskClicked(desk: DeskUi) {
+    fun onDeskClicked(desk: Desk) {
         view.displayEquipmentsScreen(desk)
     }
 }
