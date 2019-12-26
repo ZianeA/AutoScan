@@ -22,4 +22,12 @@
         <item name="boxStrokeColor">@color/spinner_box_stroke</item>
     </style>
 
+    <style name="NotScannedTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeColor">@color/not_scanned_box_stroke</item>
+    </style>
+
+    <style name="NotSyncedTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeColor">@color/not_synced_box_stroke</item>
+    </style>
+
 </resources>
