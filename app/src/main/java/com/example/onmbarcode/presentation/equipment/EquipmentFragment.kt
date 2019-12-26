@@ -131,6 +131,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
             recyclerView.setController(epoxyController)
         }
 
+        epoxyController.desk = selectedDesk
         epoxyController.equipments = equipment
         epoxyController.requestModelBuild()
     }
