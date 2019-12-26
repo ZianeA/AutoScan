@@ -1,7 +1,11 @@
 package com.example.onmbarcode.presentation.desk
 
+import android.database.sqlite.SQLiteDatabaseCorruptException
+import com.example.onmbarcode.data.KeyValueStore
+import com.example.onmbarcode.data.PreferencesStringStore
 import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.data.desk.DeskRepository
+import com.example.onmbarcode.data.equipment.EquipmentRepository
 import com.example.onmbarcode.data.user.UserRepository
 import com.example.onmbarcode.presentation.di.FragmentScope
 import com.example.onmbarcode.presentation.util.Clock
@@ -17,6 +21,8 @@ class DeskPresenter @Inject constructor(
     private val view: DeskView,
     private val deskRepository: DeskRepository,
     private val userRepository: UserRepository,
+    private val equipmentRepository: EquipmentRepository,
+    private val store: KeyValueStore<String>,
     private val schedulerProvider: SchedulerProvider,
     private val clock: Clock
 ) {
@@ -26,14 +32,36 @@ class DeskPresenter @Inject constructor(
     fun start() {
         view.disableBarcodeInput()
 
-        val disposable = deskRepository.isDatabaseEmpty()
-            .flatMapCompletable { if (it) deskRepository.downloadDatabase() else Completable.complete() }
-            .andThen(deskRepository.getScannedDesks())
-            .applySchedulers(schedulerProvider)
-            .subscribe({
-                view.displayDesks(it)
-                view.enableBarcodeInput()
-            }, { /*onError*/ })
+        val disposable =
+            deskRepository.isDatabaseEmpty()
+                .flatMapCompletable { isDatabaseEmpty ->
+                    if (isDatabaseEmpty) {
+                        deskRepository.downloadDatabase()
+                    } else {
+                        equipmentRepository.getAllEquipmentCount()
+                            .flatMapCompletable {
+                                val t = store.get(PreferencesStringStore.EQUIPMENT_COUNT_KEY, "0")
+                                val isDatabaseCorrupted =
+                                    store.get(PreferencesStringStore.EQUIPMENT_COUNT_KEY, "0")
+                                        .equals(it.toString(), true).not()
+                                if (isDatabaseCorrupted) {
+                                    deskRepository.deleteAllDesks()
+                                        .andThen(equipmentRepository.deleteAllEquipments())
+                                        .andThen(Completable.error(SQLiteDatabaseCorruptException("Database was not fully downloaded")))
+                                } else Completable.complete()
+                            }
+                    }
+                }
+                .retry()
+                .andThen(deskRepository.getScannedDesks())
+                .applySchedulers(schedulerProvider)
+                .subscribe({
+                    view.displayDesks(it)
+                    view.enableBarcodeInput()
+                }, {
+                    val t = it
+                    view.displayGenericErrorMessage()
+                })
 
         disposables.add(disposable)
     }

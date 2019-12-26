@@ -58,4 +58,7 @@ interface DeskDao {
 
     @Query("SELECT CASE WHEN EXISTS(SELECT 1 from DeskEntity) THEN 0 ELSE 1 END")
     fun isEmpty(): Single<Boolean>
+
+    @Query("DELETE FROM DeskEntity")
+    fun deleteAll(): Completable
 }

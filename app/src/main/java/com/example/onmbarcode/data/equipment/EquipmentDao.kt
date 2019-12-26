@@ -26,4 +26,10 @@ interface EquipmentDao {
 
     @Query("SELECT * FROM EquipmentEntity e WHERE e.scanState=:scanState")
     fun getByScanState(scanState: Equipment.ScanState): Single<List<EquipmentEntity>>
+
+    @Query("SELECT COUNT(*) FROM EquipmentEntity")
+    fun getAllCount(): Single<Int>
+
+    @Query("DELETE FROM EquipmentEntity")
+    fun deleteAll(): Completable
 }

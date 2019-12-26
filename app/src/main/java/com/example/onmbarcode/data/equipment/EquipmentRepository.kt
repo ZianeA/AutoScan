@@ -58,4 +58,8 @@ class EquipmentRepository @Inject constructor(
                 equipmentDao.update(equipmentEntityMapper.mapReverse(scannedAndSyncedEquipment))
             })
     }
+
+    fun getAllEquipmentCount(): Single<Int> = equipmentDao.getAllCount()
+
+    fun deleteAllEquipments(): Completable = equipmentDao.deleteAll()
 }

@@ -1,7 +1,9 @@
 package com.example.onmbarcode.data.desk
 
 import android.util.Log
+import com.example.onmbarcode.data.KeyValueStore
 import com.example.onmbarcode.data.OdooService
+import com.example.onmbarcode.data.PreferencesStringStore.Companion.EQUIPMENT_COUNT_KEY
 import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.data.equipment.EquipmentDao
 import com.example.onmbarcode.data.equipment.EquipmentEntity
@@ -25,6 +27,7 @@ class DeskRepository @Inject constructor(
     private val deskDao: DeskDao,
     private val equipmentDao: EquipmentDao,
     private val userRepository: UserRepository, //Should probably use userDao instead
+    private val store: KeyValueStore<String>,
     private val deskService: DeskService,
     private val equipmentService: EquipmentService,
     private val deskEntityMapper: Mapper<DeskWithStatsEntity, Desk>,
@@ -48,6 +51,7 @@ class DeskRepository @Inject constructor(
                     .flatMapCompletable { deskDao.addAll(it) }
                     .andThen(equipmentService.getEquipmentCount(user))
                     .flatMapObservable { count ->
+                        store.put(EQUIPMENT_COUNT_KEY, count.toString())
                         Observable.range(0, ceil(count.toDouble() / PAGE_SIZE).toInt() + 1)
                     }
                     .map { it * PAGE_SIZE }
@@ -68,6 +72,8 @@ class DeskRepository @Inject constructor(
         val deskEntity = deskEntityMapper.mapReverse(desk).deskEntity
         return deskDao.update(deskEntity)
     }
+
+    fun deleteAllDesks(): Completable = deskDao.deleteAll()
 
     companion object {
         private const val PAGE_SIZE = 500
