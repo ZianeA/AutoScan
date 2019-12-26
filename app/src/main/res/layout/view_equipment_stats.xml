@@ -19,6 +19,7 @@
         app:startIconTint="@color/not_scanned">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/notScannedCount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="458"
@@ -27,8 +28,8 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        style="@style/NotSyncedTextInputLayoutStyle"
         android:id="@+id/notSyncedLayout"
+        style="@style/NotSyncedTextInputLayoutStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -39,6 +40,7 @@
         app:startIconTint="@color/scanned_but_not_synced">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/notSyncedCount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="400"
