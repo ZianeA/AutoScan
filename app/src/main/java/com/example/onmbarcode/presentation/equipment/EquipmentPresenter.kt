@@ -9,6 +9,7 @@ import com.example.onmbarcode.presentation.util.applySchedulers
 import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
 import com.example.onmbarcode.service.SyncBackgroundService
 import de.timroes.axmlrpc.XMLRPCException
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.disposables.CompositeDisposable
 import java.lang.IllegalArgumentException
@@ -91,7 +92,7 @@ class EquipmentPresenter @Inject constructor(
                 {
                     view.hideProgressBarForEquipment(it.id)
                     view.animateEquipment(it.id)
-                    if(it.deskId != it.previousDeskId) view.showEquipmentMovedMessage()
+                    if (it.deskId != it.previousDeskId) view.showEquipmentMovedMessage()
                 },
                 {
                     view.showErrorMessage()
@@ -117,11 +118,26 @@ class EquipmentPresenter @Inject constructor(
             equipment.copy(
                 condition = EquipmentCondition.getByValue(conditionIndex)
             )
-        ).applySchedulers(schedulerProvider)
+        )
+            .onErrorResumeNext {
+                when (it) {
+                    is XMLRPCException -> {
+                        //TODO should probably do this only if it's a no internet connexion exception
+                        syncService.syncEquipments()
+                        Completable.complete()
+                    }
+                    else -> {
+                        // This is probably a serious error
+                        Completable.error(it)
+                    }
+                }
+            }
+            .applySchedulers(schedulerProvider)
             .subscribe({
                 view.hideProgressBarForEquipment(equipment.id)
                 view.displayEquipmentConditionChangedMessage()
-            }, {})
+            },
+                { view.showErrorMessage() })
 
         disposables.add(disposable)
     }
