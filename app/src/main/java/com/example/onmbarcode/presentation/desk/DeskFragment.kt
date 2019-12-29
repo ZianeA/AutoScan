@@ -152,6 +152,22 @@ class DeskFragment : Fragment(), DeskView {
         }
     }
 
+    override fun displayDownloadViews() {
+        downloadProgressBar.isIndeterminate = false
+        downloadProgressBar.visibility = View.VISIBLE
+        downloadMessage.visibility = View.VISIBLE
+    }
+
+    override fun setDownloadProgress(percentage: Int) {
+        downloadProgressBar.isIndeterminate = false
+        downloadProgressBar.progress = percentage
+    }
+
+    override fun hideDownloadViews() {
+        downloadMessage.visibility = View.GONE
+        downloadProgressBar.visibility = View.GONE
+    }
+
     override fun displayLoginScreen() {
         fragNavController.replaceFragment(LoginFragment.newInstance())
     }

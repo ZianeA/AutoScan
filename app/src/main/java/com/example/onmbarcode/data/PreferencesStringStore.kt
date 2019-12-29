@@ -22,6 +22,5 @@ class PreferencesStringStore @Inject constructor(private val app: Application) :
     // TODO move to interface
     companion object {
         const val SERVER_URL_KEY = "SERVER_URL"
-        const val EQUIPMENT_COUNT_KEY = "EQUIPMENT_COUNT_KEY"
     }
 }

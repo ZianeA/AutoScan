@@ -34,5 +34,8 @@ interface RepositoryModule {
     fun provideUserEntityMapper(mapper: UserEntityMapper): Mapper<UserEntity, User>
 
     @Binds
-    fun providePreferences(preferencesStringStore: PreferencesStringStore): KeyValueStore<String>
+    fun provideStringPreferences(preferencesStringStore: PreferencesStringStore): KeyValueStore<String>
+
+    @Binds
+    fun provideIntPreferences(preferencesIntStore: PreferencesIntStore): KeyValueStore<Int>
 }
