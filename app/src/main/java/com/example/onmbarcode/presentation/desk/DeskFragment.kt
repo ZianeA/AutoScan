@@ -1,22 +1,13 @@
 package com.example.onmbarcode.presentation.desk
 
 
-import android.animation.AnimatorSet
-import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.PorterDuff
-import android.os.Build
 import android.os.Bundle
-import android.text.InputType
 import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import com.airbnb.epoxy.EpoxyRecyclerView
 
@@ -24,7 +15,6 @@ import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.equipment.EquipmentFragment
 import com.example.onmbarcode.presentation.login.LoginFragment
 import com.example.onmbarcode.presentation.util.ItemDecoration
-import com.google.android.material.animation.AnimatorSetCompat
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_desk.*
@@ -47,6 +37,8 @@ class DeskFragment : Fragment(), DeskView {
 
     private val epoxyController =
         DeskEpoxyController { presenter.onDeskClicked(it) }
+
+    private var delayScanDeskMessage = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -177,6 +169,7 @@ class DeskFragment : Fragment(), DeskView {
         downloadProgressBar.animate()
             .alpha(0f)
             .withStartAction {
+                delayScanDeskMessage = true
                 animateDownloadCompleteMessage(downloadMessageAnimator.duration)
             }
             .withEndAction {
@@ -201,7 +194,11 @@ class DeskFragment : Fragment(), DeskView {
                     animate()
                         .setStartDelay(1500)
                         .alpha(0f)
-                        .withEndAction { visibility = View.GONE }
+                        .withEndAction {
+                            visibility = View.GONE
+                            delayScanDeskMessage = false
+                            displayScanDeskMessage()
+                        }
                         .start()
                 }
                 .start()
@@ -210,6 +207,13 @@ class DeskFragment : Fragment(), DeskView {
 
     override fun displayLoginScreen() {
         fragNavController.replaceFragment(LoginFragment.newInstance())
+    }
+
+    override fun displayScanDeskMessage() {
+        if(delayScanDeskMessage) return
+
+        scanDeskMessage.visibility = View.VISIBLE
+        barcodeIcon.visibility = View.VISIBLE
     }
 
     companion object {

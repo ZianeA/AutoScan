@@ -13,4 +13,5 @@ interface DeskView {
     fun displayDownloadViews()
     fun hideDownloadViews()
     fun indicateDownloadPending()
+    fun displayScanDeskMessage()
 }

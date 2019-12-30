@@ -49,7 +49,9 @@ class DeskPresenter @Inject constructor(
                 .flatMap { deskRepository.getScannedDesks() }
                 .applySchedulers(schedulerProvider)
                 .subscribe({
-                    view.displayDesks(it)
+                    if (it.isEmpty()) view.displayScanDeskMessage()
+                    else view.displayDesks(it)
+
                     view.enableBarcodeInput()
                 }, {
                     view.displayGenericErrorMessage()
