@@ -14,7 +14,11 @@ class PreferencesIntStore @Inject constructor(private val app: Application) :
     }
 
     override fun put(key: String, value: Int) {
-        preferences.edit().putInt(key, value).apply()
+        preferences.edit().putInt(key, value).commit()
+    }
+
+    override fun add(key: String, value: Int, defaultValue: Int) {
+        put(key, get(key, defaultValue) + value)
     }
 
     companion object {

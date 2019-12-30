@@ -1,6 +1,7 @@
 package com.example.onmbarcode.presentation.desk
 
 
+import android.animation.AnimatorSet
 import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
@@ -23,6 +24,7 @@ import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.equipment.EquipmentFragment
 import com.example.onmbarcode.presentation.login.LoginFragment
 import com.example.onmbarcode.presentation.util.ItemDecoration
+import com.google.android.material.animation.AnimatorSetCompat
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_desk.*
@@ -153,7 +155,7 @@ class DeskFragment : Fragment(), DeskView {
     }
 
     override fun displayDownloadViews() {
-        downloadProgressBar.isIndeterminate = false
+        downloadProgressBar.isIndeterminate = true
         downloadProgressBar.visibility = View.VISIBLE
         downloadMessage.visibility = View.VISIBLE
     }
@@ -164,8 +166,41 @@ class DeskFragment : Fragment(), DeskView {
     }
 
     override fun hideDownloadViews() {
-        downloadMessage.visibility = View.GONE
-        downloadProgressBar.visibility = View.GONE
+        val downloadMessageAnimator = downloadMessage.animate()
+            .alpha(0f)
+            .withEndAction { downloadMessage.visibility = View.GONE }
+
+        downloadProgressBar.animate()
+            .alpha(0f)
+            .withStartAction {
+                animateDownloadCompleteMessage(downloadMessageAnimator.duration)
+            }
+            .withEndAction {
+                downloadProgressBar.visibility = View.GONE
+                downloadMessageAnimator.start()
+            }
+            .start()
+    }
+
+    private fun animateDownloadCompleteMessage(delay: Long) {
+        downloadCompleteMessage.apply {
+            val currentPosY = translationY
+            translationY = currentPosY + 100
+            animate()
+                .setStartDelay(delay)
+                .withStartAction { visibility = View.VISIBLE }
+                .alpha(1f)
+                .translationY(currentPosY)
+                .withEndAction {
+                    animate()
+                        .setStartDelay(1500)
+                        .alpha(0f)
+                        .withEndAction { visibility = View.GONE }
+                        .start()
+                }
+                .start()
+            alpha = 0f
+        }
     }
 
     override fun displayLoginScreen() {

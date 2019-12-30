@@ -31,9 +31,14 @@ class DeskPresenter @Inject constructor(
 
         val disposable = deskRepository.downloadDatabase()
             .observeOn(schedulerProvider.main)
-            .doOnNext { view.setDownloadProgress(it) }
+            .doOnNext {
+                view.setDownloadProgress(it)
+
+                if(it >= 100){
+                    view.hideDownloadViews()
+                }
+            }
             .toList()
-            .doOnSuccess { view.hideDownloadViews() }
             .observeOn(schedulerProvider.worker)
             .flatMap { deskRepository.getScannedDesks() }
             .applySchedulers(schedulerProvider)

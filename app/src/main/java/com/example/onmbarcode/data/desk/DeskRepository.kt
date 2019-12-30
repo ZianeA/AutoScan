@@ -18,6 +18,7 @@ import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.ceil
+import kotlin.math.floor
 
 @Singleton
 class DeskRepository @Inject constructor(
@@ -42,57 +43,60 @@ class DeskRepository @Inject constructor(
     fun downloadDatabase(): Observable<Int> {
         return userRepository.getUser()
             .toSingle()
-            .flatMap {
+            .flatMapObservable { user ->
                 val downloadedEquipment = store.get(EQUIPMENT_DOWNLOADED_COUNT_KEY, 0)
                 val allEquipment = store.get(EQUIPMENT_COUNT_KEY, 0)
-                if(downloadedEquipment == 0 || downloadedEquipment != allEquipment){
-                    if(downloadedEquipment == 0) deskDao.deleteAll()
 
+                if (downloadedEquipment == 0 || downloadedEquipment < allEquipment) {
+                    deskService.getAll(user)
+                        .map { list -> list.map { deskResponseMapper.map(it as HashMap<*, *>) } }
+                        .flatMapCompletable { deskDao.addAll(it) }
+                        .andThen(equipmentService.getEquipmentCount(user))
+                        .flatMapObservable { count ->
+                            store.put(EQUIPMENT_COUNT_KEY, count)
 
-                } else {
+                            val rangeStart =
+                                ceil(downloadedEquipment.toDouble() / PAGE_SIZE).toInt()
+                            val rangeCount =
+                                ceil(count.toDouble() / PAGE_SIZE).toInt() - rangeStart
 
-                }
-
-                isDownloadFinished
-            }
-            .flatMapObservable { user ->
-                deskService.getAll(user)
-                    .map { list -> list.map { deskResponseMapper.map(it as HashMap<*, *>) } }
-                    .flatMapCompletable { deskDao.addAll(it) }
-                    .andThen(equipmentService.getEquipmentCount(user))
-                    .flatMapObservable { count ->
-                        store.put(EQUIPMENT_COUNT_KEY, count)
-                        Observable.range(0, ceil(count.toDouble() / PAGE_SIZE).toInt() + 1)
-                            .map {
-                                object {
-                                    val offset = it * PAGE_SIZE;
-                                    val total = count
+                            Observable.range(rangeStart, rangeCount)
+                                .map {
+                                    object {
+                                        val offset = it * PAGE_SIZE
+                                        val total = count
+                                    }
                                 }
-                            }
-                    }
-                    .doAfterNext {
-                        Log.d(
-                            "No Tag",
-                            "Equipment: $it.offset - ${it.offset + PAGE_SIZE}"
-                        )
-                    }
-                    .flatMap { holder ->
-                        equipmentService.get(user, holder.offset, PAGE_SIZE)
-                            .map { list -> list.map { equipmentResponseMapper.map(it as HashMap<*, *>) } }
-                            .map { list -> list.map { equipmentEntityMapper.mapReverse(it) } }
-                            .flatMapObservable {
-                                equipmentDao.addAll(it)
-                                    .andThen(Completable.defer {
-                                        Completable.fromAction {
-                                            store.put(
-                                                EQUIPMENT_DOWNLOADED_COUNT_KEY,
-                                                holder.offset + PAGE_SIZE
+                        }
+                        .doAfterNext {
+                            Log.d(
+                                "No Tag",
+                                "Equipment: ${it.offset} - ${it.offset + PAGE_SIZE}"
+                            )
+                        }
+                        .flatMap { holder ->
+                            equipmentService.get(user, holder.offset, PAGE_SIZE)
+                                .map { list -> list.map { equipmentResponseMapper.map(it as HashMap<*, *>) } }
+                                .map { list -> list.map { equipmentEntityMapper.mapReverse(it) } }
+                                .flatMapObservable {
+                                    equipmentDao.addAll(it)
+                                        .andThen(Completable.defer {
+                                            Completable.fromAction {
+                                                store.add(
+                                                    EQUIPMENT_DOWNLOADED_COUNT_KEY,
+                                                    it.size,
+                                                    0
+                                                )
+                                            }
+                                        })
+                                        .andThen(
+                                            Observable.just(
+                                                ceil(holder.offset * 100f / holder.total).toInt()
                                             )
-                                        }
-                                    })
-                                    .andThen(Observable.just(holder.offset * 100 / holder.total))
-                            }
-                    }
+                                        )
+                                }
+                        }
+                } else Observable.empty<Int>()
             }
     }
 

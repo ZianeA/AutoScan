@@ -14,9 +14,9 @@
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
         app:title="@string/toolbar_title_desk" />
 
     <com.airbnb.epoxy.EpoxyRecyclerView
@@ -47,7 +47,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/barcodeSubmitButton"
         app:layout_constraintStart_toStartOf="parent" />
-        <!--android:text="CNTM08"-->
+    <!--android:text="CNTM08"-->
 
     <ImageButton
         android:id="@+id/barcodeSubmitButton"
@@ -98,5 +98,16 @@
         app:layout_constraintEnd_toEndOf="@+id/downloadProgressBar"
         app:layout_constraintStart_toStartOf="@+id/downloadProgressBar"
         app:layout_constraintTop_toBottomOf="@+id/downloadProgressBar" />
+
+    <TextView
+        android:id="@+id/downloadCompleteMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Téléchargement terminé."
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/deskRecyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

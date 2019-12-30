@@ -8,7 +8,7 @@ import io.reactivex.Single
 
 @Dao
 interface DeskDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addAll(desk: List<DeskEntity>): Completable
 
     @Insert
