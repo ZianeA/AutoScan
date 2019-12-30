@@ -12,4 +12,5 @@ interface DeskView {
     fun setDownloadProgress(percentage: Int)
     fun displayDownloadViews()
     fun hideDownloadViews()
+    fun indicateDownloadPending()
 }

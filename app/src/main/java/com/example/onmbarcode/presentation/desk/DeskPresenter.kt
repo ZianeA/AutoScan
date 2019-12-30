@@ -1,5 +1,6 @@
 package com.example.onmbarcode.presentation.desk
 
+import android.util.Log
 import com.example.onmbarcode.data.KeyValueStore
 import com.example.onmbarcode.data.desk.DeskRepository
 import com.example.onmbarcode.data.equipment.EquipmentRepository
@@ -8,8 +9,10 @@ import com.example.onmbarcode.presentation.di.FragmentScope
 import com.example.onmbarcode.presentation.util.Clock
 import com.example.onmbarcode.presentation.util.applySchedulers
 import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @FragmentScope
@@ -27,28 +30,30 @@ class DeskPresenter @Inject constructor(
 
     fun start() {
         view.disableBarcodeInput()
-        view.displayDownloadViews()
+        if (deskRepository.isDownloadComplete().not()) view.displayDownloadViews()
 
-        val disposable = deskRepository.downloadDatabase()
-            .observeOn(schedulerProvider.main)
-            .doOnNext {
-                view.setDownloadProgress(it)
+        val disposable =
+            deskRepository.downloadDatabase()
+                .observeOn(schedulerProvider.main)
+                .doOnNext {
+                    view.setDownloadProgress(it)
 
-                if(it >= 100){
-                    view.hideDownloadViews()
+                    if (it >= 100) {
+                        view.hideDownloadViews()
+                    }
                 }
-            }
-            .toList()
-            .observeOn(schedulerProvider.worker)
-            .flatMap { deskRepository.getScannedDesks() }
-            .applySchedulers(schedulerProvider)
-            .subscribe({
-                view.displayDesks(it)
-                view.enableBarcodeInput()
-            }, {
-                view.displayGenericErrorMessage()
-            })
-
+                .doOnError { view.indicateDownloadPending() }
+                .observeOn(schedulerProvider.worker)
+                .retryWhen { it.delay(1, TimeUnit.SECONDS) }
+                .toList()
+                .flatMap { deskRepository.getScannedDesks() }
+                .applySchedulers(schedulerProvider)
+                .subscribe({
+                    view.displayDesks(it)
+                    view.enableBarcodeInput()
+                }, {
+                    view.displayGenericErrorMessage()
+                })
         disposables.add(disposable)
     }
 

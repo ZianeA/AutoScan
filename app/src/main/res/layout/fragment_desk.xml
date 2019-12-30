@@ -85,19 +85,23 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:indeterminate="true"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/deskRecyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/downloadMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Téléchargement en cours... Veuillez patienter."
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/downloadProgressBar"
         app:layout_constraintStart_toStartOf="@+id/downloadProgressBar"
-        app:layout_constraintTop_toBottomOf="@+id/downloadProgressBar" />
+        app:layout_constraintTop_toBottomOf="@+id/downloadProgressBar"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/downloadCompleteMessage"

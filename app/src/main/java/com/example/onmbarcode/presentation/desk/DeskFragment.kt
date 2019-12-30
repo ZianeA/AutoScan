@@ -165,6 +165,10 @@ class DeskFragment : Fragment(), DeskView {
         downloadProgressBar.progress = percentage
     }
 
+    override fun indicateDownloadPending() {
+        downloadProgressBar.isIndeterminate = true
+    }
+
     override fun hideDownloadViews() {
         val downloadMessageAnimator = downloadMessage.animate()
             .alpha(0f)
@@ -186,6 +190,8 @@ class DeskFragment : Fragment(), DeskView {
         downloadCompleteMessage.apply {
             val currentPosY = translationY
             translationY = currentPosY + 100
+            alpha = 0f
+
             animate()
                 .setStartDelay(delay)
                 .withStartAction { visibility = View.VISIBLE }
@@ -199,7 +205,6 @@ class DeskFragment : Fragment(), DeskView {
                         .start()
                 }
                 .start()
-            alpha = 0f
         }
     }
 

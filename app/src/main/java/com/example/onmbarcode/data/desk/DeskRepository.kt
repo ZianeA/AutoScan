@@ -40,6 +40,13 @@ class DeskRepository @Inject constructor(
 
     fun isDatabaseEmpty(): Single<Boolean> = deskDao.isEmpty()
 
+    fun isDownloadComplete(): Boolean {
+        val downloadedEquipment = store.get(EQUIPMENT_DOWNLOADED_COUNT_KEY, 0)
+        val allEquipment = store.get(EQUIPMENT_COUNT_KEY, 0)
+
+        return downloadedEquipment != 0 && downloadedEquipment >= allEquipment
+    }
+
     fun downloadDatabase(): Observable<Int> {
         return userRepository.getUser()
             .toSingle()
@@ -48,9 +55,14 @@ class DeskRepository @Inject constructor(
                 val allEquipment = store.get(EQUIPMENT_COUNT_KEY, 0)
 
                 if (downloadedEquipment == 0 || downloadedEquipment < allEquipment) {
-                    deskService.getAll(user)
-                        .map { list -> list.map { deskResponseMapper.map(it as HashMap<*, *>) } }
-                        .flatMapCompletable { deskDao.addAll(it) }
+                    Single.just(downloadedEquipment == 0)
+                        .flatMapCompletable {downloadDesks ->
+                            if (downloadDesks) {
+                                deskService.getAll(user)
+                                    .map { list -> list.map { deskResponseMapper.map(it as HashMap<*, *>) } }
+                                    .flatMapCompletable { deskDao.addAll(it) }
+                            } else Completable.complete()
+                        }
                         .andThen(equipmentService.getEquipmentCount(user))
                         .flatMapObservable { count ->
                             store.put(EQUIPMENT_COUNT_KEY, count)
@@ -74,7 +86,7 @@ class DeskRepository @Inject constructor(
                                 "Equipment: ${it.offset} - ${it.offset + PAGE_SIZE}"
                             )
                         }
-                        .flatMap { holder ->
+                        .concatMap { holder ->
                             equipmentService.get(user, holder.offset, PAGE_SIZE)
                                 .map { list -> list.map { equipmentResponseMapper.map(it as HashMap<*, *>) } }
                                 .map { list -> list.map { equipmentEntityMapper.mapReverse(it) } }
