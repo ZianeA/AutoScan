@@ -1,5 +1,6 @@
 package com.example.onmbarcode.presentation.equipment
 
+import com.example.onmbarcode.data.desk.DeskRepository
 import com.example.onmbarcode.data.equipment.EquipmentRepository
 import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.di.FragmentScope
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class EquipmentPresenter @Inject constructor(
     private val view: EquipmentView,
     private val equipmentRepository: EquipmentRepository,
+    private val deskRepository: DeskRepository,
     private val syncService: SyncBackgroundService,
     private val schedulerProvider: SchedulerProvider,
     private val clock: Clock
@@ -27,8 +29,19 @@ class EquipmentPresenter @Inject constructor(
     fun start(desk: Desk) {
         val disposable = equipmentRepository.getAllEquipmentForDesk(desk.id)
             .map { equipments -> equipments.sortedByDescending { it.scanDate } }
+            .flatMapSingle { e ->
+                deskRepository.getDeskById(desk.id)
+                    .map {
+                        object {
+                            val desk: Desk = it;
+                            val equipment: List<Equipment> = e
+                        }
+                    }
+            }
             .applySchedulers(schedulerProvider)
-            .subscribe({ if (view.isScrolling.not()) view.displayEquipments(it) }, { /*onError*/ })
+            .subscribe({
+                if (view.isScrolling.not()) view.displayEquipments(it.desk, it.equipment)
+            }, { /*onError*/ })
 
         disposables.add(disposable)
     }
@@ -37,8 +50,19 @@ class EquipmentPresenter @Inject constructor(
         val disposable = equipmentRepository.getAllEquipmentForDesk(deskId)
             .first(emptyList()) //Unsubscribe after the first emitted item
             .map { equipments -> equipments.sortedByDescending { it.scanDate } }
+            .flatMap { e ->
+                deskRepository.getDeskById(deskId)
+                    .map {
+                        object {
+                            val desk: Desk = it;
+                            val equipment: List<Equipment> = e
+                        }
+                    }
+            }
             .applySchedulers(schedulerProvider)
-            .subscribe({ if (view.isScrolling.not()) view.displayEquipments(it) }, { /*onError*/ })
+            .subscribe({
+                if (view.isScrolling.not()) view.displayEquipments(it.desk, it.equipment)
+            }, { /*onError*/ })
 
         disposables.add(disposable)
     }
@@ -91,7 +115,7 @@ class EquipmentPresenter @Inject constructor(
                 {
                     view.hideProgressBarForEquipment(it.id)
                     view.animateEquipment(it.id)
-                    if(it.deskId != it.previousDeskId) view.showEquipmentMovedMessage()
+                    if (it.deskId != it.previousDeskId) view.showEquipmentMovedMessage()
                 },
                 {
                     view.showErrorMessage()

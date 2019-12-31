@@ -22,7 +22,7 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
             deskBarcode.text = desk.barcode
             scanCount.text = view.context.getString(
                 R.string.scanned_equipment_count,
-                desk.scannedEquipmentCount,
+                desk.notSyncedEquipmentCount,
                 desk.equipmentCount
             )
             syncedCount.text = view.context.getString(

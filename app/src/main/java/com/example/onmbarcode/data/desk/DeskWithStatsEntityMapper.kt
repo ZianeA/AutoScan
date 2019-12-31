@@ -15,7 +15,8 @@ class DeskWithStatsEntityMapper @Inject constructor() : Mapper<DeskWithStatsEnti
                 deskEntity.isScanned,
                 deskEntity.scanDate,
                 equipmentCount,
-                scannedEquipmentCount,
+                equipmentCount - (notSyncedEquipmentCount + syncedEquipmentCount),
+                notSyncedEquipmentCount,
                 syncedEquipmentCount
             )
         }
@@ -26,7 +27,7 @@ class DeskWithStatsEntityMapper @Inject constructor() : Mapper<DeskWithStatsEnti
             DeskWithStatsEntity(
                 DeskEntity(id, barcode, isScanned, scanDate),
                 equipmentCount,
-                scannedEquipmentCount,
+                notSyncedEquipmentCount,
                 syncedEquipmentCount
             )
         }

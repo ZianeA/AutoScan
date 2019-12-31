@@ -126,12 +126,12 @@ class EquipmentFragment : Fragment(), EquipmentView {
         super.onAttach(context)
     }
 
-    override fun displayEquipments(equipment: List<Equipment>) {
+    override fun displayEquipments(desk: Desk, equipment: List<Equipment>) {
         if (recyclerView.adapter == null) {
             recyclerView.setController(epoxyController)
         }
 
-        epoxyController.desk = selectedDesk
+        epoxyController.desk = desk
         epoxyController.equipments = equipment
         epoxyController.requestModelBuild()
     }

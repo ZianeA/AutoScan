@@ -1,13 +1,10 @@
 package com.example.onmbarcode.data.desk
 
 import android.util.Log
-import com.example.onmbarcode.data.OdooService
 import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.data.equipment.EquipmentDao
 import com.example.onmbarcode.data.equipment.EquipmentEntity
-import com.example.onmbarcode.data.equipment.EquipmentResponseMapper
 import com.example.onmbarcode.data.equipment.EquipmentService
-import com.example.onmbarcode.data.user.UserDao
 import com.example.onmbarcode.data.user.UserRepository
 import com.example.onmbarcode.presentation.desk.Desk
 import com.example.onmbarcode.presentation.equipment.Equipment
@@ -18,7 +15,6 @@ import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.ceil
-import kotlin.random.Random
 
 @Singleton
 class DeskRepository @Inject constructor(
@@ -61,6 +57,11 @@ class DeskRepository @Inject constructor(
 
     fun findDesk(barcode: String): Maybe<Desk> {
         return deskDao.getByBarcode(barcode)
+            .map(deskEntityMapper::map)
+    }
+
+    fun getDeskById(id: Int): Single<Desk> {
+        return deskDao.getById(id)
             .map(deskEntityMapper::map)
     }
 

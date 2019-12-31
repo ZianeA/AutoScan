@@ -21,12 +21,12 @@ abstract class EquipmentStatsEpoxyModel : EpoxyModelWithHolder<EquipmentStatsHol
     override fun bind(holder: EquipmentStatsHolder) {
         super.bind(holder)
         holder.apply {
-            scannedCount.setText((desk.syncedEquipmentCount).toString())
-            notSyncedCount.setText((desk.scannedEquipmentCount - desk.syncedEquipmentCount).toString())
-            notScannedCount.setText((desk.equipmentCount - desk.scannedEquipmentCount).toString())
+            syncedCount.setText((desk.syncedEquipmentCount).toString())
+            notSyncedCount.setText((desk.notSyncedEquipmentCount).toString())
+            notScannedCount.setText((desk.notScannedEquipmentCount).toString())
 
-            scannedCount.setOnClickListener {
-                selectTag(scannedCount, scannedLayout, R.color.scanned_and_synced)
+            syncedCount.setOnClickListener {
+                selectTag(syncedCount, scannedLayout, R.color.scanned_and_synced)
             }
             notSyncedCount.setOnClickListener {
                 selectTag(notSyncedCount, notSyncedLayout, R.color.scanned_but_not_synced)
@@ -64,8 +64,8 @@ abstract class EquipmentStatsEpoxyModel : EpoxyModelWithHolder<EquipmentStatsHol
 }
 
 class EquipmentStatsHolder : KotlinEpoxyHolder() {
-    val scannedCount by bind<TextInputEditText>(R.id.scannedCount)
-    val scannedLayout by bind<TextInputLayout>(R.id.scannedLayout)
+    val syncedCount by bind<TextInputEditText>(R.id.syncedCount)
+    val scannedLayout by bind<TextInputLayout>(R.id.syncedLayout)
     val notSyncedCount by bind<TextInputEditText>(R.id.notSyncedCount)
     val notSyncedLayout by bind<TextInputLayout>(R.id.notSyncedLayout)
     val notScannedCount by bind<TextInputEditText>(R.id.notScannedCount)

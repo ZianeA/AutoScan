@@ -13,6 +13,7 @@ data class Desk(
     val isScanned: Boolean,
     val scanDate: Long,
     val equipmentCount: Int,
-    val scannedEquipmentCount: Int,
+    val notScannedEquipmentCount: Int,
+    val notSyncedEquipmentCount: Int,
     val syncedEquipmentCount: Int
 ) : Parcelable
