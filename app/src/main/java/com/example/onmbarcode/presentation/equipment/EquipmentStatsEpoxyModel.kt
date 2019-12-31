@@ -11,15 +11,15 @@ import com.google.android.material.textfield.TextInputEditText
 
 @EpoxyModelClass(layout = R.layout.view_equipment_stats)
 abstract class EquipmentStatsEpoxyModel : EpoxyModelWithHolder<EquipmentStatsHolder>() {
-    
     @EpoxyAttribute
     lateinit var desk: Desk
 
     override fun bind(holder: EquipmentStatsHolder) {
         super.bind(holder)
         holder.apply {
-            notScannedCount.setText(desk.equipmentCount - desk.scannedEquipmentCount)
-            notSyncedCount.setText(desk.equipmentCount - desk.syncedEquipmentCount)
+            notScannedCount.setText((desk.equipmentCount - desk.scannedEquipmentCount).toString())
+            notSyncedCount.setText((desk.scannedEquipmentCount - desk.syncedEquipmentCount).toString())
+            scanned.setText((desk.syncedEquipmentCount).toString())
         }
     }
 }
@@ -27,4 +27,5 @@ abstract class EquipmentStatsEpoxyModel : EpoxyModelWithHolder<EquipmentStatsHol
 class EquipmentStatsHolder : KotlinEpoxyHolder() {
     val notScannedCount by bind<TextInputEditText>(R.id.notScannedCount)
     val notSyncedCount by bind<TextInputEditText>(R.id.notSyncedCount)
+    val scanned by bind<TextInputEditText>(R.id.scannedCount)
 }

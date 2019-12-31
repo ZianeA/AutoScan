@@ -30,4 +30,8 @@
         <item name="boxStrokeColor">@color/not_synced_box_stroke</item>
     </style>
 
+    <style name="ScannedTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeColor">@color/scanned_box_stroke</item>
+    </style>
+
 </resources>

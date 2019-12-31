@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/notScannedLayout"
@@ -11,10 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        app:helperText="Non scannés"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/notSyncedLayout"
+        app:layout_constraintTop_toTopOf="@+id/notSyncedLayout"
         app:startIconDrawable="@drawable/ic_not_scanned"
         app:startIconTint="@color/not_scanned">
 
@@ -33,9 +31,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        app:helperText="Non synchronisés"
-        app:layout_constraintStart_toEndOf="@+id/notScannedLayout"
-        app:layout_constraintTop_toTopOf="@+id/notScannedLayout"
+        app:layout_constraintStart_toEndOf="@+id/scannedLayout"
+        app:layout_constraintTop_toTopOf="@+id/scannedLayout"
         app:startIconDrawable="@drawable/ic_not_synced"
         app:startIconTint="@color/scanned_but_not_synced">
 
@@ -45,6 +42,25 @@
             android:layout_height="wrap_content"
             android:text="400"
             android:textColor="@color/scanned_but_not_synced" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/scannedLayout"
+        style="@style/ScannedTextInputLayoutStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:startIconDrawable="@drawable/ic_check_circle"
+        app:startIconTint="@color/scanned_and_synced">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/scannedCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="400"
+            android:textColor="@color/scanned_and_synced" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

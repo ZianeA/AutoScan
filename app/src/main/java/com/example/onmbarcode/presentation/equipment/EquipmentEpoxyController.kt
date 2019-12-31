@@ -14,6 +14,7 @@ class EquipmentEpoxyController(private val dropdownMenuItemSelectedListener: ((c
         EquipmentStatsEpoxyModel_()
             .id(desk.id)
             .desk(desk)
+            .addTo(this)
 
         equipments.forEach {
             EquipmentEpoxyModel_()
