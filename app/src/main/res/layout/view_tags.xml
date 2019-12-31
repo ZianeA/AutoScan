@@ -18,9 +18,12 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/notScannedCount"
+            android:focusable="false"
+            android:longClickable="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="458"
+            android:cursorVisible="false"
             android:textColor="@color/not_scanned" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -41,6 +44,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="400"
+            android:focusable="false"
+            android:cursorVisible="false"
+            android:longClickable="false"
             android:textColor="@color/scanned_but_not_synced" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -60,6 +66,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="400"
+            android:focusable="false"
+            android:cursorVisible="false"
+            android:longClickable="false"
             android:textColor="@color/scanned_and_synced" />
 
     </com.google.android.material.textfield.TextInputLayout>
