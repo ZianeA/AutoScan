@@ -19,6 +19,14 @@ class PreferencesStringStore @Inject constructor(private val app: Application) :
         preferences.edit().putString(key, value).apply()
     }
 
+    override fun add(key: String, value: String, defaultValue: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun remove(key: String, value: String, defaultValue: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     companion object {
         const val SERVER_URL_KEY = "SERVER_URL"
     }

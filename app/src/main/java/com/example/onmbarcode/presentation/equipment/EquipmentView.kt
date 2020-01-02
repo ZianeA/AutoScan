@@ -3,7 +3,7 @@ package com.example.onmbarcode.presentation.equipment
 import com.example.onmbarcode.presentation.desk.Desk
 
 interface EquipmentView {
-    fun displayEquipments(desk: Desk, equipment: List<Equipment>)
+    fun displayEquipments(desk: Desk, equipment: List<Equipment>, tags: Set<String>)
     fun scrollToTop()
     fun clearBarcodeInputArea()
     fun displayEquipmentConditionChangedMessage()
