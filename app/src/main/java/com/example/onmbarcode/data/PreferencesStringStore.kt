@@ -3,11 +3,16 @@ package com.example.onmbarcode.data
 import android.app.Application
 import androidx.preference.PreferenceManager
 import dagger.Reusable
+import io.reactivex.Observable
 import javax.inject.Inject
 
 @Reusable
 class PreferencesStringStore @Inject constructor(private val app: Application) :
     KeyValueStore<String> {
+    override fun observe(key: String, defaultValue: String): Observable<String> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     private val preferences
         get() = PreferenceManager.getDefaultSharedPreferences(app)
 

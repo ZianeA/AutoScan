@@ -90,9 +90,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
         rootView.scrollDisabler.setOnClickListener { }
         epoxyController =
-            EquipmentEpoxyController(presenter::onEquipmentConditionPicked) {
-                presenter.onTagClicked(selectedDesk.id, it)
-            }
+            EquipmentEpoxyController(presenter::onEquipmentConditionPicked, presenter::onTagClicked)
         epoxyController.addModelBuildListener {
             if (scrollToTop) {
                 recyclerView.scrollToPosition(0)

@@ -1,5 +1,6 @@
 package com.example.onmbarcode.presentation.equipment
 
+import androidx.preference.PreferenceManager
 import com.example.onmbarcode.data.KeyValueStore
 import com.example.onmbarcode.data.PreferencesStringSetStore
 import com.example.onmbarcode.data.desk.DeskRepository
@@ -32,25 +33,29 @@ class EquipmentPresenter @Inject constructor(
     private val disposables = CompositeDisposable()
 
     fun start(desk: Desk) {
-        val disposable = equipmentRepository.getEquipmentForDeskWithScanState(
-            desk.id,
-            *selectedTags.map { ScanState.valueOf(it) }.toTypedArray()
-        )
-            .flatMapSingle { e ->
-                deskRepository.getDeskById(desk.id)
-                    .map {
-                        object {
-                            val desk: Desk = it;
-                            val equipment: List<Equipment> = e
-                        }
-                    }
-            }
-            .applySchedulers(schedulerProvider)
-            .subscribe({
-                if (view.isScrolling.not()) {
-                    view.displayEquipments(it.desk, it.equipment, selectedTags)
+        val disposable =
+            store.observe(PreferencesStringSetStore.EQUIPMENT_FILTER_KEY, defaultSelectedTags)
+                .switchMap { tags ->
+                    equipmentRepository.getEquipmentForDeskWithScanState(
+                        desk.id,
+                        *tags.map { ScanState.valueOf(it) }.toTypedArray()
+                    )
                 }
-            }, { /*onError*/ })
+                .flatMapSingle { e ->
+                    deskRepository.getDeskById(desk.id)
+                        .map {
+                            object {
+                                val desk: Desk = it;
+                                val equipment: List<Equipment> = e
+                            }
+                        }
+                }
+                .applySchedulers(schedulerProvider)
+                .subscribe({
+                    if (view.isScrolling.not()) {
+                        view.displayEquipments(it.desk, it.equipment, selectedTags)
+                    }
+                }, { /*onError*/ })
 
         disposables.add(disposable)
     }
@@ -165,7 +170,7 @@ class EquipmentPresenter @Inject constructor(
         disposables.add(disposable)
     }
 
-    fun onTagClicked(deskId: Int, tag: ScanState) {
+    fun onTagClicked(tag: ScanState) {
         val isTagSelected = selectedTags.find { it == tag.name } != null
         if (selectedTags.size == 1 && isTagSelected) return
 
@@ -184,28 +189,8 @@ class EquipmentPresenter @Inject constructor(
                 )
             }
         }
-            .flatMapObservable {
-                equipmentRepository.getEquipmentForDeskWithScanState(
-                    deskId,
-                    *selectedTags.map { ScanState.valueOf(it) }.toTypedArray()
-                )
-            }
-            .first(emptyList()) //Unsubscribe after the first emitted item
-            .flatMap { e ->
-                deskRepository.getDeskById(deskId)
-                    .map {
-                        object {
-                            val desk: Desk = it;
-                            val equipment: List<Equipment> = e
-                        }
-                    }
-            }
             .applySchedulers(schedulerProvider)
-            .subscribe({
-                if (view.isScrolling.not()) {
-                    view.displayEquipments(it.desk, it.equipment, selectedTags)
-                }
-            }, { /*onError*/ })
+            .subscribe({}, { /*onError*/ })
 
         disposables.add(disposable)
     }
