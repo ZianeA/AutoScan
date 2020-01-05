@@ -89,7 +89,8 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
 
         rootView.scrollDisabler.setOnClickListener { }
-        epoxyController = EquipmentEpoxyController(presenter::onEquipmentConditionPicked)
+        epoxyController =
+            EquipmentEpoxyController(presenter::onEquipmentConditionPicked, presenter::onTagClicked)
         epoxyController.addModelBuildListener {
             if (scrollToTop) {
                 recyclerView.scrollToPosition(0)
@@ -126,11 +127,13 @@ class EquipmentFragment : Fragment(), EquipmentView {
         super.onAttach(context)
     }
 
-    override fun displayEquipments(equipment: List<Equipment>) {
+    override fun displayEquipments(desk: Desk, equipment: List<Equipment>, tags: Set<String>) {
         if (recyclerView.adapter == null) {
             recyclerView.setController(epoxyController)
         }
 
+        epoxyController.desk = desk
+        epoxyController.selectedTags = tags
         epoxyController.equipments = equipment
         epoxyController.requestModelBuild()
     }

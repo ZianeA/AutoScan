@@ -4,6 +4,7 @@ import androidx.room.*
 import com.example.onmbarcode.data.equipment.EquipmentEntity
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 
 @Dao
@@ -19,7 +20,7 @@ interface DeskDao {
         SELECT 
             COUNT(e.id) AS equipmentCount,
             SUM(CASE WHEN e.scanState = 'ScannedAndSynced' THEN 1 ELSE 0 END) AS syncedEquipmentCount,
-            SUM(CASE WHEN e.scanState != 'NotScanned' THEN 1 ELSE 0 END) AS scannedEquipmentCount,
+            SUM(CASE WHEN e.scanState != 'NotScanned' THEN 1 ELSE 0 END) AS notSyncedEquipmentCount,
             d.id,
             d.barcode,
             d.isScanned,
@@ -39,7 +40,7 @@ interface DeskDao {
         SELECT 
             COUNT(e.id) AS equipmentCount,
             SUM(CASE WHEN e.scanState = 'ScannedAndSynced' THEN 1 ELSE 0 END) AS syncedEquipmentCount,
-            SUM(CASE WHEN e.scanState = 'ScannedButNotSynced' THEN 1 ELSE 0 END) AS scannedEquipmentCount,
+            SUM(CASE WHEN e.scanState = 'ScannedButNotSynced' THEN 1 ELSE 0 END) AS notSyncedEquipmentCount,
             d.id,
             d.barcode,
             d.isScanned,
@@ -52,6 +53,25 @@ interface DeskDao {
         """
     )
     fun getByBarcode(barcode: String): Maybe<DeskWithStatsEntity>
+
+    @Query(
+        """
+        SELECT 
+            COUNT(e.id) AS equipmentCount,
+            SUM(CASE WHEN e.scanState = 'ScannedAndSynced' THEN 1 ELSE 0 END) AS syncedEquipmentCount,
+            SUM(CASE WHEN e.scanState = 'ScannedButNotSynced' THEN 1 ELSE 0 END) AS notSyncedEquipmentCount,
+            d.id,
+            d.barcode,
+            d.isScanned,
+            d.scanDate
+        FROM DeskEntity d
+        INNER JOIN EquipmentEntity e
+            ON d.id = e.deskId
+            AND d.id=:id
+        GROUP BY d.id, d.barcode, d.isScanned, d.scanDate
+        """
+    )
+    fun getById(id: Int): Single<DeskWithStatsEntity>
 
     @Update
     fun update(desk: DeskEntity): Completable

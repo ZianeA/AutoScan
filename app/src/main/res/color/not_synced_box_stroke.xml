@@ -1,0 +1,6 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/scanned_but_not_synced" android:state_focused="true" />
+    <item android:color="@color/scanned_but_not_synced" android:state_hovered="true"/>
+    <item android:color="@color/scanned_but_not_synced" android:state_enabled="false"/>
+    <item android:color="@color/scanned_but_not_synced" />
+</selector>

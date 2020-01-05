@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:paddingBottom="5dp"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/notScannedLayout"
+        style="@style/NotScannedTextInputLayoutStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toEndOf="@+id/notSyncedLayout"
+        app:layout_constraintTop_toTopOf="@+id/notSyncedLayout"
+        app:startIconDrawable="@drawable/ic_not_scanned"
+        app:startIconTint="@color/not_scanned">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/notScannedCount"
+            android:focusable="false"
+            android:longClickable="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="458"
+            android:cursorVisible="false"
+            android:textColor="@color/not_scanned" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/notSyncedLayout"
+        style="@style/NotSyncedTextInputLayoutStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toEndOf="@+id/syncedLayout"
+        app:layout_constraintTop_toTopOf="@+id/syncedLayout"
+        app:startIconDrawable="@drawable/ic_not_synced"
+        app:startIconTint="@color/scanned_but_not_synced">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/notSyncedCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="20"
+            android:focusable="false"
+            android:cursorVisible="false"
+            android:longClickable="false"
+            android:textColor="@color/scanned_but_not_synced" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/syncedLayout"
+        style="@style/ScannedTextInputLayoutStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:startIconDrawable="@drawable/ic_check_circle"
+        app:startIconTint="@color/scanned_and_synced">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/syncedCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:longClickable="false"
+            tools:text="5"
+            android:textColor="@color/scanned_and_synced" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
