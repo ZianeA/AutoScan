@@ -1,21 +1,13 @@
 package com.example.onmbarcode.presentation.desk
 
 
-import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.PorterDuff
-import android.os.Build
 import android.os.Bundle
-import android.text.InputType
 import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import com.airbnb.epoxy.EpoxyRecyclerView
 
@@ -45,6 +37,8 @@ class DeskFragment : Fragment(), DeskView {
 
     private val epoxyController =
         DeskEpoxyController { presenter.onDeskClicked(it) }
+
+    private var delayScanDeskMessage = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -152,8 +146,74 @@ class DeskFragment : Fragment(), DeskView {
         }
     }
 
+    override fun displayDownloadViews() {
+        downloadProgressBar.isIndeterminate = true
+        downloadProgressBar.visibility = View.VISIBLE
+        downloadMessage.visibility = View.VISIBLE
+    }
+
+    override fun setDownloadProgress(percentage: Int) {
+        downloadProgressBar.isIndeterminate = false
+        downloadProgressBar.progress = percentage
+    }
+
+    override fun indicateDownloadPending() {
+        downloadProgressBar.isIndeterminate = true
+    }
+
+    override fun hideDownloadViews() {
+        val downloadMessageAnimator = downloadMessage.animate()
+            .alpha(0f)
+            .withEndAction { downloadMessage.visibility = View.GONE }
+
+        downloadProgressBar.animate()
+            .alpha(0f)
+            .withStartAction {
+                delayScanDeskMessage = true
+                animateDownloadCompleteMessage(downloadMessageAnimator.duration)
+            }
+            .withEndAction {
+                downloadProgressBar.visibility = View.GONE
+                downloadMessageAnimator.start()
+            }
+            .start()
+    }
+
+    private fun animateDownloadCompleteMessage(delay: Long) {
+        downloadCompleteMessage.apply {
+            val currentPosY = translationY
+            translationY = currentPosY + 100
+            alpha = 0f
+
+            animate()
+                .setStartDelay(delay)
+                .withStartAction { visibility = View.VISIBLE }
+                .alpha(1f)
+                .translationY(currentPosY)
+                .withEndAction {
+                    animate()
+                        .setStartDelay(1500)
+                        .alpha(0f)
+                        .withEndAction {
+                            visibility = View.GONE
+                            delayScanDeskMessage = false
+                            displayScanDeskMessage()
+                        }
+                        .start()
+                }
+                .start()
+        }
+    }
+
     override fun displayLoginScreen() {
         fragNavController.replaceFragment(LoginFragment.newInstance())
+    }
+
+    override fun displayScanDeskMessage() {
+        if(delayScanDeskMessage) return
+
+        scanDeskMessage.visibility = View.VISIBLE
+        barcodeIcon.visibility = View.VISIBLE
     }
 
     companion object {

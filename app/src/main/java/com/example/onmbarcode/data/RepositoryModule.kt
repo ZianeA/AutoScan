@@ -38,4 +38,8 @@ interface RepositoryModule {
 
     @Binds
     fun provideStringSetPreferences(preferences: PreferencesStringSetStore): KeyValueStore<Set<String>>
+    fun provideStringPreferences(preferencesStringStore: PreferencesStringStore): KeyValueStore<String>
+
+    @Binds
+    fun provideIntPreferences(preferencesIntStore: PreferencesIntStore): KeyValueStore<Int>
 }

@@ -9,4 +9,9 @@ interface DeskView {
     fun disableBarcodeInput()
     fun enableBarcodeInput()
     fun displayLoginScreen()
+    fun setDownloadProgress(percentage: Int)
+    fun displayDownloadViews()
+    fun hideDownloadViews()
+    fun indicateDownloadPending()
+    fun displayScanDeskMessage()
 }

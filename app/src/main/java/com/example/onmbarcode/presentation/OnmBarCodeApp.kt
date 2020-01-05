@@ -19,6 +19,9 @@ import com.example.onmbarcode.service.MyWorkerFactory
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
+import de.timroes.axmlrpc.XMLRPCException
+import io.reactivex.exceptions.UndeliverableException
+import io.reactivex.plugins.RxJavaPlugins
 import javax.inject.Inject
 
 class OnmBarCodeApp : Application(), HasActivityInjector, Configuration.Provider {
@@ -39,6 +42,15 @@ class OnmBarCodeApp : Application(), HasActivityInjector, Configuration.Provider
         // It's safe to call this repeatedly
         // because creating an existing notification channel performs no operation."
         createNotificationChannel()
+
+        // RxJava2 throws UndeliverableException when app is stopped while fetching data from server
+        RxJavaPlugins.setErrorHandler {
+            if (it is UndeliverableException && it.cause is XMLRPCException) {
+                return@setErrorHandler
+            }
+
+            throw it
+        }
     }
 
     override fun getWorkManagerConfiguration(): Configuration {
