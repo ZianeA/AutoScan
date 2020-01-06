@@ -28,11 +28,6 @@ class PreferencesStringStore @Inject constructor(private val app: Application) :
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    // TODO move to interface
-    override fun add(key: String, value: String, defaultValue: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun remove(key: String, value: String, defaultValue: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

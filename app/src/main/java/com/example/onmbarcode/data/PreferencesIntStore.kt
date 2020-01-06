@@ -2,6 +2,7 @@ package com.example.onmbarcode.data
 
 import android.app.Application
 import androidx.preference.PreferenceManager
+import io.reactivex.Observable
 import javax.inject.Inject
 
 class PreferencesIntStore @Inject constructor(private val app: Application) :
@@ -19,6 +20,14 @@ class PreferencesIntStore @Inject constructor(private val app: Application) :
 
     override fun add(key: String, value: Int, defaultValue: Int) {
         put(key, get(key, defaultValue) + value)
+    }
+
+    override fun observe(key: String, defaultValue: Int): Observable<Int> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun remove(key: String, value: Int, defaultValue: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {

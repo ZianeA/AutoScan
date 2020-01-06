@@ -24,11 +24,10 @@ class MainPresenter @Inject constructor(
         if (refresh.not()) return
 
         val disposable = userRepository.getUser()
-            .flatMap { odooService.authenticate(it.username, it.password) }
             .applySchedulers(schedulerProvider)
             .subscribe(
                 { view.displayDeskScreen() },
-                { view.displayDeskScreen() },
+                { view.displayLoginScreen() },
                 { view.displayLoginScreen() })
 
         disposables.add(disposable)
