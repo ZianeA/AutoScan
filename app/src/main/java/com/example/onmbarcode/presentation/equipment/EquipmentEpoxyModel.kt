@@ -59,7 +59,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
 
             // Show progress bar and warning icon
             val isLoading = loadingEquipments.find { it == equipment.id } != null
-            if (isLoading) {
+            if (isLoading && equipment.scanState != ScanState.ScannedAndSynced) {
                 val progressBarColor = ContextCompat.getColor(view.context, android.R.color.white)
                 progressBar.apply {
                     indeterminateDrawable.setColorFilter(progressBarColor, PorterDuff.Mode.MULTIPLY)
@@ -106,6 +106,8 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             } else {
                 cardView.setCardBackgroundColor(equipmentColor)
             }
+
+            revealView.visibility = View.INVISIBLE
         }
     }
 

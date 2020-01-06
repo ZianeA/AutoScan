@@ -131,6 +131,7 @@ class EquipmentPresenter @Inject constructor(
                         }
                     }
             }
+            .doOnDispose { syncService.syncEquipments() } // Sync in the background if the scanning was interrupted
             .applySchedulers(schedulerProvider)
             .subscribe(
                 {
@@ -176,6 +177,7 @@ class EquipmentPresenter @Inject constructor(
                     }
                 }
             }
+            .doOnDispose { syncService.syncEquipments() } // Sync in the background if the scanning was interrupted
             .applySchedulers(schedulerProvider)
             .subscribe({
                 view.hideProgressBarForEquipment(equipment.id)
