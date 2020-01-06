@@ -46,7 +46,7 @@ class EquipmentPresenter @Inject constructor(
                     deskRepository.getDeskById(desk.id)
                         .map {
                             object {
-                                val desk: Desk = it;
+                                val desk: Desk = it
                                 val equipment: List<Equipment> = e
                             }
                         }

@@ -28,24 +28,135 @@
             tools:text="CNTM08" />
 
         <TextView
-            android:id="@+id/scanCount"
+            android:id="@+id/syncedTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
+            android:text="Envoyé"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/deskBarcode"
-            app:layout_constraintTop_toBottomOf="@+id/deskBarcode"
-            tools:text="№ scannés: \n 2/8" />
+            app:layout_constraintEnd_toStartOf="@+id/notSyncedTitle"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/syncedCount"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/syncedCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@+id/syncedTitle"
+            app:layout_constraintStart_toStartOf="@+id/syncedTitle"
+            app:layout_constraintTop_toBottomOf="@+id/divider3"
+            tools:text="500" />
+
+        <ImageView
+            android:id="@+id/divider"
+            android:layout_width="0.8dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/syncedTitle"
+            app:layout_constraintEnd_toStartOf="@+id/notSyncedTitle"
+            app:layout_constraintStart_toEndOf="@+id/syncedTitle"
+            app:layout_constraintTop_toTopOf="@+id/syncedCount"
+            app:srcCompat="@color/dividerGray" />
+
+        <TextView
+            android:id="@+id/notSyncedTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            app:layout_constraintBottom_toBottomOf="@+id/scanCount"
-            app:layout_constraintStart_toEndOf="@+id/scanCount"
-            app:layout_constraintTop_toTopOf="@+id/scanCount"
-            tools:text="№ synchronisés: \n 2/8" />
+            app:layout_constraintBottom_toBottomOf="@+id/syncedTitle"
+            app:layout_constraintEnd_toStartOf="@+id/notScannedTitle"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/syncedTitle"
+            app:layout_constraintTop_toTopOf="@+id/syncedTitle"
+            android:text="Non Envoyé" />
+
+        <TextView
+            android:id="@+id/notSyncedCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@+id/notSyncedTitle"
+            app:layout_constraintStart_toStartOf="@+id/notSyncedTitle"
+            app:layout_constraintTop_toTopOf="@+id/syncedCount"
+            tools:text="5" />
+
+        <ImageView
+            android:id="@+id/divider2"
+            android:layout_width="0.8dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/notSyncedTitle"
+            app:layout_constraintEnd_toStartOf="@+id/notScannedTitle"
+            app:layout_constraintStart_toEndOf="@+id/notSyncedTitle"
+            app:layout_constraintTop_toTopOf="@+id/notSyncedCount"
+            app:srcCompat="@color/dividerGray" />
+
+        <TextView
+            android:id="@+id/notScannedTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Non Scanné"
+            app:layout_constraintBottom_toBottomOf="@+id/notSyncedTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/notSyncedTitle"
+            app:layout_constraintTop_toTopOf="@+id/notSyncedTitle" />
+
+        <TextView
+            android:id="@+id/notScannedCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@+id/notScannedTitle"
+            app:layout_constraintStart_toStartOf="@+id/notScannedTitle"
+            app:layout_constraintTop_toTopOf="@+id/syncedCount"
+            tools:text="28" />
+
+        <TextView
+            android:id="@+id/dot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="•"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintBottom_toBottomOf="@+id/deskBarcode"
+            app:layout_constraintStart_toEndOf="@+id/deskBarcode"
+            app:layout_constraintTop_toTopOf="@+id/deskBarcode" />
+
+        <TextView
+            android:id="@+id/equipmentCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            app:layout_constraintBottom_toBottomOf="@+id/deskBarcode"
+            app:layout_constraintStart_toEndOf="@+id/dot"
+            app:layout_constraintTop_toTopOf="@+id/deskBarcode"
+            tools:text="533 EQUIPMENTS" />
+
+        <ImageView
+            android:id="@+id/divider3"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/deskBarcode"
+            app:srcCompat="@color/lightGray" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

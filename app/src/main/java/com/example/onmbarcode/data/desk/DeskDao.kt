@@ -20,7 +20,7 @@ interface DeskDao {
         SELECT 
             COUNT(e.id) AS equipmentCount,
             SUM(CASE WHEN e.scanState = 'ScannedAndSynced' THEN 1 ELSE 0 END) AS syncedEquipmentCount,
-            SUM(CASE WHEN e.scanState != 'NotScanned' THEN 1 ELSE 0 END) AS notSyncedEquipmentCount,
+            SUM(CASE WHEN e.scanState = 'ScannedButNotSynced' THEN 1 ELSE 0 END) AS notSyncedEquipmentCount,
             d.id,
             d.barcode,
             d.isScanned,

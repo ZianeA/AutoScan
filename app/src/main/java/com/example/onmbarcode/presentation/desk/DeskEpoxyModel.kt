@@ -20,16 +20,13 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
         super.bind(holder)
         holder.apply {
             deskBarcode.text = desk.barcode
-            scanCount.text = view.context.getString(
-                R.string.scanned_equipment_count,
-                desk.notSyncedEquipmentCount,
+            equipmentCount.text = view.context.getString(
+                R.string.equipment_count,
                 desk.equipmentCount
             )
-            syncedCount.text = view.context.getString(
-                R.string.synced_equipment_count,
-                desk.syncedEquipmentCount,
-                desk.equipmentCount
-            )
+            syncedCount.text = desk.syncedEquipmentCount.toString()
+            notSyncedCount.text = desk.notSyncedEquipmentCount.toString()
+            notScannedCount.text = desk.notScannedEquipmentCount.toString()
             view.setOnClickListener(clickListener)
         }
     }
@@ -38,10 +35,6 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
         super.unbind(holder)
         holder.view.setOnClickListener(null)
     }
-
-    /*companion object {
-        private const val DESK_BARCODE_PREFIX = "@"
-    }*/
 }
 
 class DeskHolder : KotlinEpoxyHolder() {
@@ -53,6 +46,8 @@ class DeskHolder : KotlinEpoxyHolder() {
     }
 
     val deskBarcode by bind<TextView>(R.id.deskBarcode)
-    val scanCount by bind<TextView>(R.id.scanCount)
     val syncedCount by bind<TextView>(R.id.syncedCount)
+    val notSyncedCount by bind<TextView>(R.id.notSyncedCount)
+    val notScannedCount by bind<TextView>(R.id.notScannedCount)
+    val equipmentCount by bind<TextView>(R.id.equipmentCount)
 }

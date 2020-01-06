@@ -7,8 +7,7 @@
     <string name="toolbar_title_desk">Bureau</string>
     <string name="scanned_station_count">Nombre de station scannés: %1$d/%2$d</string>
     <string name="scanned_desk_count">Nombre de bureaux scannés: %1$d/%2$d</string>
-    <string name="scanned_equipment_count">№ scannés \n %1$d/%2$d</string>
-    <string name="synced_equipment_count">№ synchronisés \n %1$d/%2$d</string>
+    <string name="equipment_count">%1$d EQUIPMENTS</string>
     <string name="desk_barcode">Bureau: %1$s</string>
     <string name="toolbar_title_equipment">Équipement</string>
     <string name="equipment_barcode">Équipement: %1$d</string>

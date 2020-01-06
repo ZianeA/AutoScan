@@ -20,8 +20,6 @@ class DeskPresenter @Inject constructor(
     private val view: DeskView,
     private val deskRepository: DeskRepository,
     private val userRepository: UserRepository,
-    private val equipmentRepository: EquipmentRepository,
-    private val store: KeyValueStore<String>,
     private val schedulerProvider: SchedulerProvider,
     private val clock: Clock
 ) {
