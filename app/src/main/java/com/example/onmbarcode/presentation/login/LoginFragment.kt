@@ -2,10 +2,12 @@ package com.example.onmbarcode.presentation.login
 
 
 import android.content.Context
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.view.inputmethod.EditorInfo
+import android.widget.ScrollView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 
@@ -19,6 +21,7 @@ import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import kotlinx.android.synthetic.main.fragment_login.view.toolbar
 import javax.inject.Inject
+import kotlin.math.abs
 
 /**
  * A simple [Fragment] subclass.
@@ -69,6 +72,8 @@ class LoginFragment : Fragment(), LoginView {
                 false
             }
         }
+
+        setupKeyboardListener(rootView)
 
         return rootView
     }
@@ -129,6 +134,23 @@ class LoginFragment : Fragment(), LoginView {
 
     override fun displaySettingsScreen() {
         fragNavController.pushFragment(SettingsFragment.newInstance())
+    }
+
+    private fun setupKeyboardListener(view: View) {
+        view.viewTreeObserver.addOnGlobalLayoutListener {
+            val r = Rect()
+            view.getWindowVisibleDisplayFrame(r)
+            if (abs(view.rootView.height - (r.bottom - r.top)) > 100) { // if more than 100 pixels, its probably a keyboard...
+                scrollView.scrollToBottomWithoutFocusChange()
+            }
+        }
+    }
+
+    private fun ScrollView.scrollToBottomWithoutFocusChange() { // Kotlin extension to scrollView
+        val lastChild = getChildAt(childCount - 1)
+        val bottom = lastChild.bottom + paddingBottom
+        val delta = bottom - (scrollY + height)
+        smoothScrollBy(0, delta)
     }
 
     companion object {
