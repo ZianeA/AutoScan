@@ -73,7 +73,7 @@ class LoginFragment : Fragment(), LoginView {
             }
         }
 
-        setupKeyboardListener(rootView)
+        setupKeyboardListener(rootView, rootView.scrollView)
 
         return rootView
     }
@@ -136,7 +136,7 @@ class LoginFragment : Fragment(), LoginView {
         fragNavController.pushFragment(SettingsFragment.newInstance())
     }
 
-    private fun setupKeyboardListener(view: View) {
+    private fun setupKeyboardListener(view: View, scrollView: ScrollView) {
         view.viewTreeObserver.addOnGlobalLayoutListener {
             val r = Rect()
             view.getWindowVisibleDisplayFrame(r)
