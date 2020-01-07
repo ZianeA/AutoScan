@@ -99,15 +99,16 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             scanStateMessage.text = message
 
             // Set cardview background color
+            revealView.visibility = View.INVISIBLE
+
             if (equipmentToAnimateId == equipment.id) {
+                cardView.setCardBackgroundColor(notScannedColor)
                 animateEquipmentColor(this, equipmentColor, message)
                 equipmentToAnimateId = null
 
             } else {
                 cardView.setCardBackgroundColor(equipmentColor)
             }
-
-            revealView.visibility = View.INVISIBLE
         }
     }
 
