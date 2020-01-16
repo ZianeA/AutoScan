@@ -1,0 +1,70 @@
+<resources>
+    <string name="app_name">ONM Barcode</string>
+    <string name="action_settings">الإعدادات</string>
+
+    <string name="toolbar_title_region">منطقة</string>
+    <string name="toolbar_title_station">محطة</string>
+    <string name="toolbar_title_desk">مكتب</string>
+    <string name="scanned_station_count">عدد المحطات الممسوحة ضوئيًا:  %1$d/%2$d</string>
+    <string name="scanned_desk_count">عدد المكاتب الممسوحة ضوئيًا:  %1$d/%2$d</string>
+    <string name="equipment_count">%1$d عتاد</string>
+    <string name="desk_barcode">مكتب %1$s</string>
+    <string name="toolbar_title_equipment">عتاد</string>
+    <string name="equipment_barcode">عتاد %1$d</string>
+    <string name="equipment_type">نوع: %1$s</string>
+    <string name="equipment_condition">حالة العتاد</string>
+    <string name="equipment_state_dialog_title">إختر حالة</string>
+    <string name="barcode_input_hint">الباركود</string>
+    <string name="equipment_synced_message">ممسوح و مبعوث</string>
+    <string name="equipment_scanned_message">ممسوح غير مبعوث</string>
+    <string name="equipment_not_scanned_message">لم يبعث</string>
+    <string name="equipment_pending_message">مسح...</string>
+    <string name="unknown_error_message">معذرة وقع خطأ ما</string>
+    <string name="unknown_barcode_message">باركود مجهول</string>
+    <string name="equipment_already_scanned_message">العتاد ممسوح من قبل</string>
+    <string name="equipment_condition_changed_message">تم تغيير حالة العتاد</string>
+    <string name="equipment_moved_message"> تنبيه: العتاد تغير موضعه</string>
+
+    <string name="toolbar_title_login">تسجيل الدخول</string>
+    <string name="prompt_email">البريد الإلكتروني</string>
+    <string name="prompt_password">كلمة السر</string>
+    <string name="welcome">"مرحبا"</string>
+    <string name="invalid_credentials">اسم المستخدم أو كلمة المرور غير صالحة</string>
+    <string name="login_failed">فشل تسجيل الدخول</string>
+    <string name="action_sign_in">تسجيل الدخول</string>
+    <string name="action_retry">حاول مرة أخرى</string>
+
+    <!--Items order is important!-->
+    <string-array name="equipment_condition">
+        <item>جيد</item>
+        <item>متوسط</item>
+        <item>سيئ</item>
+    </string-array>
+
+    <string name="action_logout">خروج</string>
+    <string name="toolbar_title_settings">إعدادات السرفر</string>
+    <string name="edit_server_dialog_title">تغيير عنوان السرفر</string>
+    <string name="prompt_server_url">عنوان السرفر</string>
+    <string name="dialog_ok">موافق</string>
+    <string name="dialog_cancel">إلغاء</string>
+    <string name="error_Invalid_url">الرابط خاطئ</string>
+    <string name="return_to_top">إلى الأعلى</string>
+    <string name="download_in_progress_message">جار التحميل, الرجاء الإنتظار</string>
+    <string name="download_complete_message">تم التحميل</string>
+    <string name="start_scanning_message">مسح مكتب</string>
+    <string name="server">Serveur</string>
+    <string name="server_address">رابط السرفر أودو</string>
+    <string name="about">حول التطبيق</string>
+    <string name="developed_by">\nـ من إنجاز الديوان الوطني للأحوال الجوية، الجزائر٠
+\nـ من إعداد قادم عبد الرؤوف و زيان علي٠
+\nـ من ترجمة كديك نبيل٠
+\nـ شكر خاص لزيان ياسمين و عون الله مهدي٠</string>
+    <string name="synced">مبعوث</string>
+    <string name="not_synced">غير مبعوث</string>
+    <string name="not_scanned">غير ممسوح</string>
+
+    <string name="notification_sync_complete_title">تم التحديث</string>
+    <string name="notification_sync_complete_description">تم تحديث  كل العتاد الممسوح</string>
+    <!-- changer "URL mal-formée" par "URL erronée"-->
+    <!-- changer "adresse IP du  serveur Odoo" par "l'adresse IP du serveur"-->
+</resources>

@@ -16,14 +16,14 @@ class NotificationWorker(context: Context, workerParams: WorkerParameters) :
     override fun createWork(): Single<Result> {
         val builder = NotificationCompat.Builder(applicationContext, OnmBarCodeApp.CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_cloud_done)
-            .setContentTitle("Synchronisation terminée")
+            .setContentTitle(applicationContext.getString(R.string.notification_sync_complete_title))
             .setColor(
                 ContextCompat.getColor(
                     applicationContext,
                     R.color.notification_icon_color
                 )
             )
-            .setContentText("Tous les équipements ont été synchronisés.")
+            .setContentText(applicationContext.getString(R.string.notification_sync_complete_description))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
         NotificationManagerCompat.from(applicationContext).notify(405, builder.build())

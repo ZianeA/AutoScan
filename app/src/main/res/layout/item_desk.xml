@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="Envoyé"
+            android:text="@string/synced"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/notSyncedTitle"
@@ -75,7 +75,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/syncedTitle"
             app:layout_constraintTop_toTopOf="@+id/syncedTitle"
-            android:text="Non Envoyé" />
+            android:text="@string/not_synced" />
 
         <TextView
             android:id="@+id/notSyncedCount"
@@ -106,7 +106,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Non Scanné"
+            android:text="@string/not_scanned"
             app:layout_constraintBottom_toBottomOf="@+id/notSyncedTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
