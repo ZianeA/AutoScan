@@ -1,5 +1,5 @@
 # Codebar-Reader
-A stocktake & barcode scanner app for inventory management. It facilitate the scanning of equipment and assets within a business or an organization. It's designed to work both offline and online.
+An asset  tracking  and  barcode  scanner  app  for  fixed  asset  management. It facilitate the scanning and tracking of equipment and assets within a business or an organization. Designed to work both offline and online.
 
 # Functionality
 The app starts by prompting the user to enter his or her username and password. This is so we can identify the person performing the scanning. 
@@ -45,7 +45,7 @@ The project is built in Kotlin and follows single Activity, multiple Fragments a
 
 # Libraries
 * Dagger 2 for dependency injection.
-* Rxjava for a reactive UI and asychronous operations.
-* FragNav for naviation.
-* Epoxy as Recyclerview  adapter.
+* Rxjava for a reactive UI and asynchronous operations.
+* FragNav for navigation.
+* Epoxy for a multiple view type Recyclerview.
 * Room as ORM.
