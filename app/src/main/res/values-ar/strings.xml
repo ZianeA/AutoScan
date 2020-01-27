@@ -55,10 +55,7 @@
     <string name="server">Serveur</string>
     <string name="server_address">رابط السرفر أودو</string>
     <string name="about">حول التطبيق</string>
-    <string name="developed_by">\nـ من إنجاز الديوان الوطني للأحوال الجوية، الجزائر٠
-\nـ من إعداد قادم عبد الرؤوف و زيان علي٠
-\nـ من ترجمة كديك نبيل٠
-\nـ شكر خاص لزيان ياسمين و عون الله مهدي٠</string>
+    <string name="developed_by">من إنجاز الديوان الوطني للأحوال الجوية، الجزائر٠ من ترجمة كديك نبيل٠</string>
     <string name="synced">مبعوث</string>
     <string name="not_synced">غير مبعوث</string>
     <string name="not_scanned">غير ممسوح</string>

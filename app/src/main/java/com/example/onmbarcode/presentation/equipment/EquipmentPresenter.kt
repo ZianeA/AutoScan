@@ -181,6 +181,7 @@ class EquipmentPresenter @Inject constructor(
             .applySchedulers(schedulerProvider)
             .subscribe({
                 view.hideProgressBarForEquipment(equipment.id)
+                if(view.isScrolling.not()) view.rebuildUi()
                 view.displayEquipmentConditionChangedMessage()
             },
                 { view.showErrorMessage() })

@@ -189,6 +189,10 @@ class EquipmentFragment : Fragment(), EquipmentView {
         }
     }
 
+    override fun rebuildUi() {
+        epoxyController.requestModelBuild()
+    }
+
     override fun displayProgressBarForEquipment(equipmentId: Int) {
         EquipmentEpoxyModel.loadingEquipments.add(equipmentId)
     }

@@ -15,4 +15,5 @@ interface EquipmentView {
     fun displayProgressBarForEquipment(equipmentId: Int)
     fun hideProgressBarForEquipment(equipmentId: Int)
     fun showEquipmentMovedMessage()
+    fun rebuildUi()
 }
