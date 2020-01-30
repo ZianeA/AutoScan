@@ -19,6 +19,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import java.lang.IllegalArgumentException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @FragmentScope

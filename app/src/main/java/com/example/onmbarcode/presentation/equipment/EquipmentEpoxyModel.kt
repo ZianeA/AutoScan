@@ -3,8 +3,12 @@ package com.example.onmbarcode.presentation.equipment
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.text.InputType
+import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
@@ -71,6 +75,26 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             if (!isLoading && equipment.deskId != equipment.previousDeskId) {
                 warningIcon.visibility = View.VISIBLE
             } else warningIcon.visibility = View.GONE
+
+            // Show warning message
+            warningIcon.setOnClickListener {
+                PopupWindow(view.context).apply {
+                    val popupLayout = LayoutInflater.from(view.context)
+                        .inflate(R.layout.popup_window_equipment_moved, null)
+
+                    contentView = popupLayout
+                    width = WindowManager.LayoutParams.WRAP_CONTENT
+                    height = WindowManager.LayoutParams.WRAP_CONTENT
+                    isOutsideTouchable = true
+                    setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    popupLayout.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+                    val deskMargin =
+                        view.resources.getDimension(R.dimen.equipment_item_spacing).toInt()
+                    val xOffset = -(popupLayout.measuredWidth - it.width) + deskMargin
+                    showAsDropDown(it, xOffset, 0)
+                    setOnDismissListener { equipmentMoved.remove(equipment.id) }
+                }
+            }
 
             // Pick scan state message and background color
             val messageResource: Int
@@ -150,6 +174,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
         private const val ANIMATION_DURATION: Long = 1000
         var equipmentToAnimateId: Int? = null
         var loadingEquipments: MutableList<Int> = mutableListOf()
+        var equipmentMoved: MutableList<Int> = mutableListOf()
     }
 }
 
