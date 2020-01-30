@@ -44,12 +44,12 @@ class DeskPresenter @Inject constructor(
                 .observeOn(schedulerProvider.worker)
                 .retryWhen { it.delay(1, TimeUnit.SECONDS) }
                 .toList()
-                .flatMap { deskRepository.getScannedDesks() }
+                .flatMapObservable { deskRepository.getScannedDesks() }
                 .applySchedulers(schedulerProvider)
                 .subscribe({
                     if (it.isEmpty()) view.displayScanDeskMessage()
-                    else view.displayDesks(it)
 
+                    view.displayDesks(it)
                     view.enableBarcodeInput()
                 }, {
                     view.displayGenericErrorMessage()
@@ -74,6 +74,7 @@ class DeskPresenter @Inject constructor(
                 deskRepository.updateDesk(
                     it.copy(
                         isScanned = true,
+                        isHidden = false,
                         scanDate = clock.currentTimeSeconds
                     )
                 ).andThen(Single.just(it))
@@ -102,6 +103,14 @@ class DeskPresenter @Inject constructor(
         val disposable = userRepository.removeUser()
             .applySchedulers(schedulerProvider)
             .subscribe({ view.displayLoginScreen() }, { view.displayGenericErrorMessage() })
+
+        disposables.add(disposable)
+    }
+
+    fun onHideDeskClicked(desk: Desk) {
+        val disposable = deskRepository.updateDesk(desk.copy(isHidden = true))
+            .applySchedulers(schedulerProvider)
+            .subscribe({ }, { view.displayGenericErrorMessage() })
 
         disposables.add(disposable)
     }

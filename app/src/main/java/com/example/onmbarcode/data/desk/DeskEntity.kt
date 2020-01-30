@@ -9,5 +9,6 @@ data class DeskEntity(
     @PrimaryKey val id: Int,
     val barcode: String,
     val isScanned: Boolean,
-    val scanDate: Long
+    val scanDate: Long,
+    val isHidden: Boolean
 )

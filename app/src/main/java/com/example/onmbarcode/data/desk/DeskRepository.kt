@@ -33,7 +33,7 @@ class DeskRepository @Inject constructor(
     private val deskResponseMapper: Mapper<HashMap<*, *>, DeskEntity>,
     private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>
 ) {
-    fun getScannedDesks(): Single<List<Desk>> {
+    fun getScannedDesks(): Observable<List<Desk>> {
         return deskDao.getScanned()
             .map { deskEntities -> deskEntities.map { deskEntityMapper.map(it) } }
     }

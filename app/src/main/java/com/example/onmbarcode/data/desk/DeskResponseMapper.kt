@@ -15,7 +15,8 @@ class DeskResponseMapper @Inject constructor(private val clock: Clock) :
             model[ATTRIBUTE_ID_NAME] as Int,
             model[ATTRIBUTE_CODE_BUREAU_NAME] as String,
             false,
-            clock.currentTimeSeconds
+            clock.currentTimeSeconds,
+            false
         )
     }
 

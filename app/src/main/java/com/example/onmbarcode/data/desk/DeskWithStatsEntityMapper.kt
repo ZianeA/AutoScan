@@ -17,7 +17,8 @@ class DeskWithStatsEntityMapper @Inject constructor() : Mapper<DeskWithStatsEnti
                 equipmentCount,
                 equipmentCount - (notSyncedEquipmentCount + syncedEquipmentCount),
                 notSyncedEquipmentCount,
-                syncedEquipmentCount
+                syncedEquipmentCount,
+                deskEntity.isHidden
             )
         }
     }
@@ -25,7 +26,7 @@ class DeskWithStatsEntityMapper @Inject constructor() : Mapper<DeskWithStatsEnti
     override fun mapReverse(model: Desk): DeskWithStatsEntity {
         return model.run {
             DeskWithStatsEntity(
-                DeskEntity(id, barcode, isScanned, scanDate),
+                DeskEntity(id, barcode, isScanned, scanDate, isHidden),
                 equipmentCount,
                 notSyncedEquipmentCount,
                 syncedEquipmentCount

@@ -24,16 +24,17 @@ interface DeskDao {
             d.id,
             d.barcode,
             d.isScanned,
-            d.scanDate
+            d.scanDate,
+            d.isHidden
         FROM DeskEntity d
         LEFT JOIN EquipmentEntity e
             ON d.id = e.deskId
-        WHERE d.isScanned = 1
+        WHERE d.isScanned = 1 AND d.isHidden = 0
         GROUP BY d.id, d.barcode, d.isScanned, d.scanDate
         ORDER BY d.scanDate Desc
         """
     )
-    fun getScanned(): Single<List<DeskWithStatsEntity>>
+    fun getScanned(): Observable<List<DeskWithStatsEntity>>
 
     @Query(
         """
@@ -44,7 +45,8 @@ interface DeskDao {
             d.id,
             d.barcode,
             d.isScanned,
-            d.scanDate
+            d.scanDate,
+            d.isHidden
         FROM DeskEntity d
         LEFT JOIN EquipmentEntity e
             ON d.id = e.deskId
@@ -63,7 +65,8 @@ interface DeskDao {
             d.id,
             d.barcode,
             d.isScanned,
-            d.scanDate
+            d.scanDate,
+            d.isHidden
         FROM DeskEntity d
         LEFT JOIN EquipmentEntity e
             ON d.id = e.deskId

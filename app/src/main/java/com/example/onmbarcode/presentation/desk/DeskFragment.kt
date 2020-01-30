@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyRecyclerView
 
 import com.example.onmbarcode.R
@@ -35,10 +36,16 @@ class DeskFragment : Fragment(), DeskView {
 
     private lateinit var recyclerView: EpoxyRecyclerView
 
-    private val epoxyController =
-        DeskEpoxyController { presenter.onDeskClicked(it) }
+    private lateinit var epoxyController: DeskEpoxyController
+
 
     private var delayScanDeskMessage = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        epoxyController =
+            DeskEpoxyController(presenter::onDeskClicked) { d, _ -> presenter.onHideDeskClicked(d) }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -210,7 +217,7 @@ class DeskFragment : Fragment(), DeskView {
     }
 
     override fun displayScanDeskMessage() {
-        if(delayScanDeskMessage) return
+        if (delayScanDeskMessage) return
 
         scanDeskMessage.visibility = View.VISIBLE
         barcodeIcon.visibility = View.VISIBLE

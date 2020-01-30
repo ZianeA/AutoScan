@@ -3,8 +3,11 @@ package com.example.onmbarcode.presentation.desk
 import android.view.View
 import com.airbnb.epoxy.AsyncEpoxyController
 
-class DeskEpoxyController(private val onDeskClickListener: ((clickedDesk: Desk) -> Unit)) :
-    AsyncEpoxyController() {
+class DeskEpoxyController(
+    private val onDeskClickListener: ((clickedDesk: Desk) -> Unit),
+    private val menuItemClickListener: ((desk: Desk, selectedMenuItem: View) -> Unit)
+) : AsyncEpoxyController(
+) {
     var desks: List<Desk> = emptyList()
         set(value) {
             field = value
@@ -16,7 +19,8 @@ class DeskEpoxyController(private val onDeskClickListener: ((clickedDesk: Desk) 
             DeskEpoxyModel_()
                 .id(it.barcode)
                 .desk(it)
-                .clickListener { _ -> onDeskClickListener.invoke(it) }
+                .deskClickListener { _ -> onDeskClickListener.invoke(it) }
+                .menuItemClickListener { view -> menuItemClickListener.invoke(it, view) }
                 .addTo(this)
         }
     }

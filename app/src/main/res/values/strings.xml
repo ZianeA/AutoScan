@@ -55,10 +55,11 @@
     <string name="server">Serveur</string>
     <string name="server_address">L\'adresse IP du serveur.</string>
     <string name="about">À propos</string>
-    <string name="developed_by">Développée par ONM Algérie</string>
+    <string name="developed_by">Développée par ONM Algérie.</string>
     <string name="synced">Envoyé</string>
     <string name="not_synced">Non Envoyé</string>
     <string name="not_scanned">Non Scanné</string>
     <string name="notification_sync_complete_title">Synchronisation terminée</string>
     <string name="notification_sync_complete_description">Tous les équipements ont été synchronisés.</string>
+    <string name="action_hide">Masquer</string>
 </resources>

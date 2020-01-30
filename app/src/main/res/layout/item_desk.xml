@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:foreground="?android:attr/selectableItemBackground"
     app:cardBackgroundColor="@android:color/white"
     app:cardElevation="4dp"
+    app:cardCornerRadius="4dp"
     tools:cardBackgroundColor="@color/lightGray"
     tools:layout_height="match_parent">
 
@@ -70,12 +72,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:text="@string/not_synced"
             app:layout_constraintBottom_toBottomOf="@+id/syncedTitle"
             app:layout_constraintEnd_toStartOf="@+id/notScannedTitle"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/syncedTitle"
-            app:layout_constraintTop_toTopOf="@+id/syncedTitle"
-            android:text="@string/not_synced" />
+            app:layout_constraintTop_toTopOf="@+id/syncedTitle" />
 
         <TextView
             android:id="@+id/notSyncedCount"
@@ -158,5 +160,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/deskBarcode"
             app:srcCompat="@color/lightGray" />
+
+        <ImageButton
+            android:id="@+id/moreButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_more_vert" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
