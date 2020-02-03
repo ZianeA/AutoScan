@@ -3,6 +3,7 @@ package com.example.onmbarcode.presentation.equipment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -37,7 +38,6 @@ class EquipmentFragment : Fragment(), EquipmentView {
     private lateinit var epoxyController: EquipmentEpoxyController
     private lateinit var recyclerView: EpoxyRecyclerView
     private var scrollToTop = false
-    private var isUiUpdating = false
 
     override var isScrolling = false
         set(value) {
@@ -95,7 +95,6 @@ class EquipmentFragment : Fragment(), EquipmentView {
             if (scrollToTop) {
                 recyclerView.scrollToPosition(0)
                 scrollToTop = false
-                isUiUpdating = false
             }
         }
 
@@ -140,26 +139,23 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     // Smooth scroll to top -> display equipment with the new order
     // After displaying equipment, the first element will be hidden so we scroll to the top again
-
-    // While smoothing scroll to top, equipment list could change. So, we store the newest equipment list
-    // and we display it at the end of scrolling
     override fun scrollToTop() {
         isScrolling = true
 
         if (recyclerView.computeVerticalScrollOffset() == 0) {
             isScrolling = false
+            presenter.onScrollEnded()
             scrollToTop = true
             return
         }
 
         smoothScrollToTop()
-        isUiUpdating = true
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (recyclerView.computeVerticalScrollOffset() == 0) {
                     isScrolling = false
-                    presenter.onScrollEnded(selectedDesk.id)
+                    presenter.onScrollEnded()
                     scrollToTop = true
                     recyclerView.removeOnScrollListener(this)
                 }
@@ -184,9 +180,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     override fun animateEquipment(equipmentId: Int) {
         EquipmentEpoxyModel.equipmentToAnimateId = equipmentId
-        if (!isUiUpdating) {
-            epoxyController.requestDelayedModelBuild(MODEL_BUILD_DELAY)
-        }
+        epoxyController.requestModelBuild()
     }
 
     override fun rebuildUi() {
@@ -237,7 +231,6 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     companion object {
         private const val ARG_SELECTED_DESK = "selected_desk"
-        private const val MODEL_BUILD_DELAY = 200
         private const val MAX_SMOOTH_SCROLL = 15
         private const val MAX_MANUAL_SCROLL = 30
 

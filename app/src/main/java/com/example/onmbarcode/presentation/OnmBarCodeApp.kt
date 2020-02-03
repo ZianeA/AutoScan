@@ -6,6 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import androidx.multidex.MultiDexApplication
 import androidx.work.Configuration
 import com.example.onmbarcode.R
 import com.example.onmbarcode.data.equipment.EquipmentDao
@@ -24,7 +25,7 @@ import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
 import javax.inject.Inject
 
-class OnmBarCodeApp : Application(), HasActivityInjector, Configuration.Provider {
+class OnmBarCodeApp : MultiDexApplication(), HasActivityInjector, Configuration.Provider {
 
     @Inject
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>

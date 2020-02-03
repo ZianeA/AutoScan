@@ -62,21 +62,22 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             dropdownLayout.isEndIconVisible = dropdownMenu.isEnabled
 
             // Show progress bar and warning icon
+            warningIcon.visibility = View.GONE
+            progressBar.visibility = View.GONE
+
             val isLoading = loadingEquipments.find { it == equipment.id } != null
-            // The second condition is for when the synchronization happens in the background
-            if (isLoading && equipment.scanState != ScanState.ScannedAndSynced) {
+
+            if (isLoading) {
                 val progressBarColor = ContextCompat.getColor(view.context, android.R.color.white)
                 progressBar.apply {
                     indeterminateDrawable.setColorFilter(progressBarColor, PorterDuff.Mode.MULTIPLY)
                     visibility = View.VISIBLE
                 }
-            } else progressBar.visibility = View.GONE
-
-            if (!isLoading && equipment.deskId != equipment.previousDeskId) {
+            } else if (equipment.deskId != equipment.previousDeskId) {
                 warningIcon.visibility = View.VISIBLE
-            } else warningIcon.visibility = View.GONE
+            }
 
-            // Show warning message
+            // Show warning message on click
             warningIcon.setOnClickListener {
                 PopupWindow(view.context).apply {
                     val popupLayout = LayoutInflater.from(view.context)
@@ -101,13 +102,13 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             val equipmentColor: Int
 
             when {
+                isLoading || equipmentToAnimateId == equipment.id -> {
+                    messageResource = R.string.equipment_pending_message
+                    equipmentColor = notScannedColor
+                }
                 equipment.scanState == ScanState.ScannedAndSynced -> {
                     messageResource = R.string.equipment_synced_message
                     equipmentColor = syncedColor
-                }
-                isLoading && equipment.scanState == ScanState.ScannedButNotSynced -> {
-                    messageResource = R.string.equipment_pending_message
-                    equipmentColor = notScannedColor
                 }
                 equipment.scanState == ScanState.ScannedButNotSynced -> {
                     messageResource = R.string.equipment_scanned_message
@@ -125,14 +126,11 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
 
             // Set cardview background color
             revealView.visibility = View.INVISIBLE
+            cardView.setCardBackgroundColor(equipmentColor)
 
             if (equipmentToAnimateId == equipment.id) {
-                cardView.setCardBackgroundColor(notScannedColor)
-                animateEquipmentColor(this, equipmentColor, message)
+                animateEquipmentColor(this)
                 equipmentToAnimateId = null
-
-            } else {
-                cardView.setCardBackgroundColor(equipmentColor)
             }
         }
     }
@@ -152,7 +150,22 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
         }
     }
 
-    private fun animateEquipmentColor(holder: EquipmentHolder, endColor: Int, endMessage: String) {
+    private fun animateEquipmentColor(holder: EquipmentHolder) {
+        val endColor: Int
+        val endMessage: String
+
+        when (equipment.scanState) {
+            ScanState.ScannedAndSynced -> {
+                endColor = holder.syncedColor
+                endMessage = holder.view.context.getString(R.string.equipment_synced_message)
+            }
+            ScanState.ScannedButNotSynced -> {
+                endColor = holder.scannedColor
+                endMessage = holder.view.context.getString(R.string.equipment_scanned_message)
+            }
+            else -> throw IllegalStateException("Invalid equipment state")
+        }
+
         holder.apply {
             revealView.visibility = View.VISIBLE
             progressBar.visibility = View.GONE

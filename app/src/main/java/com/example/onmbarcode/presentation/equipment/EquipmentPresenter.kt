@@ -1,6 +1,6 @@
 package com.example.onmbarcode.presentation.equipment
 
-import androidx.preference.PreferenceManager
+import android.util.Log
 import com.example.onmbarcode.data.KeyValueStore
 import com.example.onmbarcode.data.PreferencesStringSetStore
 import com.example.onmbarcode.data.desk.DeskRepository
@@ -13,11 +13,12 @@ import com.example.onmbarcode.presentation.util.applySchedulers
 import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
 import com.example.onmbarcode.service.SyncBackgroundService
 import de.timroes.axmlrpc.XMLRPCException
+import hu.akarnokd.rxjava2.operators.ObservableTransformers
 import io.reactivex.Completable
 import io.reactivex.Maybe
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.processors.PublishProcessor
 import java.lang.IllegalArgumentException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -33,6 +34,7 @@ class EquipmentPresenter @Inject constructor(
     private val clock: Clock
 ) {
     private val disposables = CompositeDisposable()
+    private val scrollingValve = PublishProcessor.create<Boolean>()
 
     fun start(desk: Desk) {
         val disposable =
@@ -52,41 +54,18 @@ class EquipmentPresenter @Inject constructor(
                             }
                         }
                 }
+                .compose(ObservableTransformers.valve(scrollingValve.toObservable(), true))
                 .applySchedulers(schedulerProvider)
-                .subscribe({
-                    if (view.isScrolling.not()) {
-                        view.displayEquipments(it.desk, it.equipment, selectedTags)
-                    }
-                }, { /*onError*/ })
+                .subscribe(
+                    { view.displayEquipments(it.desk, it.equipment, selectedTags) },
+                    { /*onError*/ }
+                )
 
         disposables.add(disposable)
     }
 
-    fun onScrollEnded(deskId: Int) {
-        val disposable = equipmentRepository.getEquipmentForDeskWithScanState(
-            deskId,
-            *selectedTags.map { ScanState.valueOf(it) }.toTypedArray()
-        )
-            .first(emptyList()) //Unsubscribe after the first emitted item
-            .flatMap { e ->
-                deskRepository.getDeskById(deskId)
-                    .map {
-                        object {
-                            val desk: Desk = it;
-                            val equipment: List<Equipment> = e
-                        }
-                    }
-            }
-            .applySchedulers(schedulerProvider)
-            .subscribe({
-                if (view.isScrolling.not()) view.displayEquipments(
-                    it.desk,
-                    it.equipment,
-                    selectedTags
-                )
-            }, { /*onError*/ })
-
-        disposables.add(disposable)
+    fun onScrollEnded() {
+        scrollingValve.onNext(true)
     }
 
     // TODO add more unit tests, notably for error messages
@@ -96,10 +75,12 @@ class EquipmentPresenter @Inject constructor(
                 "Malformed equipment barcode. Equipment barcode must contain only numeric values"
             )
         view.clearBarcodeInputArea()
+        var equipmentId: Int? = null
 
         val disposable = equipmentRepository.findEquipment(barcode)
             .observeOn(schedulerProvider.main)
             .doOnEvent { e, t -> if (e == null && t == null) view.showUnknownBarcodeMessage() }
+            .doOnSuccess { equipmentId = it.id }
             .flatMap {
                 if (it.scanState != ScanState.NotScanned) {
                     view.showEquipmentAlreadyScannedMessage()
@@ -107,6 +88,7 @@ class EquipmentPresenter @Inject constructor(
                 } else {
                     view.displayProgressBarForEquipment(it.id)
                     if (view.isScrolling.not()) {
+                        scrollingValve.onNext(false)
                         view.scrollToTop()
                     }
                     Maybe.just(it)
@@ -132,7 +114,14 @@ class EquipmentPresenter @Inject constructor(
                         }
                     }
             }
-            .doOnDispose { syncService.syncEquipments() } // Sync in the background if the scanning was interrupted
+            .doOnDispose {
+                // Sync in the background if the scanning was interrupted
+                syncService.syncEquipments()
+                equipmentId?.let { view.hideProgressBarForEquipment(it) }
+            }
+            .toObservable()
+            .compose(ObservableTransformers.valve(scrollingValve.toObservable(), true))
+            .delay(1, TimeUnit.SECONDS)
             .applySchedulers(schedulerProvider)
             .subscribe(
                 {
@@ -140,8 +129,9 @@ class EquipmentPresenter @Inject constructor(
                     view.animateEquipment(it.id)
                     if (it.deskId != it.previousDeskId) view.showEquipmentMovedMessage()
                 },
-                {
+                { _ ->
                     view.showErrorMessage()
+                    equipmentId?.let { view.hideProgressBarForEquipment(it) }
                 },
                 { /*onComplete*/ }
             )
