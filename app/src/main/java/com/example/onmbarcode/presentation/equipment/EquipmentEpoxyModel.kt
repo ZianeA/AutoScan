@@ -84,7 +84,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                 warningIcon.visibility = View.VISIBLE
             }
 
-            // Show warning message on click
+            // Show equipment moved tooltip on click
             warningIcon.setOnClickListener {
                 it.isEnabled = false
 
@@ -202,6 +202,12 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                     revealView.scaleX = 1f
                     cardView.setCardBackgroundColor(endColor)
                     scanStateMessage.text = endMessage
+
+                    // Show equipment moved tooltip
+                    if (equipmentMoved.find { it == equipment.id } != null) {
+                        equipmentMoved.remove(equipment.id)
+                        warningIcon.performClick()
+                    }
                 }
                 .start()
         }

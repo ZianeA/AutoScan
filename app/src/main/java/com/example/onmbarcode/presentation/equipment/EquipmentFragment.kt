@@ -222,8 +222,8 @@ class EquipmentFragment : Fragment(), EquipmentView {
         )
     }
 
-    override fun showEquipmentMovedMessage() {
-        snackbar.showMessage(R.string.equipment_moved_message, MySnackbar.LENGTH_SHORT)
+    override fun showEquipmentMovedMessage(equipmentId: Int) {
+        EquipmentEpoxyModel.equipmentMoved.add(equipmentId)
     }
 
     private val selectedDesk

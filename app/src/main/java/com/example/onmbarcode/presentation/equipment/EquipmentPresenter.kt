@@ -1,6 +1,5 @@
 package com.example.onmbarcode.presentation.equipment
 
-import android.util.Log
 import com.example.onmbarcode.data.KeyValueStore
 import com.example.onmbarcode.data.PreferencesStringSetStore
 import com.example.onmbarcode.data.desk.DeskRepository
@@ -126,8 +125,8 @@ class EquipmentPresenter @Inject constructor(
             .subscribe(
                 {
                     view.hideProgressBarForEquipment(it.id)
+                    if (it.deskId != it.previousDeskId) view.showEquipmentMovedMessage(it.id)
                     view.animateEquipment(it.id)
-                    if (it.deskId != it.previousDeskId) view.showEquipmentMovedMessage()
                 },
                 { _ ->
                     view.showErrorMessage()
