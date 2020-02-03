@@ -8,6 +8,7 @@ import android.widget.ImageButton
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.postDelayed
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
@@ -40,6 +41,8 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
             view.setOnClickListener(deskClickListener)
 
             moreButton.setOnClickListener {
+                it.isEnabled = false
+
                 PopupWindow(view.context).apply {
                     val popupLayout = LayoutInflater.from(view.context)
                         .inflate(R.layout.popup_window_item_desk, null)
@@ -66,6 +69,8 @@ abstract class DeskEpoxyModel : EpoxyModelWithHolder<DeskHolder>() {
                     val deskMargin = view.resources.getDimension(R.dimen.desk_item_spacing).toInt()
                     val xOffset = -(popupLayout.measuredWidth - it.width) + deskMargin
                     showAsDropDown(it, xOffset, 0)
+
+                    setOnDismissListener { it.postDelayed(50) { it.isEnabled = true } }
                 }
             }
         }

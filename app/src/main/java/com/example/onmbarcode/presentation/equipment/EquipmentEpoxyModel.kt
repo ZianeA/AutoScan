@@ -5,13 +5,19 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
+import android.os.Handler
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.os.postDelayed
+import androidx.core.view.marginEnd
+import androidx.core.view.postDelayed
+import androidx.core.view.updateLayoutParams
 import androidx.core.widget.ImageViewCompat
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
@@ -20,6 +26,7 @@ import com.example.onmbarcode.R
 import com.example.onmbarcode.presentation.equipment.Equipment.*
 import com.example.onmbarcode.presentation.util.KotlinEpoxyHolder
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.android.synthetic.main.popup_window_equipment_moved.view.*
 import java.util.*
 
 @EpoxyModelClass(layout = R.layout.item_equipment)
@@ -79,21 +86,35 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
 
             // Show warning message on click
             warningIcon.setOnClickListener {
+                it.isEnabled = false
+
                 PopupWindow(view.context).apply {
                     val popupLayout = LayoutInflater.from(view.context)
                         .inflate(R.layout.popup_window_equipment_moved, null)
+                    // Set pointer position
+                    (popupLayout.pointer.layoutParams as ConstraintLayout.LayoutParams).marginEnd += it.width / 2
 
                     contentView = popupLayout
                     width = WindowManager.LayoutParams.WRAP_CONTENT
                     height = WindowManager.LayoutParams.WRAP_CONTENT
                     isOutsideTouchable = true
+
                     setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
                     popupLayout.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
                     val deskMargin =
                         view.resources.getDimension(R.dimen.equipment_item_spacing).toInt()
-                    val xOffset = -(popupLayout.measuredWidth - it.width) + deskMargin
+                    val elevation =
+                        view.resources.getDimension(R.dimen.popup_window_elevation).toInt()
+                    val xOffset = -(popupLayout.measuredWidth - it.width) + deskMargin + elevation
                     showAsDropDown(it, xOffset, 0)
-                    setOnDismissListener { equipmentMoved.remove(equipment.id) }
+
+                    Handler().postDelayed(TOOLTIP_DURATION) { dismiss() }
+
+                    setOnDismissListener {
+                        equipmentMoved.remove(equipment.id)
+                        it.postDelayed(50) { it.isEnabled = true }
+                    }
                 }
             }
 
@@ -185,6 +206,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
 
     companion object {
         private const val ANIMATION_DURATION: Long = 1000
+        private const val TOOLTIP_DURATION: Long = 4000
         var equipmentToAnimateId: Int? = null
         var loadingEquipments: MutableList<Int> = mutableListOf()
         var equipmentMoved: MutableList<Int> = mutableListOf()

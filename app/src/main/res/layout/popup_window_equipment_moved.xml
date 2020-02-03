@@ -6,40 +6,48 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <Space
+<!--    <Space
         android:id="@+id/spacer"
         android:layout_width="40dp"
-        android:layout_height="28dp"
-        app:layout_constraintEnd_toEndOf="@+id/MessageLayout"
-        app:layout_constraintTop_toTopOf="@+id/MessageLayout" />
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="@+id/messageBackground"
+        app:layout_constraintTop_toTopOf="@+id/messageBackground" />-->
 
     <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:rotation="-90"
+        android:id="@+id/pointer"
+        android:layout_width="20dp"
+        android:layout_height="10dp"
+        android:layout_marginEnd="14dp"
+        android:elevation="@dimen/popup_window_elevation"
         android:tint="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="@id/spacer"
-        app:layout_constraintStart_toStartOf="@+id/spacer"
+        app:layout_constraintBottom_toTopOf="@id/messageBackground"
+        app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_triangle_rounded_corners" />
 
-    <FrameLayout
-        android:id="@+id/MessageLayout"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/messageBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="@drawable/rounded_corners_4dp"
+        android:elevation="@dimen/popup_window_elevation"
+        app:layout_constraintBottom_toBottomOf="@+id/message"
+        app:layout_constraintEnd_toEndOf="@+id/message"
+        app:layout_constraintStart_toStartOf="@+id/message"
+        app:layout_constraintTop_toTopOf="@+id/message" />
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/popup_window_elevation"
+        android:elevation="@dimen/popup_window_elevation"
         android:padding="16dp"
+        android:text="@string/equipment_moved_message"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
-
-        <TextView
-            android:id="@+id/message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/equipment_moved_message"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-    </FrameLayout>
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
