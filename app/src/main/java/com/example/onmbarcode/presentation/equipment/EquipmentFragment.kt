@@ -101,6 +101,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
         rootView.barcodeInput.apply {
             addTextChangedListener(afterTextChanged = {
                 presenter.onBarcodeChange(it.toString(), selectedDesk.id)
+                EquipmentEpoxyModel.tooltipList.forEach { tooltip -> tooltip.dismiss() }
             })
 
             requestFocus()

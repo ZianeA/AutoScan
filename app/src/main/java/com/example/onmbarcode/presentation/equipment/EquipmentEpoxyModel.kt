@@ -88,7 +88,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             warningIcon.setOnClickListener {
                 it.isEnabled = false
 
-                PopupWindow(view.context).apply {
+                val tooltip = PopupWindow(view.context).apply {
                     val popupLayout = LayoutInflater.from(view.context)
                         .inflate(R.layout.popup_window_equipment_moved, null)
                     // Set pointer position
@@ -114,8 +114,11 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                     setOnDismissListener {
                         equipmentMoved.remove(equipment.id)
                         it.postDelayed(50) { it.isEnabled = true }
+                        tooltipList.remove(this)
                     }
                 }
+
+                tooltipList.add(tooltip)
             }
 
             // Pick scan state message and background color
@@ -210,6 +213,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
         var equipmentToAnimateId: Int? = null
         var loadingEquipments: MutableList<Int> = mutableListOf()
         var equipmentMoved: MutableList<Int> = mutableListOf()
+        var tooltipList: MutableList<PopupWindow> = mutableListOf()
     }
 }
 
