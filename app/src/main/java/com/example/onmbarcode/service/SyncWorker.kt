@@ -4,12 +4,11 @@ import android.content.Context
 import androidx.work.RxWorker
 import androidx.work.WorkerParameters
 import com.example.onmbarcode.data.equipment.EquipmentDao
+import com.example.onmbarcode.data.equipment.EquipmentEntity
 import com.example.onmbarcode.data.equipment.EquipmentEntityMapper
-import com.example.onmbarcode.data.equipment.EquipmentResponseMapper.Companion.ATTRIBUTE_ID_NAME
 import com.example.onmbarcode.data.equipment.EquipmentService
 import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.data.user.UserRepository
-import com.example.onmbarcode.presentation.equipment.Equipment
 import com.example.onmbarcode.presentation.equipment.Equipment.*
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -20,14 +19,13 @@ class SyncWorker(
     private val equipmentService: EquipmentService,
     private val userRepository: UserRepository,
     private val equipmentEntityMapper: EquipmentEntityMapper,
-    private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>,
+    private val equipmentResponseMapper: Mapper<HashMap<*, *>, EquipmentEntity>,
     context: Context,
     workerParams: WorkerParameters
 ) :
     RxWorker(context, workerParams) {
     override fun createWork(): Single<Result> {
         return userRepository.getUser()
-            .toSingle()
             .flatMap { user ->
                 equipmentDao.getByScanState(ScanState.ScannedButNotSynced)
                     .flatMapObservable { Observable.fromIterable(it) }
@@ -35,11 +33,7 @@ class SyncWorker(
                         object {
                             val id = it.id
                             val equipmentResponse =
-                                equipmentResponseMapper.mapReverse(
-                                    equipmentEntityMapper.map(it).copy(
-                                        scanState = ScanState.ScannedAndSynced
-                                    )
-                                )
+                                equipmentResponseMapper.mapReverse(it.copy(scanState = ScanState.ScannedAndSynced))
                             val equipmentEntity = it.copy(scanState = ScanState.ScannedAndSynced)
                         }
                     }

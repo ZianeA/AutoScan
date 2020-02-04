@@ -35,11 +35,12 @@ class EquipmentPresenter @Inject constructor(
     private val disposables = CompositeDisposable()
     private val scrollingValve = PublishProcessor.create<Boolean>()
 
-    fun start(desk: Desk) {
+    fun start(refresh: Boolean, desk: Desk) {
         val disposable =
             store.observe(PreferencesStringSetStore.EQUIPMENT_FILTER_KEY, defaultSelectedTags)
                 .switchMap { tags ->
-                    equipmentRepository.getEquipmentForDeskWithScanState(
+                    equipmentRepository.getEquipmentForDeskAndScanState(
+                        false,
                         desk.id,
                         *tags.map { ScanState.valueOf(it) }.toTypedArray()
                     )
@@ -171,7 +172,7 @@ class EquipmentPresenter @Inject constructor(
             .applySchedulers(schedulerProvider)
             .subscribe({
                 view.hideProgressBarForEquipment(equipment.id)
-                if(view.isScrolling.not()) view.rebuildUi()
+                if (view.isScrolling.not()) view.rebuildUi()
                 view.displayEquipmentConditionChangedMessage()
             },
                 { view.showErrorMessage() })

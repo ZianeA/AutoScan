@@ -18,5 +18,5 @@ interface UserDao {
     fun get(uid: Int): Single<UserEntity>*/
 
     @Query("SELECT * FROM UserEntity")
-    fun getAll(): Maybe<List<UserEntity>>
+    fun getAll(): Single<List<UserEntity>>
 }

@@ -38,6 +38,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
     private lateinit var epoxyController: EquipmentEpoxyController
     private lateinit var recyclerView: EpoxyRecyclerView
     private var scrollToTop = false
+    var savedInstanceState: Bundle? = null
 
     override var isScrolling = false
         set(value) {
@@ -46,6 +47,11 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
             field = value
         }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        this.savedInstanceState = savedInstanceState
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -114,7 +120,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     override fun onStart() {
         super.onStart()
-        presenter.start(selectedDesk)
+        presenter.start(savedInstanceState == null, selectedDesk)
     }
 
     override fun onStop() {
@@ -125,6 +131,11 @@ class EquipmentFragment : Fragment(), EquipmentView {
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
         super.onAttach(context)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        savedInstanceState = outState
     }
 
     override fun displayEquipments(desk: Desk, equipment: List<Equipment>, tags: Set<String>) {

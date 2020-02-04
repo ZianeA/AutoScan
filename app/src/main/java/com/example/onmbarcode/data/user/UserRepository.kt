@@ -22,9 +22,9 @@ class UserRepository @Inject constructor(
         return userDao.removeAll()
     }
 
-    fun getUser(): Maybe<User> {
+    // TODO change return type to single
+    fun getUser(): Single<User> {
         return userDao.getAll()
-            .flatMap { if (it.isEmpty()) Maybe.empty() else Maybe.just(it) }
             .map { it.single() } //There should be only one user in the database
             .map(mapper::map)
     }

@@ -50,6 +50,9 @@ interface EquipmentDao {
     @Update
     fun update(equipment: EquipmentEntity): Completable
 
+    @Update
+    fun updateAll(equipments: List<EquipmentEntity>): Completable
+
     @Query("SELECT * FROM EquipmentEntity e WHERE e.scanState=:scanState")
     fun getByScanState(scanState: Equipment.ScanState): Single<List<EquipmentEntity>>
 

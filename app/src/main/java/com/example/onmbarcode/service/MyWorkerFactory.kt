@@ -4,10 +4,7 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
-import com.example.onmbarcode.data.equipment.EquipmentDao
-import com.example.onmbarcode.data.equipment.EquipmentEntityMapper
-import com.example.onmbarcode.data.equipment.EquipmentRepository
-import com.example.onmbarcode.data.equipment.EquipmentService
+import com.example.onmbarcode.data.equipment.*
 import com.example.onmbarcode.data.mapper.Mapper
 import com.example.onmbarcode.data.user.UserRepository
 import com.example.onmbarcode.presentation.equipment.Equipment
@@ -20,7 +17,7 @@ class MyWorkerFactory @Inject constructor(
     private val equipmentService: EquipmentService,
     private val userRepository: UserRepository,
     private val equipmentEntityMapper: EquipmentEntityMapper,
-    private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>
+    private val equipmentResponseMapper: Mapper<HashMap<*, *>, EquipmentEntity>
 ) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,

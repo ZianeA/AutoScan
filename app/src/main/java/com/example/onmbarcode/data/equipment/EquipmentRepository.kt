@@ -19,18 +19,28 @@ class EquipmentRepository @Inject constructor(
     private val equipmentService: EquipmentService,
     private val userRepository: UserRepository, //Should probably use userDao instead
     private val equipmentEntityMapper: Mapper<EquipmentEntity, Equipment>,
-    private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>
+    private val equipmentResponseMapper: Mapper<HashMap<*, *>, EquipmentEntity>
 ) {
     fun getAllEquipmentForDesk(deskId: Int): Observable<List<Equipment>> {
         return equipmentDao.getByDesk(deskId)
             .map { e -> e.map(equipmentEntityMapper::map) }
     }
 
-    fun getEquipmentForDeskWithScanState(
+    fun getEquipmentForDeskAndScanState(
+        refresh: Boolean,
         deskId: Int,
         vararg scanState: ScanState
     ): Observable<List<Equipment>> {
-        return Observable.just(scanState)
+        return Single.just(refresh)
+            .flatMapCompletable {
+                if (it) {
+                    userRepository.getUser()
+                        .flatMap { user -> equipmentService.getByDesk(user, deskId) }
+                        .map { list -> list.map { item -> equipmentResponseMapper.map(item as HashMap<*, *>) } }
+                        .flatMapCompletable { equipmentDao.updateAll(it) }
+                } else Completable.complete()
+            }
+            .andThen(Observable.just(scanState))
             .flatMap {
                 when (it.size) {
                     1 -> equipmentDao.getByDeskAndScanState(deskId, it.first())
@@ -38,7 +48,8 @@ class EquipmentRepository @Inject constructor(
                     3 -> equipmentDao.getByDesk(deskId)
                     else -> throw IllegalArgumentException("You can't filter by more than three scan states.")
                 }
-            }.map { e -> e.map(equipmentEntityMapper::map) }
+            }
+            .map { e -> e.map(equipmentEntityMapper::map) }
     }
 
     fun findEquipment(barcode: String): Maybe<Equipment> {
@@ -54,7 +65,6 @@ class EquipmentRepository @Inject constructor(
     fun updateEquipment(equipment: Equipment): Completable {
         val scannedAndSyncedEquipment = equipment.copy(scanState = ScanState.ScannedAndSynced)
         return userRepository.getUser()
-            .toSingle() //To throw an exception if there's no user.
             .flatMapCompletable { user ->
                 equipmentDao.update(
                     equipmentEntityMapper.mapReverse(
@@ -66,7 +76,11 @@ class EquipmentRepository @Inject constructor(
                     equipmentService.update(
                         user,
                         equipment.id,
-                        equipmentResponseMapper.mapReverse(scannedAndSyncedEquipment)
+                        equipmentResponseMapper.mapReverse(
+                            equipmentEntityMapper.mapReverse(
+                                scannedAndSyncedEquipment
+                            )
+                        )
                     )
                 )
             }

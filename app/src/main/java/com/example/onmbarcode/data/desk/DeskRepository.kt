@@ -29,9 +29,8 @@ class DeskRepository @Inject constructor(
     private val deskService: DeskService,
     private val equipmentService: EquipmentService,
     private val deskEntityMapper: Mapper<DeskWithStatsEntity, Desk>,
-    private val equipmentEntityMapper: Mapper<EquipmentEntity, Equipment>,
     private val deskResponseMapper: Mapper<HashMap<*, *>, DeskEntity>,
-    private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>
+    private val equipmentResponseMapper: Mapper<HashMap<*, *>, EquipmentEntity>
 ) {
     fun getScannedDesks(): Observable<List<Desk>> {
         return deskDao.getScanned()
@@ -49,7 +48,6 @@ class DeskRepository @Inject constructor(
 
     fun downloadDatabase(): Observable<Int> {
         return userRepository.getUser()
-            .toSingle()
             .flatMapObservable { user ->
                 val downloadedEquipment = store.get(EQUIPMENT_DOWNLOADED_COUNT_KEY, 0)
                 val allEquipment = store.get(EQUIPMENT_COUNT_KEY, 0)
@@ -89,7 +87,6 @@ class DeskRepository @Inject constructor(
                         .concatMap { holder ->
                             equipmentService.get(user, holder.offset, PAGE_SIZE)
                                 .map { list -> list.map { equipmentResponseMapper.map(it as HashMap<*, *>) } }
-                                .map { list -> list.map { equipmentEntityMapper.mapReverse(it) } }
                                 .flatMapObservable {
                                     equipmentDao.addAll(it)
                                         .andThen(Completable.defer {
