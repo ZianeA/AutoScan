@@ -62,4 +62,5 @@
     <string name="notification_sync_complete_title">Synchronisation terminée</string>
     <string name="notification_sync_complete_description">Tous les équipements ont été synchronisés.</string>
     <string name="action_hide">Masquer</string>
+    <string name="you_are_offline_message">Vous êtes actuellement hors connexion</string>
 </resources>

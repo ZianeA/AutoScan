@@ -19,8 +19,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="@string/toolbar_title_equipment" />
 
-    <com.airbnb.epoxy.EpoxyRecyclerView
-        android:id="@+id/equipmentRecyclerView"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -28,7 +28,13 @@
         app:layout_constraintBottom_toTopOf="@+id/barcodeInput"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        tools:background="@color/scanned_and_synced" />
+        tools:background="@color/scanned_and_synced">
+
+        <com.airbnb.epoxy.EpoxyRecyclerView
+            android:id="@+id/equipmentRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ImageView
         android:id="@+id/scrollDisabler"
@@ -70,7 +76,7 @@
         app:backgroundTint="@color/colorAccent"
         app:icon="@drawable/ic_arrow_up"
         app:iconTint="@android:color/white"
-        app:layout_constraintEnd_toEndOf="@+id/equipmentRecyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/swipeRefreshLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 

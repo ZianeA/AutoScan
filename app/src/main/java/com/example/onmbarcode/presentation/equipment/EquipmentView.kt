@@ -16,4 +16,6 @@ interface EquipmentView {
     fun hideProgressBarForEquipment(equipmentId: Int)
     fun showEquipmentMovedMessage(equipmentId: Int)
     fun rebuildUi()
+    fun showNetworkErrorMessage()
+    fun hideRefreshView()
 }

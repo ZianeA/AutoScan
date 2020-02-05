@@ -115,6 +115,8 @@ class EquipmentFragment : Fragment(), EquipmentView {
                 ?.hideSoftInputFromWindow(windowToken, 0)
         }
 
+        rootView.swipeRefreshLayout.setOnRefreshListener { presenter.onRefresh(selectedDesk.id) }
+
         return rootView
     }
 
@@ -235,6 +237,15 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     override fun showEquipmentMovedMessage(equipmentId: Int) {
         EquipmentEpoxyModel.equipmentMoved.add(equipmentId)
+    }
+
+    // TODO refactor these error messages
+    override fun showNetworkErrorMessage() {
+        snackbar.showMessage(getString(R.string.you_are_offline_message), MySnackbar.LENGTH_SHORT)
+    }
+
+    override fun hideRefreshView() {
+        swipeRefreshLayout.isRefreshing = false
     }
 
     private val selectedDesk

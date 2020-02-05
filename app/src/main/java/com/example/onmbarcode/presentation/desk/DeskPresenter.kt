@@ -57,9 +57,8 @@ class DeskPresenter @Inject constructor(
         disposables.add(disposable)
     }
 
-    //TODO add yellow flashing animation similar to reddit and stackoverflow comment highlighting animation
-    // maybe not because...
-    // maybe yes when the user navigates back
+    //TODO Add yellow flashing animation when the user navigates back.
+    // Similar to reddit and stackoverflow comment highlighting animation.
     fun onBarcodeEntered(barcode: String) {
         if (isBarcodeScanInProgress) return
 

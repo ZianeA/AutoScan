@@ -27,20 +27,10 @@ class EquipmentRepository @Inject constructor(
     }
 
     fun getEquipmentForDeskAndScanState(
-        refresh: Boolean,
         deskId: Int,
         vararg scanState: ScanState
     ): Observable<List<Equipment>> {
-        return Single.just(refresh)
-            .flatMapCompletable {
-                if (it) {
-                    userRepository.getUser()
-                        .flatMap { user -> equipmentService.getByDesk(user, deskId) }
-                        .map { list -> list.map { item -> equipmentResponseMapper.map(item as HashMap<*, *>) } }
-                        .flatMapCompletable { equipmentDao.updateAll(it) }
-                } else Completable.complete()
-            }
-            .andThen(Observable.just(scanState))
+        return Observable.just(scanState)
             .flatMap {
                 when (it.size) {
                     1 -> equipmentDao.getByDeskAndScanState(deskId, it.first())
@@ -50,6 +40,13 @@ class EquipmentRepository @Inject constructor(
                 }
             }
             .map { e -> e.map(equipmentEntityMapper::map) }
+    }
+
+    fun refreshEquipmentForDesk(deskId: Int): Completable {
+        return userRepository.getUser()
+            .flatMap { user -> equipmentService.getByDesk(user, deskId) }
+            .map { list -> list.map { item -> equipmentResponseMapper.map(item as HashMap<*, *>) } }
+            .flatMapCompletable { equipmentDao.updateAll(it) }
     }
 
     fun findEquipment(barcode: String): Maybe<Equipment> {

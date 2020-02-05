@@ -11,10 +11,12 @@ import com.example.onmbarcode.presentation.util.Clock
 import com.example.onmbarcode.presentation.util.applySchedulers
 import com.example.onmbarcode.presentation.util.scheduler.SchedulerProvider
 import com.example.onmbarcode.service.SyncBackgroundService
+import com.jakewharton.rxrelay2.PublishRelay
 import de.timroes.axmlrpc.XMLRPCException
 import hu.akarnokd.rxjava2.operators.ObservableTransformers
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
@@ -36,30 +38,70 @@ class EquipmentPresenter @Inject constructor(
     private val scrollingValve = PublishProcessor.create<Boolean>()
 
     fun start(refresh: Boolean, desk: Desk) {
-        val disposable =
-            store.observe(PreferencesStringSetStore.EQUIPMENT_FILTER_KEY, defaultSelectedTags)
-                .switchMap { tags ->
-                    equipmentRepository.getEquipmentForDeskAndScanState(
-                        false,
-                        desk.id,
-                        *tags.map { ScanState.valueOf(it) }.toTypedArray()
-                    )
+        val disposable = Single.just(refresh)
+            .flatMapCompletable {
+                if (it) {
+                    equipmentRepository.refreshEquipmentForDesk(desk.id)
+                } else {
+                    Completable.complete()
                 }
-                .flatMapSingle { e ->
-                    deskRepository.getDeskById(desk.id)
-                        .map {
-                            object {
-                                val desk: Desk = it
-                                val equipment: List<Equipment> = e
-                            }
-                        }
+            }
+            .observeOn(schedulerProvider.main)
+            // hide refresh view regardless if completable completes normally or fails
+            .doOnTerminate { view.hideRefreshView() }
+            .onErrorResumeNext {
+                if (it is XMLRPCException) {
+                    view.showNetworkErrorMessage()
+                    Completable.complete()
+                } else {
+                    Completable.error(it)
                 }
-                .compose(ObservableTransformers.valve(scrollingValve.toObservable(), true))
-                .applySchedulers(schedulerProvider)
-                .subscribe(
-                    { view.displayEquipments(it.desk, it.equipment, selectedTags) },
-                    { /*onError*/ }
+            }
+            .observeOn(schedulerProvider.worker)
+            .andThen(
+                store.observe(
+                    PreferencesStringSetStore.EQUIPMENT_FILTER_KEY,
+                    defaultSelectedTags
                 )
+            )
+            .switchMap { tags ->
+                equipmentRepository.getEquipmentForDeskAndScanState(
+                    desk.id,
+                    *tags.map { ScanState.valueOf(it) }.toTypedArray()
+                )
+            }
+            .flatMapSingle { e ->
+                deskRepository.getDeskById(desk.id)
+                    .map {
+                        object {
+                            val desk: Desk = it
+                            val equipment: List<Equipment> = e
+                        }
+                    }
+            }
+            .compose(ObservableTransformers.valve(scrollingValve.toObservable(), true))
+            .applySchedulers(schedulerProvider)
+            .subscribe(
+                { view.displayEquipments(it.desk, it.equipment, selectedTags) },
+                { view.showErrorMessage() }
+            )
+
+        disposables.add(disposable)
+    }
+
+    fun onRefresh(deskId: Int) {
+        val disposable = equipmentRepository.refreshEquipmentForDesk(deskId)
+            .applySchedulers(schedulerProvider)
+            .subscribe({ view.hideRefreshView() },
+                {
+                    view.hideRefreshView()
+
+                    if (it is XMLRPCException) {
+                        view.showNetworkErrorMessage()
+                    } else {
+                        view.showErrorMessage()
+                    }
+                })
 
         disposables.add(disposable)
     }
