@@ -16,4 +16,5 @@
     <color name="spinner_background_color">#33FFFFFF</color>
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#fff</color>
     <color name="snackbar_background_color">#323232</color>
+    <color name="skeleton_shimmer_gray">#d9d9d9</color>
 </resources>

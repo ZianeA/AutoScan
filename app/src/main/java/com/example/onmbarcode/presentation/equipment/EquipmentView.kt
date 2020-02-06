@@ -17,5 +17,6 @@ interface EquipmentView {
     fun showEquipmentMovedMessage(equipmentId: Int)
     fun rebuildUi()
     fun showNetworkErrorMessage()
-    fun hideRefreshView()
+    fun showLoadingView()
+    fun hideLoadingView()
 }

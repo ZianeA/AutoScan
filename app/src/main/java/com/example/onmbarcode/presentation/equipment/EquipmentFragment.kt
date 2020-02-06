@@ -244,7 +244,17 @@ class EquipmentFragment : Fragment(), EquipmentView {
         snackbar.showMessage(getString(R.string.you_are_offline_message), MySnackbar.LENGTH_SHORT)
     }
 
-    override fun hideRefreshView() {
+    override fun showLoadingView() {
+        if (recyclerView.adapter == null) {
+            recyclerView.setController(epoxyController)
+        }
+
+        epoxyController.skeletonEquipmentCount = selectedDesk.equipmentCount
+        epoxyController.requestModelBuild()
+    }
+
+    override fun hideLoadingView() {
+        epoxyController.skeletonEquipmentCount = 0
         swipeRefreshLayout.isRefreshing = false
     }
 

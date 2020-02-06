@@ -38,6 +38,8 @@ class EquipmentPresenter @Inject constructor(
     private val scrollingValve = PublishProcessor.create<Boolean>()
 
     fun start(refresh: Boolean, desk: Desk) {
+        if (refresh) view.showLoadingView()
+
         val disposable = Single.just(refresh)
             .flatMapCompletable {
                 if (it) {
@@ -47,8 +49,8 @@ class EquipmentPresenter @Inject constructor(
                 }
             }
             .observeOn(schedulerProvider.main)
-            // hide refresh view regardless if completable completes normally or fails
-            .doOnTerminate { view.hideRefreshView() }
+            // hide loading view regardless if completable completes normally or fails
+            .doOnTerminate { view.hideLoadingView() }
             .onErrorResumeNext {
                 if (it is XMLRPCException) {
                     view.showNetworkErrorMessage()
@@ -92,9 +94,9 @@ class EquipmentPresenter @Inject constructor(
     fun onRefresh(deskId: Int) {
         val disposable = equipmentRepository.refreshEquipmentForDesk(deskId)
             .applySchedulers(schedulerProvider)
-            .subscribe({ view.hideRefreshView() },
+            .subscribe({ view.hideLoadingView() },
                 {
-                    view.hideRefreshView()
+                    view.hideLoadingView()
 
                     if (it is XMLRPCException) {
                         view.showNetworkErrorMessage()

@@ -21,7 +21,7 @@ class EquipmentResponseMapper @Inject constructor() :
             translateCondition(model[ATTRIBUTE_OBSERVATION] as String),
             odooDatetimeToUnix(model[ATTRIBUTE_DATE_DE_SCAN] as String),
             (model[ATTRIBUTE_CODE_AFF] as Array<*>)[0] as Int,
-            (model[ATTRIBUTE_CODE_AFF] as Array<*>)[0] as Int
+            (model[ATTRIBUTE_CODE_AFF_ANC] as Array<*>)[0] as Int
         )
     }
 
@@ -45,6 +45,7 @@ class EquipmentResponseMapper @Inject constructor() :
         const val ATTRIBUTE_DATE_DE_SCAN = "date_scan"
         const val ATTRIBUTE_CODE_AFF = "code_aff"
         const val ATTRIBUTE_SCANNE = "scanne"
+        const val ATTRIBUTE_CODE_AFF_ANC = "code_aff_anc"
     }
 
     fun translateCondition(condition: String) = when (condition.toUpperCase(Locale.FRENCH)) {
