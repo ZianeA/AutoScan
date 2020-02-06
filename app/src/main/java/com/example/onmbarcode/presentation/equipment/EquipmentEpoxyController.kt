@@ -18,10 +18,10 @@ class EquipmentEpoxyController(
 
     override fun buildModels() {
         if (skeletonEquipmentCount > 0) {
-            skeletonTags { id(0) }
+            skeletonTags { id("st") }
 
             for (i in 0..skeletonEquipmentCount) {
-                skeletonEquipment { id(i) }
+                skeletonEquipment { id("s", i.toLong()) }
             }
 
             return
