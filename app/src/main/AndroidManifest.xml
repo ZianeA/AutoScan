@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.onmbarcode">
+    package="com.meteoalgerie.autoscan">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".presentation.OnmBarCodeApp"
+        android:name="com.meteoalgerie.autoscan.presentation.OnmBarCodeApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -15,7 +15,7 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".presentation.MainActivity"
+            android:name="com.meteoalgerie.autoscan.presentation.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"

@@ -63,7 +63,7 @@
         app:layout_constraintTop_toTopOf="@+id/barcodeInput"
         app:srcCompat="@drawable/ic_send_24dp" />
 
-    <com.example.onmbarcode.presentation.util.MySnackbar
+    <com.meteoalgerie.autoscan.presentation.util.MySnackbar
         android:id="@+id/snackbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
