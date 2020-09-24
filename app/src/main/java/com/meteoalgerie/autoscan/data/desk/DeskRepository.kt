@@ -1,9 +1,7 @@
 package com.meteoalgerie.autoscan.data.desk
 
 import android.util.Log
-import com.meteoalgerie.autoscan.data.KeyValueStore
-import com.meteoalgerie.autoscan.data.PreferencesIntStore.Companion.EQUIPMENT_COUNT_KEY
-import com.meteoalgerie.autoscan.data.PreferencesIntStore.Companion.EQUIPMENT_DOWNLOADED_COUNT_KEY
+import com.meteoalgerie.autoscan.data.PreferenceStorage
 import com.meteoalgerie.autoscan.data.mapper.Mapper
 import com.meteoalgerie.autoscan.data.equipment.EquipmentDao
 import com.meteoalgerie.autoscan.data.equipment.Equipment
@@ -23,7 +21,7 @@ class DeskRepository @Inject constructor(
     private val deskDao: DeskDao,
     private val equipmentDao: EquipmentDao,
     private val userRepository: UserRepository, //Should probably use userDao instead
-    private val store: KeyValueStore<Int>,
+    private val storage: PreferenceStorage,
     private val deskService: DeskService,
     private val equipmentService: EquipmentService,
     private val deskEntityMapper: Mapper<DeskWithStatsEntity, Desk>,
@@ -38,8 +36,8 @@ class DeskRepository @Inject constructor(
     fun isDatabaseEmpty(): Single<Boolean> = deskDao.isEmpty()
 
     fun isDownloadComplete(): Boolean {
-        val downloadedEquipment = store.get(EQUIPMENT_DOWNLOADED_COUNT_KEY, 0)
-        val allEquipment = store.get(EQUIPMENT_COUNT_KEY, 0)
+        val downloadedEquipment = storage.downloadedEquipmentCount
+        val allEquipment = storage.equipmentCount
 
         return downloadedEquipment != 0 && downloadedEquipment >= allEquipment
     }
@@ -47,12 +45,12 @@ class DeskRepository @Inject constructor(
     fun downloadDatabase(): Observable<Int> {
         return userRepository.getUser()
             .flatMapObservable { user ->
-                val downloadedEquipment = store.get(EQUIPMENT_DOWNLOADED_COUNT_KEY, 0)
-                val allEquipment = store.get(EQUIPMENT_COUNT_KEY, 0)
+                val downloadedEquipment = storage.downloadedEquipmentCount
+                val allEquipment = storage.equipmentCount
 
                 if (downloadedEquipment == 0 || downloadedEquipment < allEquipment) {
                     Single.just(downloadedEquipment == 0)
-                        .flatMapCompletable {downloadDesks ->
+                        .flatMapCompletable { downloadDesks ->
                             if (downloadDesks) {
                                 deskService.getAll(user)
                                     .map { list -> list.map { deskResponseMapper.map(it as HashMap<*, *>) } }
@@ -61,7 +59,7 @@ class DeskRepository @Inject constructor(
                         }
                         .andThen(equipmentService.getEquipmentCount(user))
                         .flatMapObservable { count ->
-                            store.put(EQUIPMENT_COUNT_KEY, count)
+                            storage.equipmentCount = count
 
                             val rangeStart =
                                 ceil(downloadedEquipment.toDouble() / PAGE_SIZE).toInt()
@@ -89,11 +87,7 @@ class DeskRepository @Inject constructor(
                                     equipmentDao.addAll(it)
                                         .andThen(Completable.defer {
                                             Completable.fromAction {
-                                                store.add(
-                                                    EQUIPMENT_DOWNLOADED_COUNT_KEY,
-                                                    it.size,
-                                                    0
-                                                )
+                                                storage.downloadedEquipmentCount += it.size
                                             }
                                         })
                                         .andThen(

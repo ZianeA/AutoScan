@@ -27,7 +27,7 @@ interface DeskDao {
             d.scanDate,
             d.isHidden
         FROM DeskEntity d
-        LEFT JOIN Equipment e
+        LEFT JOIN EquipmentEntity e
             ON d.id = e.deskId
         WHERE d.isScanned = 1 AND d.isHidden = 0
         GROUP BY d.id, d.barcode, d.isScanned, d.scanDate
@@ -48,7 +48,7 @@ interface DeskDao {
             d.scanDate,
             d.isHidden
         FROM DeskEntity d
-        LEFT JOIN Equipment e
+        LEFT JOIN EquipmentEntity e
             ON d.id = e.deskId
         WHERE d.barcode=:barcode
         GROUP BY d.id, d.barcode, d.isScanned, d.scanDate
@@ -68,7 +68,7 @@ interface DeskDao {
             d.scanDate,
             d.isHidden
         FROM DeskEntity d
-        LEFT JOIN Equipment e
+        LEFT JOIN EquipmentEntity e
             ON d.id = e.deskId
         WHERE d.id=:id
         GROUP BY d.id, d.barcode, d.isScanned, d.scanDate

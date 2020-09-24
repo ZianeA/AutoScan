@@ -1,7 +1,6 @@
 package com.meteoalgerie.autoscan.presentation.equipment
 
-import com.meteoalgerie.autoscan.data.KeyValueStore
-import com.meteoalgerie.autoscan.data.PreferencesStringSetStore
+import com.meteoalgerie.autoscan.data.PreferenceStorage
 import com.meteoalgerie.autoscan.data.desk.DeskRepository
 import com.meteoalgerie.autoscan.data.equipment.Equipment
 import com.meteoalgerie.autoscan.data.equipment.Equipment.*
@@ -19,6 +18,8 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
+import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import java.lang.IllegalArgumentException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -28,13 +29,14 @@ class EquipmentPresenter @Inject constructor(
     private val view: EquipmentView,
     private val equipmentRepository: EquipmentRepository,
     private val deskRepository: DeskRepository,
-    @JvmSuppressWildcards private val store: KeyValueStore<Set<String>>,
+    private val storage: PreferenceStorage,
     private val syncService: SyncBackgroundService,
     private val schedulerProvider: SchedulerProvider,
     private val clock: Clock
 ) {
     private val disposables = CompositeDisposable()
     private val scrollingValve = PublishProcessor.create<Boolean>()
+    private val filterSubject = BehaviorSubject.createDefault(storage.equipmentFilter)
 
     fun start(refresh: Boolean, desk: Desk) {
         if (refresh) view.showLoadingView()
@@ -59,12 +61,7 @@ class EquipmentPresenter @Inject constructor(
                 }
             }
             .observeOn(schedulerProvider.worker)
-            .andThen(
-                store.observe(
-                    PreferencesStringSetStore.EQUIPMENT_FILTER_KEY,
-                    defaultSelectedTags
-                )
-            )
+            .andThen(filterSubject)
             .switchMap { tags ->
                 equipmentRepository.getEquipmentForDeskAndScanState(
                     desk.id,
@@ -83,7 +80,7 @@ class EquipmentPresenter @Inject constructor(
             .compose(ObservableTransformers.valve(scrollingValve.toObservable(), true))
             .applySchedulers(schedulerProvider)
             .subscribe(
-                { view.displayEquipments(it.desk, it.equipment, selectedTags) },
+                { view.displayEquipments(it.desk, it.equipment, storage.equipmentFilter) },
                 { view.showErrorMessage() }
             )
 
@@ -224,44 +221,22 @@ class EquipmentPresenter @Inject constructor(
     }
 
     fun onTagClicked(tag: ScanState) {
-        val isTagSelected = selectedTags.find { it == tag.name } != null
-        if (selectedTags.size == 1 && isTagSelected) return
+        val isTagSelected = storage.equipmentFilter.any { it == tag.name }
+        // At least one tag must be selected
+        if (storage.equipmentFilter.size == 1 && isTagSelected) return
 
-        val disposable = Single.fromCallable {
-            if (isTagSelected) {
-                store.remove(
-                    PreferencesStringSetStore.EQUIPMENT_FILTER_KEY,
-                    setOf(tag.name),
-                    defaultSelectedTags
-                )
-            } else {
-                store.add(
-                    PreferencesStringSetStore.EQUIPMENT_FILTER_KEY,
-                    setOf(tag.name),
-                    defaultSelectedTags
-                )
-            }
+        if (isTagSelected) {
+            storage.equipmentFilter -= tag.name
+        } else {
+            storage.equipmentFilter += tag.name
         }
-            .applySchedulers(schedulerProvider)
-            .subscribe({}, { /*onError*/ })
 
-        disposables.add(disposable)
+        filterSubject.onNext(storage.equipmentFilter)
     }
 
     fun stop() {
         disposables.clear()
     }
-
-    private val defaultSelectedTags = setOf(
-        ScanState.ScannedAndSynced.name,
-        ScanState.ScannedButNotSynced.name,
-        ScanState.NotScanned.name
-    )
-
-    private val selectedTags: Set<String>
-        get() {
-            return store.get(PreferencesStringSetStore.EQUIPMENT_FILTER_KEY, defaultSelectedTags)
-        }
 
     companion object {
         private const val EQUIPMENT_BARCODE_LENGTH = 5

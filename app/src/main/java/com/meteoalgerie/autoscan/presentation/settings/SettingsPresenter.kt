@@ -1,21 +1,18 @@
 package com.meteoalgerie.autoscan.presentation.settings
 
-import com.meteoalgerie.autoscan.data.KeyValueStore
 import com.meteoalgerie.autoscan.data.OdooService
-import com.meteoalgerie.autoscan.data.PreferencesStringStore
+import com.meteoalgerie.autoscan.data.PreferenceStorage
 import com.meteoalgerie.autoscan.presentation.di.FragmentScope
 import javax.inject.Inject
 
 @FragmentScope
 class SettingsPresenter @Inject constructor(
     private val view: SettingsView,
-    private val store: KeyValueStore<String>
+    private val storage: PreferenceStorage
 ) {
 
     fun start() {
-        val serverUrl =
-            store.get(PreferencesStringStore.SERVER_URL_KEY, OdooService.URL_SERVER_DEFAULT)
-        view.displayServerUrl(serverUrl)
+        view.displayServerUrl(storage.serverUrl)
     }
 
     fun onServerEntered(serverUrl: String) {
@@ -27,8 +24,8 @@ class SettingsPresenter @Inject constructor(
             validUrl = "$PROTOCOL_HTTP$serverUrl"
         }
 
-        store.put(PreferencesStringStore.SERVER_URL_KEY, validUrl)
-        view.displayServerUrl(validUrl)
+        storage.serverUrl = validUrl
+        view.displayServerUrl(storage.serverUrl)
     }
 
     companion object {

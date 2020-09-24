@@ -8,18 +8,18 @@ import io.reactivex.Single
 
 @Dao
 interface EquipmentDao {
-    @Query("SELECT * FROM Equipment")
+    @Query("SELECT * FROM EquipmentEntity")
     fun getAll(): Single<List<Equipment>>
 
-    @Query("SELECT * FROM Equipment e WHERE e.barcode=:barcode")
+    @Query("SELECT * FROM EquipmentEntity e WHERE e.barcode=:barcode")
     fun getByBarcode(barcode: String): Maybe<Equipment>
 
-    @Query("SELECT * FROM Equipment e WHERE e.deskId=:deskId ORDER BY e.scanDate Desc")
+    @Query("SELECT * FROM EquipmentEntity e WHERE e.deskId=:deskId ORDER BY e.scanDate Desc")
     fun getByDesk(deskId: Int): Observable<List<Equipment>>
 
     @Query(
         """SELECT * 
-        FROM Equipment e 
+        FROM EquipmentEntity e 
         WHERE e.deskId=:deskId 
         AND e.scanState=:scanState 
         ORDER BY e.scanDate Desc"""
@@ -32,7 +32,7 @@ interface EquipmentDao {
     @Query(
         """
         SELECT * 
-        FROM Equipment e 
+        FROM EquipmentEntity e 
         WHERE e.deskId=:deskId 
         AND (e.scanState=:scanState1 OR e.scanState=:scanState2)
         ORDER BY e.scanDate Desc"""
@@ -52,12 +52,12 @@ interface EquipmentDao {
     @Update
     fun updateAll(equipments: List<Equipment>): Completable
 
-    @Query("SELECT * FROM Equipment e WHERE e.scanState=:scanState")
+    @Query("SELECT * FROM EquipmentEntity e WHERE e.scanState=:scanState")
     fun getByScanState(scanState: Equipment.ScanState): Single<List<Equipment>>
 
-    @Query("SELECT COUNT(*) FROM Equipment")
+    @Query("SELECT COUNT(*) FROM EquipmentEntity")
     fun getAllCount(): Single<Int>
 
-    @Query("DELETE FROM Equipment")
+    @Query("DELETE FROM EquipmentEntity")
     fun deleteAll(): Completable
 }

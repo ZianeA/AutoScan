@@ -1,20 +1,6 @@
 package com.meteoalgerie.autoscan.presentation.equipment
 
-import com.meteoalgerie.autoscan.data.KeyValueStore
-import com.meteoalgerie.autoscan.data.desk.DeskRepository
-import com.meteoalgerie.autoscan.data.equipment.EquipmentRepository
-import com.meteoalgerie.autoscan.presentation.util.Clock
-import com.meteoalgerie.autoscan.service.SyncBackgroundService
-import com.meteoalgerie.autoscan.util.SyncSchedulerProvider
-import com.meteoalgerie.autoscan.util.createEquipment
-import io.mockk.*
 import io.mockk.junit5.MockKExtension
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Single
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
 

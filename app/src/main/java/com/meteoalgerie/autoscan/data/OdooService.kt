@@ -7,7 +7,7 @@ import java.net.URL
 import javax.inject.Inject
 
 @Reusable
-class OdooService @Inject constructor(private val urlStore: KeyValueStore<String>) {
+class OdooService @Inject constructor(private val storage: PreferenceStorage) {
     fun authenticate(username: String, password: String): Maybe<Int> {
         return Maybe.fromCallable {
             val client = XMLRPCClient(URL(commonUrl))
@@ -26,8 +26,7 @@ class OdooService @Inject constructor(private val urlStore: KeyValueStore<String
 
     val baseUrl: String
         get() {
-            val serverUrl =
-                urlStore.get(PreferencesStringStore.SERVER_URL_KEY, URL_SERVER_DEFAULT)
+            val serverUrl = storage.serverUrl
             return "$serverUrl/$PATH_BASE"
         }
 
@@ -35,7 +34,6 @@ class OdooService @Inject constructor(private val urlStore: KeyValueStore<String
     val objectUrl: String get() = "$baseUrl/$PATH_OBJECT"
 
     companion object {
-        const val URL_SERVER_DEFAULT = "http://192.168.0.176"
         private const val PATH_BASE = "xmlrpc/2"
         private const val PATH_COMMON = "common"
         private const val PATH_OBJECT = "object"

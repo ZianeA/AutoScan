@@ -4,6 +4,7 @@ import androidx.room.*
 import com.meteoalgerie.autoscan.data.desk.DeskEntity
 
 @Entity(
+    tableName = "EquipmentEntity",
     foreignKeys = [ForeignKey(
         entity = DeskEntity::class,
         parentColumns = ["id"],
