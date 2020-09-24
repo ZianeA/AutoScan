@@ -14,7 +14,7 @@ import com.meteoalgerie.autoscan.R
 class EquipmentConditionDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val listener = parentFragment as? EquipmentConditionDialogListener
-        val builder = AlertDialog.Builder(context!!)
+        val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(getString(R.string.equipment_state_dialog_title))
             .setSingleChoiceItems(
                 R.array.equipment_condition,

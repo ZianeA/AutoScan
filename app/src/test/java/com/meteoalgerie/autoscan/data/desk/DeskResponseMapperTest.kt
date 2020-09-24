@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
 internal class DeskResponseMapperTest {
-    private val deskMapper = DeskResponseMapper()
+    /*private val deskMapper = DeskResponseMapper()
 
     @BeforeEach
     internal fun setUp() {
@@ -29,5 +29,5 @@ internal class DeskResponseMapperTest {
 
         //Assert
         Assertions.assertThat(mappedDesk).isEqualTo(createDeskEntity())
-    }
+    }*/
 }

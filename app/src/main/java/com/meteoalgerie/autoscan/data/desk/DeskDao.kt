@@ -1,7 +1,7 @@
 package com.meteoalgerie.autoscan.data.desk
 
 import androidx.room.*
-import com.meteoalgerie.autoscan.data.equipment.EquipmentEntity
+import com.meteoalgerie.autoscan.data.equipment.Equipment
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -13,7 +13,7 @@ interface DeskDao {
     fun addAll(desk: List<DeskEntity>): Completable
 
     @Insert
-    fun addAll(desk: List<DeskEntity>, equipments: List<EquipmentEntity>)
+    fun addAll(desk: List<DeskEntity>, equipments: List<Equipment>)
 
     @Query(
         """
@@ -27,7 +27,7 @@ interface DeskDao {
             d.scanDate,
             d.isHidden
         FROM DeskEntity d
-        LEFT JOIN EquipmentEntity e
+        LEFT JOIN Equipment e
             ON d.id = e.deskId
         WHERE d.isScanned = 1 AND d.isHidden = 0
         GROUP BY d.id, d.barcode, d.isScanned, d.scanDate
@@ -48,7 +48,7 @@ interface DeskDao {
             d.scanDate,
             d.isHidden
         FROM DeskEntity d
-        LEFT JOIN EquipmentEntity e
+        LEFT JOIN Equipment e
             ON d.id = e.deskId
         WHERE d.barcode=:barcode
         GROUP BY d.id, d.barcode, d.isScanned, d.scanDate
@@ -68,7 +68,7 @@ interface DeskDao {
             d.scanDate,
             d.isHidden
         FROM DeskEntity d
-        LEFT JOIN EquipmentEntity e
+        LEFT JOIN Equipment e
             ON d.id = e.deskId
         WHERE d.id=:id
         GROUP BY d.id, d.barcode, d.isScanned, d.scanDate

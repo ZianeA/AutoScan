@@ -8,10 +8,11 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.meteoalgerie.autoscan.R
 import com.meteoalgerie.autoscan.presentation.desk.Desk
-import com.meteoalgerie.autoscan.presentation.equipment.Equipment.*
 import com.meteoalgerie.autoscan.presentation.util.KotlinEpoxyHolder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.meteoalgerie.autoscan.data.equipment.Equipment
+import com.meteoalgerie.autoscan.data.equipment.Equipment.*
 
 @EpoxyModelClass(layout = R.layout.view_tags)
 abstract class EquipmentStatsEpoxyModel : EpoxyModelWithHolder<EquipmentStatsHolder>() {

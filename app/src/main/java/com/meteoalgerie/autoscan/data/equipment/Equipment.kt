@@ -2,7 +2,6 @@ package com.meteoalgerie.autoscan.data.equipment
 
 import androidx.room.*
 import com.meteoalgerie.autoscan.data.desk.DeskEntity
-import com.meteoalgerie.autoscan.presentation.equipment.Equipment
 
 @Entity(
     foreignKeys = [ForeignKey(
@@ -18,30 +17,41 @@ import com.meteoalgerie.autoscan.presentation.equipment.Equipment
     )],
     indices = [Index(value = ["deskId"]), Index(value = ["barcode"], unique = true)]
 )
-data class EquipmentEntity(
+data class Equipment(
     @PrimaryKey val id: Int,
     val barcode: String,
     val type: String,
-    val scanState: Equipment.ScanState,
-    val condition: Equipment.EquipmentCondition,
+    val scanState: ScanState,
+    val condition: EquipmentCondition,
     val scanDate: Long,
     val deskId: Int,
     val previousDeskId: Int
 ) {
     class EquipmentConditionConverter {
         @TypeConverter
-        fun fromEquipmentConditionToString(condition: Equipment.EquipmentCondition) = condition.name
+        fun fromEquipmentConditionToString(condition: EquipmentCondition) = condition.name
 
         @TypeConverter
         fun fromStringToEquipmentCondition(condition: String) =
-            Equipment.EquipmentCondition.valueOf(condition)
+            EquipmentCondition.valueOf(condition)
     }
 
     class ScanStateConverter {
         @TypeConverter
-        fun fromScanStateToString(scanState: Equipment.ScanState) = scanState.name
+        fun fromScanStateToString(scanState: ScanState) = scanState.name
 
         @TypeConverter
-        fun fromStringToScanState(scanState: String) = Equipment.ScanState.valueOf(scanState)
+        fun fromStringToScanState(scanState: String) = ScanState.valueOf(scanState)
     }
+
+    enum class EquipmentCondition {
+        GOOD, AVERAGE, BAD;
+
+        companion object {
+            private val values = values();
+            fun getByValue(value: Int) = values.first { it.ordinal == value }
+        }
+    }
+
+    enum class ScanState { ScannedAndSynced, ScannedButNotSynced, NotScanned }
 }

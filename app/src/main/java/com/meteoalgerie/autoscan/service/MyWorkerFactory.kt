@@ -15,8 +15,8 @@ class MyWorkerFactory @Inject constructor(
     private val equipmentDao: EquipmentDao,
     private val equipmentService: EquipmentService,
     private val userRepository: UserRepository,
-    private val equipmentEntityMapper: EquipmentEntityMapper,
-    private val equipmentResponseMapper: Mapper<HashMap<*, *>, EquipmentEntity>
+    private val equipmentMapper: EquipmentMapper,
+    private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>
 ) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,
@@ -29,7 +29,7 @@ class MyWorkerFactory @Inject constructor(
                 equipmentDao,
                 equipmentService,
                 userRepository,
-                equipmentEntityMapper,
+                equipmentMapper,
                 equipmentResponseMapper,
                 appContext,
                 workerParameters

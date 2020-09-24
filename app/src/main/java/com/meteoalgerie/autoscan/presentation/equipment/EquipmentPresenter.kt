@@ -3,10 +3,11 @@ package com.meteoalgerie.autoscan.presentation.equipment
 import com.meteoalgerie.autoscan.data.KeyValueStore
 import com.meteoalgerie.autoscan.data.PreferencesStringSetStore
 import com.meteoalgerie.autoscan.data.desk.DeskRepository
+import com.meteoalgerie.autoscan.data.equipment.Equipment
+import com.meteoalgerie.autoscan.data.equipment.Equipment.*
 import com.meteoalgerie.autoscan.data.equipment.EquipmentRepository
 import com.meteoalgerie.autoscan.presentation.desk.Desk
 import com.meteoalgerie.autoscan.presentation.di.FragmentScope
-import com.meteoalgerie.autoscan.presentation.equipment.Equipment.*
 import com.meteoalgerie.autoscan.presentation.util.Clock
 import com.meteoalgerie.autoscan.presentation.util.applySchedulers
 import com.meteoalgerie.autoscan.presentation.util.scheduler.SchedulerProvider

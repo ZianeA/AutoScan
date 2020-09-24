@@ -4,12 +4,12 @@ import android.content.Context
 import androidx.work.RxWorker
 import androidx.work.WorkerParameters
 import com.meteoalgerie.autoscan.data.equipment.EquipmentDao
-import com.meteoalgerie.autoscan.data.equipment.EquipmentEntity
-import com.meteoalgerie.autoscan.data.equipment.EquipmentEntityMapper
+import com.meteoalgerie.autoscan.data.equipment.Equipment
+import com.meteoalgerie.autoscan.data.equipment.Equipment.*
+import com.meteoalgerie.autoscan.data.equipment.EquipmentMapper
 import com.meteoalgerie.autoscan.data.equipment.EquipmentService
 import com.meteoalgerie.autoscan.data.mapper.Mapper
 import com.meteoalgerie.autoscan.data.user.UserRepository
-import com.meteoalgerie.autoscan.presentation.equipment.Equipment.*
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -18,8 +18,8 @@ class SyncWorker(
     private val equipmentDao: EquipmentDao,
     private val equipmentService: EquipmentService,
     private val userRepository: UserRepository,
-    private val equipmentEntityMapper: EquipmentEntityMapper,
-    private val equipmentResponseMapper: Mapper<HashMap<*, *>, EquipmentEntity>,
+    private val equipmentMapper: EquipmentMapper,
+    private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>,
     context: Context,
     workerParams: WorkerParameters
 ) :

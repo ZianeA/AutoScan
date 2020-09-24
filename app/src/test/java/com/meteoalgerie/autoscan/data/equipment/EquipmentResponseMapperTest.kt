@@ -1,20 +1,13 @@
 package com.meteoalgerie.autoscan.data.equipment
 
-import com.meteoalgerie.autoscan.presentation.equipment.Equipment
-import com.meteoalgerie.autoscan.util.createEquipment
-import com.meteoalgerie.autoscan.util.createEquipmentResponse
-import io.mockk.clearAllMocks
 import io.mockk.junit5.MockKExtension
-import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
 internal class EquipmentResponseMapperTest {
-    private val mapper = EquipmentResponseMapper()
+    /*private val mapper = EquipmentResponseMapper()
 
     @BeforeEach
     internal fun setUp() {
@@ -44,5 +37,5 @@ internal class EquipmentResponseMapperTest {
             "aff" to (response["aff"] as Array<*>)[0] as Int
         )
         Assertions.assertThat(mappedEquipmentResponse).isEqualTo(expectedEquipmentResponse)
-    }
+    }*/
 }

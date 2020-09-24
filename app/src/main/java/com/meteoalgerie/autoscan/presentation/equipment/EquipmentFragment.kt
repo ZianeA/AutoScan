@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
 
 import com.meteoalgerie.autoscan.R
+import com.meteoalgerie.autoscan.data.equipment.Equipment
 import com.meteoalgerie.autoscan.presentation.desk.Desk
 import com.meteoalgerie.autoscan.presentation.util.ItemDecoration
 import com.meteoalgerie.autoscan.presentation.util.MySnackbar

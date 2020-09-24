@@ -20,9 +20,10 @@ import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.meteoalgerie.autoscan.R
-import com.meteoalgerie.autoscan.presentation.equipment.Equipment.*
 import com.meteoalgerie.autoscan.presentation.util.KotlinEpoxyHolder
 import com.google.android.material.textfield.TextInputLayout
+import com.meteoalgerie.autoscan.data.equipment.Equipment
+import com.meteoalgerie.autoscan.data.equipment.Equipment.*
 import kotlinx.android.synthetic.main.popup_window_equipment_moved.view.*
 import java.util.*
 

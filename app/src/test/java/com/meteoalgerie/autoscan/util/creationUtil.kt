@@ -1,9 +1,7 @@
 package com.meteoalgerie.autoscan.util
 
 import com.meteoalgerie.autoscan.data.desk.DeskEntity
-import com.meteoalgerie.autoscan.data.equipment.EquipmentEntity
 import com.meteoalgerie.autoscan.presentation.desk.Desk
-import com.meteoalgerie.autoscan.presentation.equipment.Equipment
 import kotlin.collections.HashMap
 
 private const val EQUIPMENT_ID = 101
@@ -11,8 +9,8 @@ private const val EQUIPMENT_BARCODE = "12345"
 private const val EQUIPMENT_TYPE = "clavier"
 private val EQUIPMENT_SCAN_STATE = Equipment.ScanState.ScannedAndSynced
 private val EQUIPMENT_CONDITION = Equipment.EquipmentCondition.AVERAGE
-private val EQUIPMENT_CONDITION_FRENCH = "moyen"
-private const val EQUIPMENT_SCAN_DATE: Long = 1545293705
+private const val EQUIPMENT_CONDITION_FRENCH = "moyen"
+private const val EQUIPMENT_SCAN_DATE = 1545293705L
 private const val EQUIPMENT_SCAN_DATE_STRING = "2018-12-20 08:15:05"
 
 fun createEquipment(
@@ -22,18 +20,9 @@ fun createEquipment(
     scanState: Equipment.ScanState = EQUIPMENT_SCAN_STATE,
     condition: Equipment.EquipmentCondition = EQUIPMENT_CONDITION,
     scanDate: Long = EQUIPMENT_SCAN_DATE,
-    deskBarcode: Int = DESK_ID
-) = Equipment(id, barcode, type, scanState, condition, scanDate, deskBarcode)
-
-fun createEquipmentEntity(
-    id: Int = EQUIPMENT_ID,
-    barcode: String = EQUIPMENT_BARCODE,
-    type: String = EQUIPMENT_TYPE,
-    scanState: Equipment.ScanState = EQUIPMENT_SCAN_STATE,
-    condition: Equipment.EquipmentCondition = EQUIPMENT_CONDITION,
-    scanDate: Long = EQUIPMENT_SCAN_DATE,
-    deskBarcode: Int = DESK_ID
-) = EquipmentEntity(id, barcode, type, scanState, condition, scanDate, deskBarcode)
+    deskId: Int = DESK_ID,
+    previousDeskId: Int = DESK_ID
+) = Equipment(id, barcode, type, scanState, condition, scanDate, deskId, previousDeskId)
 
 fun createEquipmentResponse(
     id: Int = EQUIPMENT_ID,
@@ -58,27 +47,19 @@ private const val DESK_BARCODE = "CNTM08"
 private const val DESK_IS_SCANNED = false
 private const val DESK_SCAN_DATE: Long = 1545215405
 private const val DESK_SCAN_DATE_STRING = "2018-12-19 10:30:05"
-private val DESK_EQUIPMENTS = listOf(createEquipment())
-
-fun createDesk(
-    id: Int = DESK_ID,
-    barcode: String = DESK_BARCODE,
-    isScanned: Boolean = DESK_IS_SCANNED,
-    scanDate: Long = DESK_SCAN_DATE,
-    equipments: List<Equipment> = DESK_EQUIPMENTS
-) = Desk(id, barcode, isScanned, scanDate, equipments)
+private const val DESK_EQUIPMENT_COUNT = 30
+private const val DESK_NOT_SCANNED_EQUIPMENT_COUNT = 10
+private const val DESK_NOT_SYNCED_EQUIPMENT_COUNT = 10
+private const val DESK_SYNCED_EQUIPMENT_COUNT = 10
+private const val DESK_IS_HIDDEN = false
 
 fun createDeskEntity(
     id: Int = DESK_ID,
     barcode: String = DESK_BARCODE,
     isScanned: Boolean = DESK_IS_SCANNED,
-    scanDate: Long = DESK_SCAN_DATE
-) = DeskEntity(id, barcode, isScanned, scanDate)
-
-fun createDeskWithEquipmentsEntity(
-    deskEntity: DeskEntity = createDeskEntity(),
-    equipmentEntities: List<EquipmentEntity> = listOf(createEquipmentEntity())
-) = DeskWithEquipmentsEntity(deskEntity, equipmentEntities)
+    scanDate: Long = DESK_SCAN_DATE,
+    isHidden: Boolean = DESK_IS_HIDDEN
+) = DeskEntity(id, barcode, isScanned, scanDate, isHidden)
 
 fun createDeskResponse(
     id: Int = DESK_ID,
@@ -94,22 +75,24 @@ fun createDeskResponse(
     )
 }
 
-fun createDeskUi(
+fun createDesk(
     id: Int = DESK_ID,
     barcode: String = DESK_BARCODE,
     isScanned: Boolean = DESK_IS_SCANNED,
     scanDate: Long = DESK_SCAN_DATE,
-    equipments: List<Equipment> = DESK_EQUIPMENTS,
-    scannedEquipmentCount: Int = equipments.filter { it.scanState != Equipment.ScanState.NotScanned }.size,
-    syncedEquipmentCount: Int = equipments.filter { it.scanState == Equipment.ScanState.ScannedAndSynced }.size,
-    equipmentsCount: Int = equipments.size
-) = DeskUi(
+    equipmentCount: Int = DESK_EQUIPMENT_COUNT,
+    notScannedEquipmentCount: Int = DESK_NOT_SCANNED_EQUIPMENT_COUNT,
+    notSyncedEquipmentCount: Int = DESK_NOT_SYNCED_EQUIPMENT_COUNT,
+    syncedEquipmentCount: Int = DESK_SYNCED_EQUIPMENT_COUNT,
+    isHidden: Boolean = DESK_IS_HIDDEN
+) = Desk(
     id,
     barcode,
     isScanned,
     scanDate,
-    equipments,
-    scannedEquipmentCount,
+    equipmentCount,
+    notScannedEquipmentCount,
+    notSyncedEquipmentCount,
     syncedEquipmentCount,
-    equipmentsCount
+    isHidden
 )

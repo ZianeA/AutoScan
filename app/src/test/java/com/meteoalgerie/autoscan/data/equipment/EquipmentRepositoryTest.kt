@@ -1,23 +1,14 @@
 package com.meteoalgerie.autoscan.data.equipment
 
-import com.meteoalgerie.autoscan.data.mapper.Mapper
-import com.meteoalgerie.autoscan.presentation.equipment.Equipment
-import com.meteoalgerie.autoscan.presentation.equipment.Equipment.*
-import com.meteoalgerie.autoscan.util.createEquipment
 import com.meteoalgerie.autoscan.util.createEquipmentEntity
-import io.mockk.*
 import io.mockk.junit5.MockKExtension
-import io.reactivex.Completable
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockKExtension::class)
 internal class EquipmentRepositoryTest {
-    private val equipmentDao: EquipmentDao = mockk()
+    /*private val equipmentDao: EquipmentDao = mockk()
     private val equipmentService: EquipmentService = mockk()
     private val entityMapper: Mapper<EquipmentEntity, Equipment> = mockk()
     private val responseMapper: Mapper<HashMap<*, *>, Equipment> = mockk()
@@ -86,5 +77,5 @@ internal class EquipmentRepositoryTest {
             verify { equipmentDao.update(scannedButNotSyncedEquipment) }
             verify(exactly = 0) { equipmentDao.update(scannedAndSyncedEquipment) }
         }
-    }
+    }*/
 }

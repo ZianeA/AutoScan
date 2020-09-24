@@ -6,7 +6,7 @@ import com.meteoalgerie.autoscan.data.PreferencesIntStore.Companion.EQUIPMENT_CO
 import com.meteoalgerie.autoscan.data.PreferencesIntStore.Companion.EQUIPMENT_DOWNLOADED_COUNT_KEY
 import com.meteoalgerie.autoscan.data.mapper.Mapper
 import com.meteoalgerie.autoscan.data.equipment.EquipmentDao
-import com.meteoalgerie.autoscan.data.equipment.EquipmentEntity
+import com.meteoalgerie.autoscan.data.equipment.Equipment
 import com.meteoalgerie.autoscan.data.equipment.EquipmentService
 import com.meteoalgerie.autoscan.data.user.UserRepository
 import com.meteoalgerie.autoscan.presentation.desk.Desk
@@ -28,7 +28,7 @@ class DeskRepository @Inject constructor(
     private val equipmentService: EquipmentService,
     private val deskEntityMapper: Mapper<DeskWithStatsEntity, Desk>,
     private val deskResponseMapper: Mapper<HashMap<*, *>, DeskEntity>,
-    private val equipmentResponseMapper: Mapper<HashMap<*, *>, EquipmentEntity>
+    private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>
 ) {
     fun getScannedDesks(): Observable<List<Desk>> {
         return deskDao.getScanned()

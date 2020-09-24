@@ -1,9 +1,9 @@
 package com.meteoalgerie.autoscan.data.equipment
 
+import com.meteoalgerie.autoscan.data.equipment.Equipment.*
 import com.meteoalgerie.autoscan.data.mapper.Mapper
 import com.meteoalgerie.autoscan.data.mapper.odooDatetimeToUnix
 import com.meteoalgerie.autoscan.data.mapper.unixToOdooDatetime
-import com.meteoalgerie.autoscan.presentation.equipment.Equipment.*
 import dagger.Reusable
 import java.util.*
 import javax.inject.Inject
@@ -11,9 +11,9 @@ import kotlin.collections.HashMap
 
 @Reusable
 class EquipmentResponseMapper @Inject constructor() :
-    Mapper<HashMap<*, *>, EquipmentEntity> {
-    override fun map(model: HashMap<*, *>): EquipmentEntity {
-        return EquipmentEntity(
+    Mapper<HashMap<*, *>, Equipment> {
+    override fun map(model: HashMap<*, *>): Equipment {
+        return Equipment(
             model[ATTRIBUTE_ID] as Int,
             model[ATTRIBUTE_CODE] as String,
             model[ATTRIBUTE_LIBELLE] as String,
@@ -25,7 +25,7 @@ class EquipmentResponseMapper @Inject constructor() :
         )
     }
 
-    override fun mapReverse(model: EquipmentEntity): HashMap<*, *> {
+    override fun mapReverse(model: Equipment): HashMap<*, *> {
         return model.run {
             hashMapOf<Any, Any>(
                 ATTRIBUTE_OBSERVATION to translateCondition(condition),
