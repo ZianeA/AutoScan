@@ -8,12 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.view.ViewCompat
+import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.BaseTransientBottomBar.*
+import com.google.android.material.snackbar.Snackbar
 
 import com.meteoalgerie.autoscan.R
 import com.meteoalgerie.autoscan.data.equipment.Equipment
@@ -22,8 +28,10 @@ import com.meteoalgerie.autoscan.presentation.util.ItemDecoration
 import com.meteoalgerie.autoscan.presentation.util.MySnackbar
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_equipment.*
-import kotlinx.android.synthetic.main.fragment_equipment.snackbar
 import kotlinx.android.synthetic.main.fragment_equipment.view.*
+import kotlinx.android.synthetic.main.fragment_equipment.view.appBarLayout
+import kotlinx.android.synthetic.main.fragment_equipment.view.barcodeInput
+import kotlinx.android.synthetic.main.fragment_equipment.view.toolbar
 import javax.inject.Inject
 
 /**
@@ -59,6 +67,15 @@ class EquipmentFragment : Fragment(), EquipmentView {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_equipment, container, false)
+
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
+            // Move toolbar below status bar
+            rootView.appBarLayout.updatePadding(top = insets.systemWindowInsetTop)
+
+            // Move content above navigation bar
+            rootView.content.updatePadding(bottom = insets.systemWindowInsetBottom)
+            insets
+        }
 
         (activity as AppCompatActivity).apply {
             setSupportActionBar(rootView.toolbar)
@@ -214,25 +231,29 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     override fun displayEquipmentConditionChangedMessage() {
-        snackbar.showMessage(
-            getString(R.string.equipment_condition_changed_message),
-            MySnackbar.LENGTH_SHORT
-        )
+        showSnackbar(R.string.equipment_condition_changed_message)
     }
 
     override fun showErrorMessage() {
-        snackbar.showMessage(R.string.unknown_error_message)
+        showSnackbar(R.string.unknown_error_message)
     }
 
     override fun showUnknownBarcodeMessage() {
-        snackbar.showMessage(R.string.unknown_barcode_message, MySnackbar.LENGTH_SHORT)
+        showSnackbar(R.string.unknown_barcode_message)
     }
 
     override fun showEquipmentAlreadyScannedMessage() {
-        snackbar.showMessage(
-            getString(R.string.equipment_already_scanned_message),
-            MySnackbar.LENGTH_SHORT
-        )
+        showSnackbar(R.string.equipment_already_scanned_message)
+    }
+
+    private fun showSnackbar(
+        @StringRes text: Int,
+        @Duration duration: Int = Snackbar.LENGTH_SHORT
+    ) {
+        Snackbar.make(requireView(), getString(text), duration).apply {
+            setAnchorView(R.id.inputLayout)
+            show()
+        }
     }
 
     override fun showEquipmentMovedMessage(equipmentId: Int) {
@@ -241,7 +262,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     // TODO refactor these error messages
     override fun showNetworkErrorMessage() {
-        snackbar.showMessage(getString(R.string.you_are_offline_message), MySnackbar.LENGTH_SHORT)
+        showSnackbar(R.string.you_are_offline_message)
     }
 
     override fun showLoadingView() {

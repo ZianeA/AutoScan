@@ -57,6 +57,8 @@ class DeskFragment : Fragment(), DeskView {
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
             // Move toolbar below status bar
             rootView.appBarLayout.updatePadding(top = insets.systemWindowInsetTop)
+
+            // Move content above navigation bar
             rootView.content.updatePadding(bottom = insets.systemWindowInsetBottom)
             insets
         }

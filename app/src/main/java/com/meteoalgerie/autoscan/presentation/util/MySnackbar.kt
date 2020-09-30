@@ -2,7 +2,10 @@ package com.meteoalgerie.autoscan.presentation.util
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
@@ -37,10 +40,7 @@ class MySnackbar : CardView {
     ) {
         inflate(getContext(), R.layout.my_snackbar, this) as CardView
         setCardBackgroundColor(
-            ContextCompat.getColor(
-                getContext(),
-                R.color.snackbar_background_color
-            )
+            ContextCompat.getColor(getContext(), R.color.snackbar_background_color)
         )
         radius = resources.getDimension(R.dimen.snackbar_corner_radius)
         cardElevation = resources.getDimension(R.dimen.snackbar_elevation)
@@ -86,7 +86,7 @@ class MySnackbar : CardView {
     }
 
     companion object {
-        public const val LENGTH_LONG: Long = 7000
-        public const val LENGTH_SHORT: Long = 4000
+        const val LENGTH_LONG = 7000L
+        const val LENGTH_SHORT = 4000L
     }
 }
