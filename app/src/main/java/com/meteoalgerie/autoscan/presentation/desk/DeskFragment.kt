@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.updatePadding
 import com.airbnb.epoxy.EpoxyRecyclerView
 
 import com.meteoalgerie.autoscan.R
@@ -53,16 +54,19 @@ class DeskFragment : Fragment(), DeskView {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_desk, container, false)
 
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
+            // Move toolbar below status bar
+            rootView.appBarLayout.updatePadding(top = insets.systemWindowInsetTop)
+            rootView.content.updatePadding(bottom = insets.systemWindowInsetBottom)
+            insets
+        }
+
         (activity as AppCompatActivity).apply {
             setSupportActionBar(rootView.toolbar)
         }
 
         recyclerView = rootView.deskRecyclerView
-        recyclerView.addItemDecoration(
-            ItemDecoration(
-                resources.getDimension(R.dimen.desk_item_spacing).toInt()
-            )
-        )
+        recyclerView.setItemSpacingDp(8)
 
         rootView.barcodeSubmitButton.setOnClickListener {
             presenter.onBarcodeEntered(rootView.barcodeInput.text.toString())

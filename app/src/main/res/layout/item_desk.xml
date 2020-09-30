@@ -1,27 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:foreground="?android:attr/selectableItemBackground"
-    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="0dp"
     app:cardElevation="4dp"
-    app:cardCornerRadius="4dp"
-    tools:cardBackgroundColor="@color/lightGray"
     tools:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:background="@android:color/white">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/deskBarcode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/black_rectangle_outline"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
@@ -33,7 +30,8 @@
             android:id="@+id/syncedTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/synced"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -55,17 +53,17 @@
             app:layout_constraintTop_toBottomOf="@+id/divider3"
             tools:text="500" />
 
-        <ImageView
+        <View
             android:id="@+id/divider"
             android:layout_width="0.8dp"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
+            android:background="?attr/colorControlHighlight"
             app:layout_constraintBottom_toBottomOf="@+id/syncedTitle"
             app:layout_constraintEnd_toStartOf="@+id/notSyncedTitle"
             app:layout_constraintStart_toEndOf="@+id/syncedTitle"
-            app:layout_constraintTop_toTopOf="@+id/syncedCount"
-            app:srcCompat="@color/dividerGray" />
+            app:layout_constraintTop_toTopOf="@+id/syncedCount" />
 
         <TextView
             android:id="@+id/notSyncedTitle"
@@ -91,17 +89,17 @@
             app:layout_constraintTop_toTopOf="@+id/syncedCount"
             tools:text="5" />
 
-        <ImageView
+        <View
             android:id="@+id/divider2"
             android:layout_width="0.8dp"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
+            android:background="?attr/colorControlHighlight"
             app:layout_constraintBottom_toBottomOf="@+id/notSyncedTitle"
             app:layout_constraintEnd_toStartOf="@+id/notScannedTitle"
             app:layout_constraintStart_toEndOf="@+id/notSyncedTitle"
-            app:layout_constraintTop_toTopOf="@+id/notSyncedCount"
-            app:srcCompat="@color/dividerGray" />
+            app:layout_constraintTop_toTopOf="@+id/notSyncedCount" />
 
         <TextView
             android:id="@+id/notScannedTitle"
@@ -149,17 +147,17 @@
             app:layout_constraintTop_toTopOf="@+id/deskBarcode"
             tools:text="533 EQUIPMENTS" />
 
-        <ImageView
+        <View
             android:id="@+id/divider3"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="32dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/colorControlHighlight"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/deskBarcode"
-            app:srcCompat="@color/lightGray" />
+            app:layout_constraintTop_toBottomOf="@+id/deskBarcode" />
 
         <ImageButton
             android:id="@+id/moreButton"
@@ -167,9 +165,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:tint="?attr/colorControlHighlight"
             android:background="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_more_vert" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

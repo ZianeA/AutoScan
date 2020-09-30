@@ -1,7 +1,7 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="equipment_item_spacing">8dp</dimen>
-    <dimen name="desk_item_spacing">8dp</dimen>
+    <dimen name="desk_item_spacing">16dp</dimen>
     <dimen name="snackbar_corner_radius">6dp</dimen>
     <dimen name="snackbar_elevation">4dp</dimen>
     <dimen name="popup_window_elevation">16dp</dimen>

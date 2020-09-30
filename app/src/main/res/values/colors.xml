@@ -3,7 +3,7 @@
     <color name="colorPrimary">#546E7A</color>
     <color name="colorPrimaryDark">#29434e</color>
     <color name="colorAccent">#1E88E5</color>
-    <color name="lightGray">#f0f0f0</color>
+    <color name="colorGraySurface">#F5F5F5</color>
     <color name="dividerGray">#d3d3d3</color>
     <color name="materialGreen">#81C784</color>
     <color name="materialRed">#e57373</color>
@@ -17,4 +17,17 @@
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#fff</color>
     <color name="snackbar_background_color">#323232</color>
     <color name="skeleton_shimmer_gray">#d9d9d9</color>
+
+    <!-- Scrim colors -->
+    <color name="system_ui_scrim_light">#B3FFFFFF</color> <!-- 70% white -->
+    <color name="system_ui_scrim_black">#40000000</color> <!-- 25% black -->
+
+    <!-- We use a dark scrim by default since light status is API 23+ -->
+    <color name="status_bar_scrim">@color/system_ui_scrim_black</color>
+    <!-- We use a dark scrim by default since light nav bar is API 27+ -->
+    <color name="nav_bar_scrim">@color/system_ui_scrim_black</color>
+
+    <color name="white">#fff</color>
+    <color name="black">#000</color>
+    <color name="transparent">#0fff</color>
 </resources>
