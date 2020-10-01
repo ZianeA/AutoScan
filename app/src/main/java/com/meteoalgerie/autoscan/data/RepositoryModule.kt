@@ -8,10 +8,7 @@ import com.meteoalgerie.autoscan.data.equipment.Equipment
 import com.meteoalgerie.autoscan.data.equipment.EquipmentMapper
 import com.meteoalgerie.autoscan.data.equipment.EquipmentResponseMapper
 import com.meteoalgerie.autoscan.data.mapper.Mapper
-import com.meteoalgerie.autoscan.data.user.UserEntity
-import com.meteoalgerie.autoscan.data.user.UserEntityMapper
 import com.meteoalgerie.autoscan.presentation.desk.Desk
-import com.meteoalgerie.autoscan.presentation.login.User
 import dagger.Binds
 import dagger.Module
 
@@ -28,7 +25,4 @@ interface RepositoryModule {
 
     @Binds
     fun provideDeskResponseMapper(mapper: DeskResponseMapper): Mapper<HashMap<*, *>, DeskEntity>
-
-    @Binds
-    fun provideUserEntityMapper(mapper: UserEntityMapper): Mapper<UserEntity, User>
 }

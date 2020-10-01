@@ -6,7 +6,9 @@ import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.meteoalgerie.autoscan.data.equipment.*
 import com.meteoalgerie.autoscan.data.mapper.Mapper
-import com.meteoalgerie.autoscan.data.user.UserRepository
+import com.meteoalgerie.autoscan.data.user.UserDao
+import com.meteoalgerie.autoscan.presentation.download.DownloadDataUseCase
+import com.meteoalgerie.autoscan.presentation.download.DownloadWorker
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,9 +16,9 @@ import javax.inject.Singleton
 class MyWorkerFactory @Inject constructor(
     private val equipmentDao: EquipmentDao,
     private val equipmentService: EquipmentService,
-    private val userRepository: UserRepository,
-    private val equipmentMapper: EquipmentMapper,
-    private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>
+    private val userDao: UserDao,
+    private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>,
+    private val downloadDataUseCase: DownloadDataUseCase
 ) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,
@@ -25,15 +27,19 @@ class MyWorkerFactory @Inject constructor(
     ): ListenableWorker? {
         val workerClass = Class.forName(workerClassName)
         return when {
-            workerClass.isAssignableFrom(SyncWorker::class.java) -> SyncWorker(
-                equipmentDao,
-                equipmentService,
-                userRepository,
-                equipmentMapper,
-                equipmentResponseMapper,
-                appContext,
-                workerParameters
-            )
+            workerClass.isAssignableFrom(SyncWorker::class.java) -> {
+                SyncWorker(
+                    equipmentDao,
+                    equipmentService,
+                    userDao,
+                    equipmentResponseMapper,
+                    appContext,
+                    workerParameters
+                )
+            }
+            workerClass.isAssignableFrom(DownloadWorker::class.java) -> {
+                DownloadWorker(appContext, workerParameters, downloadDataUseCase)
+            }
             else -> null //Use default workerFactory
         }
     }

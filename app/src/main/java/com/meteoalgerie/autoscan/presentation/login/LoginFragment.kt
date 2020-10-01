@@ -15,6 +15,7 @@ import com.meteoalgerie.autoscan.R
 import com.meteoalgerie.autoscan.presentation.settings.SettingsFragment
 import com.meteoalgerie.autoscan.presentation.desk.DeskFragment
 import com.google.android.material.snackbar.Snackbar
+import com.meteoalgerie.autoscan.presentation.download.DownloadFragment
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -103,7 +104,7 @@ class LoginFragment : Fragment(), LoginView {
     }
 
     override fun displayDeskScreen() {
-        fragNavController.replaceFragment(DeskFragment.newInstance())
+        fragNavController.replaceFragment(DownloadFragment.newInstance())
     }
 
     override fun enableLogin() {

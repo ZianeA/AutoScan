@@ -9,7 +9,7 @@ import com.meteoalgerie.autoscan.data.equipment.Equipment.*
 import com.meteoalgerie.autoscan.data.equipment.EquipmentMapper
 import com.meteoalgerie.autoscan.data.equipment.EquipmentService
 import com.meteoalgerie.autoscan.data.mapper.Mapper
-import com.meteoalgerie.autoscan.data.user.UserRepository
+import com.meteoalgerie.autoscan.data.user.UserDao
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -17,15 +17,14 @@ import io.reactivex.Single
 class SyncWorker(
     private val equipmentDao: EquipmentDao,
     private val equipmentService: EquipmentService,
-    private val userRepository: UserRepository,
-    private val equipmentMapper: EquipmentMapper,
+    private val userDao: UserDao,
     private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>,
     context: Context,
     workerParams: WorkerParameters
 ) :
     RxWorker(context, workerParams) {
     override fun createWork(): Single<Result> {
-        return userRepository.getUser()
+        return userDao.get()
             .flatMap { user ->
                 equipmentDao.getByScanState(ScanState.ScannedButNotSynced)
                     .flatMapObservable { Observable.fromIterable(it) }

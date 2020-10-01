@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ONM Barcode</string>
+    <string name="app_name">AutoScan</string>
     <string name="action_settings">Paramètres</string>
 
     <string name="toolbar_title_region">Région</string>
@@ -9,6 +9,8 @@
     <string name="scanned_desk_count">Nombre de bureaux scannés: %1$d/%2$d</string>
     <string name="equipment_count">%1$d EQUIPEMENTS</string>
     <string name="desk_barcode">Bureau: %1$s</string>
+    <string name="action_hide">Masquer</string>
+
     <string name="toolbar_title_equipment">Équipement</string>
     <string name="equipment_barcode">Équipement: %1$d</string>
     <string name="equipment_type">Type: %1$s</string>
@@ -24,11 +26,12 @@
     <string name="equipment_already_scanned_message">Équipement déjà scanné</string>
     <string name="equipment_condition_changed_message">L\'état de l\'équipement a bien été modifié</string>
     <string name="equipment_moved_message">Attention: L\'équipement a été déplacé</string>
+    <string name="you_are_offline_message">Vous êtes actuellement hors connexion</string>
 
     <string name="toolbar_title_login">Identification</string>
     <string name="prompt_email">Adresse e-mail</string>
     <string name="prompt_password">Mot de passe</string>
-    <string name="welcome">"Bienvenu !"</string>
+    <string name="welcome">"Bienvenue"</string>
     <string name="invalid_credentials">Nom d\'utilisateur ou mot de passe incorrect</string>
     <string name="login_failed">"Connexion échoué."</string>
     <string name="action_sign_in">Connexion</string>
@@ -59,8 +62,13 @@
     <string name="synced">Envoyé</string>
     <string name="not_synced">Non Envoyé</string>
     <string name="not_scanned">Non Scanné</string>
-    <string name="notification_sync_complete_title">Synchronisation terminée</string>
-    <string name="notification_sync_complete_description">Tous les équipements ont été synchronisés.</string>
-    <string name="action_hide">Masquer</string>
-    <string name="you_are_offline_message">Vous êtes actuellement hors connexion</string>
+    <string name="notification_title_sync_complete">Synchronisation terminée</string>
+    <string name="notification_description_sync_complete">Tous les équipements ont été synchronisés.</string>
+    <string name="notification_title_download">Téléchargement de données</string>
+    <string name="notification_cancel_download">Annuler</string>
+    <string name="notification_description_download">En cours</string>
+    <string name="notification_channel_download">Download</string>
+
+    <string name="download_message">Veuillez patienter pendant le téléchargement des données.</string>
+    <string name="loading">Chargement...</string>
 </resources>

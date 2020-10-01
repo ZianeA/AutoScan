@@ -6,6 +6,7 @@ import com.meteoalgerie.autoscan.presentation.desk.DeskFragment
 import com.meteoalgerie.autoscan.presentation.desk.DeskModule
 import com.meteoalgerie.autoscan.presentation.di.ActivityScope
 import com.meteoalgerie.autoscan.presentation.di.FragmentScope
+import com.meteoalgerie.autoscan.presentation.download.DownloadFragment
 import com.meteoalgerie.autoscan.presentation.equipment.EquipmentFragment
 import com.meteoalgerie.autoscan.presentation.equipment.EquipmentModule
 import com.meteoalgerie.autoscan.presentation.login.LoginFragment
@@ -41,5 +42,9 @@ class MainModule {
         @FragmentScope
         @ContributesAndroidInjector(modules = [EquipmentModule::class])
         fun equipmentFragment(): EquipmentFragment
+
+        @FragmentScope
+        @ContributesAndroidInjector
+        fun downloadFragment(): DownloadFragment
     }
 }

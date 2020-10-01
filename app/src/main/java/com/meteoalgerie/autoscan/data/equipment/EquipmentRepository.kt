@@ -2,7 +2,7 @@ package com.meteoalgerie.autoscan.data.equipment
 
 import com.meteoalgerie.autoscan.data.equipment.Equipment.*
 import com.meteoalgerie.autoscan.data.mapper.Mapper
-import com.meteoalgerie.autoscan.data.user.UserRepository
+import com.meteoalgerie.autoscan.data.user.UserDao
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -14,7 +14,7 @@ import javax.inject.Singleton
 class EquipmentRepository @Inject constructor(
     private val equipmentDao: EquipmentDao,
     private val equipmentService: EquipmentService,
-    private val userRepository: UserRepository, //Should probably use userDao instead
+    private val userDao: UserDao,
     private val equipmentMapper: Mapper<Equipment, Equipment>,
     private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>
 ) {
@@ -40,7 +40,7 @@ class EquipmentRepository @Inject constructor(
     }
 
     fun refreshEquipmentForDesk(deskId: Int): Completable {
-        return userRepository.getUser()
+        return userDao.get()
             .flatMap { user -> equipmentService.getByDesk(user, deskId) }
             .map { list -> list.map { item -> equipmentResponseMapper.map(item as HashMap<*, *>) } }
             .flatMap {
@@ -65,7 +65,7 @@ class EquipmentRepository @Inject constructor(
 
     fun updateEquipment(equipment: Equipment): Completable {
         val scannedAndSyncedEquipment = equipment.copy(scanState = ScanState.ScannedAndSynced)
-        return userRepository.getUser()
+        return userDao.get()
             .flatMapCompletable { user ->
                 equipmentDao.update(
                     equipmentMapper.mapReverse(

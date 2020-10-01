@@ -8,7 +8,7 @@ import javax.inject.Singleton
 
 @Singleton
 class PreferenceStorage @Inject constructor(context: Application) : SimpleKrate(context) {
-    var serverUrl: String by stringPref("server_url", "http://192.168.0.176")
+    var serverUrl: String by stringPref("server_url", "http://192.168.0.177:8069")
     var equipmentCount: Int by intPref("equipment_count", 0)
     var downloadedEquipmentCount: Int by intPref("downloaded_equipment_count", 0)
     var equipmentFilter: Set<String> by stringSetPref(

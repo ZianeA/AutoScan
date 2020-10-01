@@ -38,7 +38,6 @@ class DeskFragment : Fragment(), DeskView {
 
     private lateinit var epoxyController: DeskEpoxyController
 
-
     private var delayScanDeskMessage = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +53,7 @@ class DeskFragment : Fragment(), DeskView {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_desk, container, false)
 
-        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { _, insets ->
             // Move toolbar below status bar
             rootView.appBarLayout.updatePadding(top = insets.systemWindowInsetTop)
 
@@ -155,65 +154,6 @@ class DeskFragment : Fragment(), DeskView {
                 this,
                 ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorAccent))
             )
-        }
-    }
-
-    override fun displayDownloadViews() {
-        downloadProgressBar.isIndeterminate = true
-        downloadProgressBar.visibility = View.VISIBLE
-        downloadMessage.visibility = View.VISIBLE
-    }
-
-    override fun setDownloadProgress(percentage: Int) {
-        downloadProgressBar.isIndeterminate = false
-        downloadProgressBar.progress = percentage
-    }
-
-    override fun indicateDownloadPending() {
-        downloadProgressBar.isIndeterminate = true
-    }
-
-    override fun hideDownloadViews() {
-        val downloadMessageAnimator = downloadMessage.animate()
-            .alpha(0f)
-            .withEndAction { downloadMessage.visibility = View.GONE }
-
-        downloadProgressBar.animate()
-            .alpha(0f)
-            .withStartAction {
-                delayScanDeskMessage = true
-                animateDownloadCompleteMessage(downloadMessageAnimator.duration)
-            }
-            .withEndAction {
-                downloadProgressBar.visibility = View.GONE
-                downloadMessageAnimator.start()
-            }
-            .start()
-    }
-
-    private fun animateDownloadCompleteMessage(delay: Long) {
-        downloadCompleteMessage.apply {
-            val currentPosY = translationY
-            translationY = currentPosY + 100
-            alpha = 0f
-
-            animate()
-                .setStartDelay(delay)
-                .withStartAction { visibility = View.VISIBLE }
-                .alpha(1f)
-                .translationY(currentPosY)
-                .withEndAction {
-                    animate()
-                        .setStartDelay(1500)
-                        .alpha(0f)
-                        .withEndAction {
-                            visibility = View.GONE
-                            delayScanDeskMessage = false
-                            displayScanDeskMessage()
-                        }
-                        .start()
-                }
-                .start()
         }
     }
 

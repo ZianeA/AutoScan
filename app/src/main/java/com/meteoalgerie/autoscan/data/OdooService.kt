@@ -43,7 +43,7 @@ class OdooService @Inject constructor(private val storage: PreferenceStorage) {
         const val METHOD_COUNT = "search_count"
         const val METHOD_SEARCH_READ = "search_read"
         const val METHOD_WRITE = "write"
-        const val DB_NAME = "GestionActifs"
+        const val DB_NAME = "mydatabase"
         private const val METHOD_AUTHENTICATE = "authenticate"
     }
 }

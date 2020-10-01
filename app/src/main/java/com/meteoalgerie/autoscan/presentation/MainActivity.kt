@@ -8,6 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import com.meteoalgerie.autoscan.R
 import com.meteoalgerie.autoscan.presentation.desk.DeskFragment
+import com.meteoalgerie.autoscan.presentation.download.DownloadFragment
 import com.meteoalgerie.autoscan.presentation.login.LoginFragment
 import com.ncapdevi.fragnav.FragNavController
 import dagger.android.AndroidInjection
@@ -88,7 +89,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
 
     override fun getRootFragment(index: Int): Fragment {
         if (index == FragNavController.TAB1) return LoginFragment.newInstance()
-        if (index == FragNavController.TAB2) return DeskFragment.newInstance()
+        if (index == FragNavController.TAB2) return DownloadFragment.newInstance()
         else throw IllegalArgumentException("Unknown index")
     }
 }

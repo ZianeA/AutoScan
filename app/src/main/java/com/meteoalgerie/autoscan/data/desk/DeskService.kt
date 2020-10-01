@@ -1,7 +1,7 @@
 package com.meteoalgerie.autoscan.data.desk
 
 import com.meteoalgerie.autoscan.data.OdooService
-import com.meteoalgerie.autoscan.presentation.login.User
+import com.meteoalgerie.autoscan.data.user.User
 import dagger.Reusable
 import de.timroes.axmlrpc.XMLRPCClient
 import io.reactivex.Single

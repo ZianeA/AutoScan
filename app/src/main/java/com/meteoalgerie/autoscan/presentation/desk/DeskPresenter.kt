@@ -1,7 +1,7 @@
 package com.meteoalgerie.autoscan.presentation.desk
 
 import com.meteoalgerie.autoscan.data.desk.DeskRepository
-import com.meteoalgerie.autoscan.data.user.UserRepository
+import com.meteoalgerie.autoscan.data.user.UserDao
 import com.meteoalgerie.autoscan.presentation.di.FragmentScope
 import com.meteoalgerie.autoscan.presentation.util.Clock
 import com.meteoalgerie.autoscan.presentation.util.applySchedulers
@@ -15,7 +15,7 @@ import javax.inject.Inject
 class DeskPresenter @Inject constructor(
     private val view: DeskView,
     private val deskRepository: DeskRepository,
-    private val userRepository: UserRepository,
+    private val userDao: UserDao,
     private val schedulerProvider: SchedulerProvider,
     private val clock: Clock
 ) {
@@ -23,24 +23,7 @@ class DeskPresenter @Inject constructor(
     private var isBarcodeScanInProgress = false
 
     fun start() {
-        view.disableBarcodeInput()
-        if (deskRepository.isDownloadComplete().not()) view.displayDownloadViews()
-
-        val disposable =
-            deskRepository.downloadDatabase()
-                .observeOn(schedulerProvider.main)
-                .doOnNext {
-                    view.setDownloadProgress(it)
-
-                    if (it >= 100) {
-                        view.hideDownloadViews()
-                    }
-                }
-                .doOnError { view.indicateDownloadPending() }
-                .observeOn(schedulerProvider.worker)
-                .retryWhen { it.delay(1, TimeUnit.SECONDS) }
-                .toList()
-                .flatMapObservable { deskRepository.getScannedDesks() }
+        val disposable = deskRepository.getScannedDesks()
                 .applySchedulers(schedulerProvider)
                 .subscribe({
                     if (it.isEmpty()) view.displayScanDeskMessage()
@@ -53,8 +36,6 @@ class DeskPresenter @Inject constructor(
         disposables.add(disposable)
     }
 
-    //TODO Add yellow flashing animation when the user navigates back.
-    // Similar to reddit and stackoverflow comment highlighting animation.
     fun onBarcodeEntered(barcode: String) {
         if (isBarcodeScanInProgress) return
 
@@ -95,7 +76,7 @@ class DeskPresenter @Inject constructor(
     }
 
     fun onLogout() {
-        val disposable = userRepository.removeUser()
+        val disposable = userDao.delete()
             .applySchedulers(schedulerProvider)
             .subscribe({ view.displayLoginScreen() }, { view.displayGenericErrorMessage() })
 
@@ -110,12 +91,12 @@ class DeskPresenter @Inject constructor(
         disposables.add(disposable)
     }
 
+    fun onDeskClicked(desk: Desk) {
+        view.displayEquipmentsScreen(desk)
+    }
+
     fun stop() {
         disposables.clear()
         isBarcodeScanInProgress = false
-    }
-
-    fun onDeskClicked(desk: Desk) {
-        view.displayEquipmentsScreen(desk)
     }
 }

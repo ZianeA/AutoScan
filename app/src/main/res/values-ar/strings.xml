@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ONM Barcode</string>
+    <string name="app_name">أوتوسكان</string>
     <string name="action_settings">الإعدادات</string>
 
     <string name="toolbar_title_region">منطقة</string>
@@ -60,8 +60,8 @@
     <string name="not_synced">غير مبعوث</string>
     <string name="not_scanned">غير ممسوح</string>
 
-    <string name="notification_sync_complete_title">تم التحديث</string>
-    <string name="notification_sync_complete_description">تم تحديث  كل العتاد الممسوح</string>
+    <string name="notification_title_sync_complete">تم التحديث</string>
+    <string name="notification_description_sync_complete">تم تحديث  كل العتاد الممسوح</string>
     <!-- changer "URL mal-formée" par "URL erronée"-->
     <!-- changer "adresse IP du  serveur Odoo" par "l'adresse IP du serveur"-->
 </resources>
