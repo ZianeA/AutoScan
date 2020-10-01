@@ -28,7 +28,7 @@
     <string name="equipment_moved_message">Attention: L\'équipement a été déplacé</string>
     <string name="you_are_offline_message">Vous êtes actuellement hors connexion</string>
 
-    <string name="toolbar_title_login">Identification</string>
+    <string name="toolbar_title_login">Connexion</string>
     <string name="prompt_email">Adresse e-mail</string>
     <string name="prompt_password">Mot de passe</string>
     <string name="welcome">"Bienvenue"</string>

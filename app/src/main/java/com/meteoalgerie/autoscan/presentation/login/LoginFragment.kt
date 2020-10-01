@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import android.view.inputmethod.EditorInfo
 import android.widget.ScrollView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.updatePadding
 import androidx.core.widget.doAfterTextChanged
 
 import com.meteoalgerie.autoscan.R
@@ -20,6 +22,7 @@ import com.ncapdevi.fragnav.FragNavController
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
+import kotlinx.android.synthetic.main.fragment_login.view.appBarLayout
 import kotlinx.android.synthetic.main.fragment_login.view.toolbar
 import javax.inject.Inject
 import kotlin.math.abs
@@ -46,23 +49,26 @@ class LoginFragment : Fragment(), LoginView {
             setHasOptionsMenu(true);
         }
 
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { _, insets ->
+            // Move toolbar below status bar
+            rootView.appBarLayout.updatePadding(top = insets.systemWindowInsetTop)
+
+            // Move content above navigation bar
+            rootView.content.updatePadding(bottom = insets.systemWindowInsetBottom)
+            insets
+        }
+
         rootView.loginButton.setOnClickListener {
             presenter.onLogin(username.text.toString(), password.text.toString())
         }
 
         rootView.username.doAfterTextChanged {
-            presenter.onLoginDataChanged(
-                it.toString(),
-                rootView.password.text.toString()
-            )
+            presenter.onLoginDataChanged(it.toString(), rootView.password.text.toString())
         }
 
         rootView.password.apply {
             doAfterTextChanged {
-                presenter.onLoginDataChanged(
-                    rootView.username.text.toString(),
-                    it.toString()
-                )
+                presenter.onLoginDataChanged(rootView.username.text.toString(), it.toString())
             }
 
             setOnEditorActionListener { _, actionId, _ ->
@@ -74,7 +80,7 @@ class LoginFragment : Fragment(), LoginView {
             }
         }
 
-        setupKeyboardListener(rootView, rootView.scrollView)
+        setupKeyboardListener(rootView, rootView.content)
 
         return rootView
     }
@@ -107,6 +113,10 @@ class LoginFragment : Fragment(), LoginView {
         fragNavController.replaceFragment(DownloadFragment.newInstance())
     }
 
+    override fun displaySettingsScreen() {
+        fragNavController.pushFragment(SettingsFragment.newInstance())
+    }
+
     override fun enableLogin() {
         loginButton.isEnabled = true
     }
@@ -130,11 +140,7 @@ class LoginFragment : Fragment(), LoginView {
     }
 
     override fun hideErrorMessage() {
-        passwordLayout.isErrorEnabled = false
-    }
-
-    override fun displaySettingsScreen() {
-        fragNavController.pushFragment(SettingsFragment.newInstance())
+        passwordLayout.error = null
     }
 
     private fun setupKeyboardListener(view: View, scrollView: ScrollView) {
