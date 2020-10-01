@@ -25,12 +25,12 @@ class DownloadWorker(
     }
 
     override fun createWork(): Single<Result> {
-        setForegroundAsync(createForegroundInfo(-1, true))
+        setForegroundAsync(createForegroundInfo(-1, true)).get()
 
         return downloadDataUseCase.execute()
-            .doOnError { setForegroundAsync(createForegroundInfo(-1, true)) }
+            .doOnError { setForegroundAsync(createForegroundInfo(-1, true)).get() }
             .retryWhen { it.delay(1, TimeUnit.SECONDS) }
-            .doOnNext { progress -> setForegroundAsync(createForegroundInfo(progress)) }
+            .doOnNext { progress -> setForegroundAsync(createForegroundInfo(progress)).get() }
             .toList()
             .map { Result.success() }
     }

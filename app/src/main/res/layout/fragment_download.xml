@@ -15,7 +15,7 @@
             android:id="@+id/illustration"
             android:layout_width="220dp"
             android:layout_height="220dp"
-            android:src="@drawable/il_download"
+            app:srcCompat="@drawable/il_download"
             app:layout_constraintBottom_toTopOf="@+id/welcome"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
