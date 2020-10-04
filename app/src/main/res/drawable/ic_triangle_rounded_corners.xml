@@ -2,6 +2,6 @@
     android:viewportWidth="289.75" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
     <group>
         <clip-path android:pathData="M0,0h289.75v200.176h-289.75z M 0,0"/>
-        <path android:fillColor="#000000" android:pathData="M289.75,200.176L144.875,200.176L0,200.176L72.437,74.71L94.875,35.848C122.471,-11.95 167.279,-11.95 194.875,35.848L217.312,74.71L289.75,200.176Z"/>
+        <path android:fillColor="?attr/colorSurface" android:pathData="M289.75,200.176L144.875,200.176L0,200.176L72.437,74.71L94.875,35.848C122.471,-11.95 167.279,-11.95 194.875,35.848L217.312,74.71L289.75,200.176Z"/>
     </group>
 </vector>

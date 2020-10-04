@@ -25,7 +25,7 @@
     <string name="unknown_barcode_message">Code à barres non reconnu</string>
     <string name="equipment_already_scanned_message">Équipement déjà scanné</string>
     <string name="equipment_condition_changed_message">L\'état de l\'équipement a bien été modifié</string>
-    <string name="equipment_moved_message">Attention: L\'équipement a été déplacé</string>
+    <string name="equipment_moved_message">Attention l\'équipement a été déplacé</string>
     <string name="you_are_offline_message">Vous êtes actuellement hors connexion</string>
 
     <string name="toolbar_title_login">Connexion</string>

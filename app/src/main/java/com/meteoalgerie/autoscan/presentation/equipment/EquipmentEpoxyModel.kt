@@ -1,5 +1,6 @@
 package com.meteoalgerie.autoscan.presentation.equipment
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -14,16 +15,20 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.os.postDelayed
+import androidx.core.view.ViewCompat
 import androidx.core.view.postDelayed
 import androidx.core.widget.ImageViewCompat
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
+import com.google.android.material.elevation.ElevationOverlayProvider
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.meteoalgerie.autoscan.R
 import com.meteoalgerie.autoscan.presentation.util.KotlinEpoxyHolder
 import com.google.android.material.textfield.TextInputLayout
 import com.meteoalgerie.autoscan.data.equipment.Equipment
 import com.meteoalgerie.autoscan.data.equipment.Equipment.*
+import com.meteoalgerie.autoscan.presentation.util.dpToPx
 import kotlinx.android.synthetic.main.popup_window_equipment_moved.view.*
 import java.util.*
 
@@ -78,45 +83,14 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                     indeterminateDrawable.setColorFilter(progressBarColor, PorterDuff.Mode.MULTIPLY)
                     visibility = View.VISIBLE
                 }
-            } else if (equipment.deskId != equipment.previousDeskId) {
+            } else if (equipment.deskId != equipment.previousDeskId && equipment.scanState != ScanState.NotScanned) {
                 warningIcon.visibility = View.VISIBLE
             }
 
             // Show equipment moved tooltip on click
             warningIcon.setOnClickListener {
                 it.isEnabled = false
-
-                val tooltip = PopupWindow(view.context).apply {
-                    val popupLayout = LayoutInflater.from(view.context)
-                        .inflate(R.layout.popup_window_equipment_moved, null)
-                    // Set pointer position
-                    (popupLayout.pointer.layoutParams as ConstraintLayout.LayoutParams).marginEnd += it.width / 2
-
-                    contentView = popupLayout
-                    width = WindowManager.LayoutParams.WRAP_CONTENT
-                    height = WindowManager.LayoutParams.WRAP_CONTENT
-                    isOutsideTouchable = true
-
-                    setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-                    popupLayout.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-                    val deskMargin =
-                        view.resources.getDimension(R.dimen.equipment_item_spacing).toInt()
-                    val elevation =
-                        view.resources.getDimension(R.dimen.popup_window_elevation).toInt()
-                    val xOffset = -(popupLayout.measuredWidth - it.width) + deskMargin + elevation
-                    showAsDropDown(it, xOffset, 0)
-
-                    Handler().postDelayed(TOOLTIP_DURATION) { dismiss() }
-
-                    setOnDismissListener {
-                        equipmentMoved.remove(equipment.id)
-                        it.postDelayed(50) { it.isEnabled = true }
-                        tooltipList.remove(this)
-                    }
-                }
-
-                tooltipList.add(tooltip)
+                showTooltip(view.context, it)
             }
 
             // Pick scan state message and background color
@@ -155,6 +129,56 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                 equipmentToAnimateId = null
             }
         }
+    }
+
+    private fun showTooltip(context: Context, anchor: View) {
+        val tooltip = PopupWindow(context).apply {
+            val popupLayout = LayoutInflater.from(context)
+                .inflate(R.layout.popup_window_equipment_moved, null)
+
+            // Set pointer position
+            val pointer = popupLayout.pointer
+            (pointer.layoutParams as ConstraintLayout.LayoutParams).marginEnd += anchor.width / 2
+
+            // Add elevation overlay in dark theme
+            val elevationOverlayColor =
+                ElevationOverlayProvider(context).compositeOverlayWithThemeSurfaceColorIfNeeded(
+                    pointer.elevation
+                )
+            ViewCompat.setBackgroundTintList(
+                pointer,
+                ColorStateList.valueOf(elevationOverlayColor)
+            )
+            ViewCompat.setBackgroundTintList(
+                popupLayout.messageBackground,
+                ColorStateList.valueOf(elevationOverlayColor)
+            )
+
+            contentView = popupLayout
+            width = WindowManager.LayoutParams.WRAP_CONTENT
+            height = WindowManager.LayoutParams.WRAP_CONTENT
+            isOutsideTouchable = true
+
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            popupLayout.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            val deskMargin =
+                context.resources.getDimension(R.dimen.equipment_item_spacing).toInt()
+            val elevation =
+                context.resources.getDimension(R.dimen.popup_window_elevation).toInt()
+            val xOffset = -(popupLayout.measuredWidth - anchor.width) + deskMargin + elevation
+            showAsDropDown(anchor, xOffset, 0)
+
+            Handler().postDelayed(TOOLTIP_DURATION) { dismiss() }
+
+            setOnDismissListener {
+                equipmentMoved.remove(equipment.id)
+                anchor.postDelayed(50) { anchor.isEnabled = true }
+                tooltipList.remove(this)
+            }
+        }
+
+        tooltipList.add(tooltip)
     }
 
     override fun onViewDetachedFromWindow(holder: EquipmentHolder) {
