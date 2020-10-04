@@ -8,7 +8,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
 
@@ -53,17 +55,21 @@ class SettingsFragment : Fragment(), SettingsView {
             inputDialog.setInputText(rootView.server.text.toString())
             inputDialog.setInputListener(doOnPositiveButtonClick = { dialog, input, inputLayout, text ->
                 if (Patterns.WEB_URL.matcher(text.toString()).matches().not()) {
-                    inputLayout.isErrorEnabled = true
                     inputLayout.error = getString(R.string.error_Invalid_url)
                 } else {
                     presenter.onServerEntered(text.toString())
                     dialog.dismiss()
                 }
             }, doAfterTextChanged = { input, inputLayout, text ->
-                inputLayout.isErrorEnabled = false
+                inputLayout.error = null
             })
 
             inputDialog.show(childFragmentManager, inputDialogTag)
+        }
+
+        rootView.editThemeButton.setOnClickListener {
+            ThemeDialogFragment(theme.text.toString()) { presenter.onChangeTheme(it) }
+                .show(parentFragmentManager, null)
         }
 
         return rootView
@@ -74,13 +80,18 @@ class SettingsFragment : Fragment(), SettingsView {
         presenter.start()
     }
 
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
+    override fun changeTheme(@StringRes name: Int, @NightMode mode: Int) {
+        theme.text = getString(name)
+        (requireActivity() as AppCompatActivity).delegate.localNightMode = mode
     }
 
     override fun displayServerUrl(serverUrl: String) {
         server.text = serverUrl
+    }
+
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
     }
 
     companion object {

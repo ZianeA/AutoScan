@@ -1,6 +1,7 @@
 package com.meteoalgerie.autoscan.data
 
 import android.app.Application
+import androidx.appcompat.app.AppCompatDelegate
 import com.meteoalgerie.autoscan.data.equipment.Equipment
 import hu.autsoft.krate.*
 import javax.inject.Inject
@@ -19,4 +20,5 @@ class PreferenceStorage @Inject constructor(context: Application) : SimpleKrate(
             Equipment.ScanState.NotScanned.name
         )
     )
+    var themeMode: Int by intPref("theme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
 }

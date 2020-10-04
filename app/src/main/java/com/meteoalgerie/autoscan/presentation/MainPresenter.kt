@@ -15,9 +15,7 @@ class MainPresenter @Inject constructor(
 ) {
     private val disposables = CompositeDisposable()
 
-    fun start(refresh: Boolean) {
-        if (refresh.not()) return
-
+    fun start() {
         val disposable = userDao.get()
             .applySchedulers(schedulerProvider)
             .subscribe(

@@ -71,4 +71,8 @@
 
     <string name="download_message">Veuillez patienter pendant le téléchargement des données.</string>
     <string name="loading">Chargement...</string>
+    <string name="theme">Theme</string>
+    <string name="theme_light">Clair</string>
+    <string name="theme_dark">Sombre</string>
+    <string name="theme_follow_os_setting">Thème du système</string>
 </resources>

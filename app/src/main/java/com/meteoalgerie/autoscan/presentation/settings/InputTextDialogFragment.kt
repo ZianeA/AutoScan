@@ -19,7 +19,7 @@ class InputTextDialogFragment : DialogFragment() {
     private var inputText: String = ""
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(context!!)
+        val builder = AlertDialog.Builder(requireContext())
         val view = View.inflate(context, R.layout.dialog_input_text, null)
         input = view.input
         inputLayout = view.inputLayout
