@@ -9,11 +9,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.updatePadding
 
 import com.meteoalgerie.autoscan.R
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.fragment_settings.view.*
+import kotlinx.android.synthetic.main.fragment_settings.view.toolbar
 import javax.inject.Inject
 
 /**
@@ -30,6 +33,15 @@ class SettingsFragment : Fragment(), SettingsView {
     ): View? {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_settings, container, false)
+
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { _, insets ->
+            // Move toolbar below status bar
+            rootView.appBarLayout.updatePadding(top = insets.systemWindowInsetTop)
+
+            // Move content above navigation bar
+            rootView.content.updatePadding(bottom = insets.systemWindowInsetBottom)
+            insets
+        }
 
         (activity as AppCompatActivity).apply {
             setSupportActionBar(rootView.toolbar)
