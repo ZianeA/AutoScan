@@ -1,7 +1,6 @@
 package com.meteoalgerie.autoscan.presentation
 
 import com.meteoalgerie.autoscan.presentation.settings.SettingsFragment
-import com.meteoalgerie.autoscan.presentation.settings.SettingsModule
 import com.meteoalgerie.autoscan.presentation.desk.DeskFragment
 import com.meteoalgerie.autoscan.presentation.desk.DeskModule
 import com.meteoalgerie.autoscan.presentation.di.ActivityScope
@@ -21,10 +20,6 @@ class MainModule {
     @Provides
     fun provideFragNavController(mainActivity: MainActivity) = mainActivity.fragNavController
 
-    @ActivityScope
-    @Provides
-    fun provideMainView(mainActivity: MainActivity): MainView = mainActivity
-
     @Module
     interface FragmentBindingModule {
         @FragmentScope
@@ -36,7 +31,7 @@ class MainModule {
         fun loginFragment(): LoginFragment
 
         @FragmentScope
-        @ContributesAndroidInjector(modules = [SettingsModule::class])
+        @ContributesAndroidInjector()
         fun settingsFragment(): SettingsFragment
 
         @FragmentScope

@@ -15,6 +15,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
 
 import com.meteoalgerie.autoscan.R
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
+import com.uber.autodispose.autoDispose
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.fragment_settings.view.*
@@ -24,10 +26,9 @@ import javax.inject.Inject
 /**
  * A simple [Fragment] subclass.
  */
-class SettingsFragment : Fragment(), SettingsView {
+class SettingsFragment : Fragment() {
     @Inject
     lateinit var presenter: SettingsPresenter
-    lateinit var inputDialog: InputTextDialogFragment
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,43 +51,44 @@ class SettingsFragment : Fragment(), SettingsView {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
-        rootView.editServerButton.setOnClickListener {
-            inputDialog = InputTextDialogFragment.newInstance()
-            inputDialog.setInputText(rootView.server.text.toString())
-            inputDialog.setInputListener(doOnPositiveButtonClick = { dialog, input, inputLayout, text ->
-                if (Patterns.WEB_URL.matcher(text.toString()).matches().not()) {
-                    inputLayout.error = getString(R.string.error_Invalid_url)
-                } else {
-                    presenter.onServerEntered(text.toString())
-                    dialog.dismiss()
-                }
-            }, doAfterTextChanged = { input, inputLayout, text ->
-                inputLayout.error = null
-            })
+        return rootView
+    }
 
-            inputDialog.show(childFragmentManager, inputDialogTag)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter.serverUrl
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { server.text = it }
+
+        presenter.theme
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { (name, mode) ->
+                theme.text = getString(name)
+                (requireActivity() as AppCompatActivity).delegate.localNightMode = mode
+            }
+
+        editServerButton.setOnClickListener {
+            val inputDialog = InputTextDialogFragment.newInstance()
+            inputDialog.setInputText(server.text.toString())
+            inputDialog.setInputListener(
+                doOnPositiveButtonClick = { dialog, _, inputLayout, text ->
+                    if (!Patterns.WEB_URL.matcher(text.toString()).matches()) {
+                        inputLayout.error = getString(R.string.error_Invalid_url)
+                    } else {
+                        presenter.onServerEntered(text.toString())
+                        dialog.dismiss()
+                    }
+                },
+                doAfterTextChanged = { _, inputLayout, _ -> inputLayout.error = null })
+
+            inputDialog.show(childFragmentManager, null)
         }
 
-        rootView.editThemeButton.setOnClickListener {
+        editThemeButton.setOnClickListener {
             ThemeDialogFragment(theme.text.toString()) { presenter.onChangeTheme(it) }
                 .show(parentFragmentManager, null)
         }
 
-        return rootView
-    }
-
-    override fun onStart() {
-        super.onStart()
-        presenter.start()
-    }
-
-    override fun changeTheme(@StringRes name: Int, @NightMode mode: Int) {
-        theme.text = getString(name)
-        (requireActivity() as AppCompatActivity).delegate.localNightMode = mode
-    }
-
-    override fun displayServerUrl(serverUrl: String) {
-        server.text = serverUrl
     }
 
     override fun onAttach(context: Context) {
@@ -96,6 +98,5 @@ class SettingsFragment : Fragment(), SettingsView {
 
     companion object {
         fun newInstance() = SettingsFragment()
-        const val inputDialogTag = "EditServerDialog"
     }
 }

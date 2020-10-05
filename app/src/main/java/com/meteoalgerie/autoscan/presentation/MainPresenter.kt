@@ -8,24 +8,14 @@ import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 @ActivityScope
-class MainPresenter @Inject constructor(
-    private val view: MainView,
-    private val userDao: UserDao,
-    private val schedulerProvider: SchedulerProvider
-) {
-    private val disposables = CompositeDisposable()
+class MainPresenter @Inject constructor(userDao: UserDao, schedulerProvider: SchedulerProvider) {
 
-    fun start() {
-        val disposable = userDao.get()
-            .applySchedulers(schedulerProvider)
-            .subscribe(
-                { view.displayDeskScreen() },
-                { view.displayLoginScreen() })
+    val launchDestination = userDao.get()
+        .applySchedulers(schedulerProvider)
+        // If user is logged in go to desk screen
+        .map { LaunchDestination.DESK }
+        // Else go to login screen
+        .onErrorReturnItem(LaunchDestination.LOGIN)
 
-        disposables.add(disposable)
-    }
-
-    fun stop() {
-        disposables.clear()
-    }
+    enum class LaunchDestination { LOGIN, DESK }
 }
