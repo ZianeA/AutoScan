@@ -6,7 +6,6 @@ import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.meteoalgerie.autoscan.data.equipment.*
 import com.meteoalgerie.autoscan.data.mapper.Mapper
-import com.meteoalgerie.autoscan.data.user.UserDao
 import com.meteoalgerie.autoscan.presentation.download.DownloadDataUseCase
 import com.meteoalgerie.autoscan.presentation.download.DownloadWorker
 import javax.inject.Inject
@@ -16,7 +15,6 @@ import javax.inject.Singleton
 class MyWorkerFactory @Inject constructor(
     private val equipmentDao: EquipmentDao,
     private val equipmentService: EquipmentService,
-    private val userDao: UserDao,
     private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>,
     private val downloadDataUseCase: DownloadDataUseCase
 ) : WorkerFactory() {
@@ -31,7 +29,6 @@ class MyWorkerFactory @Inject constructor(
                 SyncWorker(
                     equipmentDao,
                     equipmentService,
-                    userDao,
                     equipmentResponseMapper,
                     appContext,
                     workerParameters

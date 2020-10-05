@@ -1,18 +1,21 @@
 package com.meteoalgerie.autoscan.data.equipment
 
 import com.meteoalgerie.autoscan.data.OdooService
-import com.meteoalgerie.autoscan.data.user.User
+import com.meteoalgerie.autoscan.data.PreferenceStorage
 import dagger.Reusable
 import de.timroes.axmlrpc.XMLRPCClient
 import io.reactivex.Completable
 import io.reactivex.Single
-import java.net.URL
 import javax.inject.Inject
 
 @Reusable
-class EquipmentService @Inject constructor(private val odooService: OdooService) {
-    fun getAll(user: User): Single<Array<*>> {
-        val client = XMLRPCClient(URL(odooService.objectUrl))
+class EquipmentService @Inject constructor(
+    private val client: XMLRPCClient,
+    storage: PreferenceStorage
+) {
+    private val user by lazy { storage.user!! }
+
+    fun getAll(): Single<Array<*>> {
         return Single.fromCallable {
             client.call(
                 OdooService.METHOD_MAIN,
@@ -27,8 +30,7 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
             .map { it as Array<*> }
     }
 
-    fun get(user: User, offset: Int, limit: Int): Single<Array<*>> {
-        val client = XMLRPCClient(URL(odooService.objectUrl))
+    fun get(offset: Int, limit: Int): Single<Array<*>> {
         return Single.fromCallable {
             client.call(
                 OdooService.METHOD_MAIN,
@@ -59,9 +61,7 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
             .map { it as Array<*> }
     }
 
-    fun getByDesk(user: User, deskId: Int): Single<Array<*>> {
-        val client = XMLRPCClient(URL(odooService.objectUrl))
-
+    fun getByDesk(deskId: Int): Single<Array<*>> {
         return Single.fromCallable {
             client.call(
                 OdooService.METHOD_MAIN,
@@ -82,14 +82,13 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
             )
         }
             .map { it as Array<*> }
-            /*.delay(
-                Random.nextLong(3000, 5000),
-                TimeUnit.MILLISECONDS
-            ) //TODO remove this delay*/
+        /*.delay(
+            Random.nextLong(3000, 5000),
+            TimeUnit.MILLISECONDS
+        ) //TODO remove this delay*/
     }
 
-    fun update(user: User, equipmentId: Int, equipment: HashMap<*, *>): Completable {
-        val client = XMLRPCClient(URL(odooService.objectUrl))
+    fun update(equipmentId: Int, equipment: HashMap<*, *>): Completable {
         return Completable.fromAction {
             client.call(
                 OdooService.METHOD_MAIN,
@@ -110,8 +109,7 @@ class EquipmentService @Inject constructor(private val odooService: OdooService)
         ) //TODO remove this delay*/
     }
 
-    fun getEquipmentCount(user: User): Single<Int> {
-        val client = XMLRPCClient(URL(odooService.objectUrl))
+    fun getEquipmentCount(): Single<Int> {
         return Single.fromCallable {
             client.call(
                 OdooService.METHOD_MAIN,

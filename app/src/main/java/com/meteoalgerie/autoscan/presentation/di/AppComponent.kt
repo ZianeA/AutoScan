@@ -2,6 +2,7 @@ package com.meteoalgerie.autoscan.presentation.di
 
 import android.app.Application
 import com.meteoalgerie.autoscan.data.DatabaseModule
+import com.meteoalgerie.autoscan.data.NetworkModule
 import com.meteoalgerie.autoscan.data.RepositoryModule
 import com.meteoalgerie.autoscan.presentation.OnmBarCodeApp
 import com.meteoalgerie.autoscan.service.ServiceModule
@@ -14,7 +15,7 @@ import javax.inject.Singleton
 @Component(
     modules = [AndroidSupportInjectionModule::class, AppModule::class,
         ActivityBindingModule::class, DatabaseModule::class, RepositoryModule::class,
-        ServiceModule::class]
+        ServiceModule::class, NetworkModule::class]
 )
 interface AppComponent {
     fun inject(app: OnmBarCodeApp)

@@ -2,7 +2,6 @@ package com.meteoalgerie.autoscan.data.equipment
 
 import com.meteoalgerie.autoscan.data.equipment.Equipment.*
 import com.meteoalgerie.autoscan.data.mapper.Mapper
-import com.meteoalgerie.autoscan.data.user.UserDao
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -14,13 +13,10 @@ import javax.inject.Singleton
 class EquipmentRepository @Inject constructor(
     private val equipmentDao: EquipmentDao,
     private val equipmentService: EquipmentService,
-    private val userDao: UserDao,
-    private val equipmentMapper: Mapper<Equipment, Equipment>,
     private val equipmentResponseMapper: Mapper<HashMap<*, *>, Equipment>
 ) {
     fun getAllEquipmentForDesk(deskId: Int): Observable<List<Equipment>> {
         return equipmentDao.getByDesk(deskId)
-            .map { e -> e.map(equipmentMapper::map) }
     }
 
     fun getEquipmentForDeskAndScanState(
@@ -36,12 +32,10 @@ class EquipmentRepository @Inject constructor(
                     else -> throw IllegalArgumentException("You can't filter by more than three scan states.")
                 }
             }
-            .map { e -> e.map(equipmentMapper::map) }
     }
 
     fun refreshEquipmentForDesk(deskId: Int): Completable {
-        return userDao.get()
-            .flatMap { user -> equipmentService.getByDesk(user, deskId) }
+        return equipmentService.getByDesk(deskId)
             .map { list -> list.map { item -> equipmentResponseMapper.map(item as HashMap<*, *>) } }
             .flatMap {
                 equipmentDao.getByDeskAndScanState(deskId, ScanState.ScannedButNotSynced)
@@ -55,40 +49,22 @@ class EquipmentRepository @Inject constructor(
 
     fun findEquipment(barcode: String): Maybe<Equipment> {
         return equipmentDao.getByBarcode(barcode)
-            .map(equipmentMapper::map)
     }
 
     fun getAllUnsyncedEquipment(): Single<List<Equipment>> {
         return equipmentDao.getByScanState(ScanState.ScannedButNotSynced)
-            .map { e -> e.map(equipmentMapper::map) }
     }
 
     fun updateEquipment(equipment: Equipment): Completable {
         val scannedAndSyncedEquipment = equipment.copy(scanState = ScanState.ScannedAndSynced)
-        return userDao.get()
-            .flatMapCompletable { user ->
-                equipmentDao.update(
-                    equipmentMapper.mapReverse(
-                        equipment.copy(
-                            scanState = ScanState.ScannedButNotSynced
-                        )
-                    )
-                ).andThen(
-                    equipmentService.update(
-                        user,
-                        equipment.id,
-                        equipmentResponseMapper.mapReverse(
-                            equipmentMapper.mapReverse(
-                                scannedAndSyncedEquipment
-                            )
-                        )
-                    )
+        return equipmentDao.update(equipment.copy(scanState = ScanState.ScannedButNotSynced))
+            .andThen(
+                equipmentService.update(
+                    equipment.id,
+                    equipmentResponseMapper.mapReverse(scannedAndSyncedEquipment)
                 )
-            }
-            .andThen(Completable.defer {
-                //I'm getting unexpected behavior, I had to use defer.
-                equipmentDao.update(equipmentMapper.mapReverse(scannedAndSyncedEquipment))
-            })
+            )
+            .andThen(Completable.defer { equipmentDao.update(scannedAndSyncedEquipment) })
     }
 
     fun getAllEquipmentCount(): Single<Int> = equipmentDao.getAllCount()

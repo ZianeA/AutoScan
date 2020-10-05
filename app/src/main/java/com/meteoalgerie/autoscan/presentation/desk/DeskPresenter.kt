@@ -1,21 +1,20 @@
 package com.meteoalgerie.autoscan.presentation.desk
 
+import com.meteoalgerie.autoscan.data.PreferenceStorage
 import com.meteoalgerie.autoscan.data.desk.DeskRepository
-import com.meteoalgerie.autoscan.data.user.UserDao
 import com.meteoalgerie.autoscan.presentation.di.FragmentScope
 import com.meteoalgerie.autoscan.presentation.util.Clock
 import com.meteoalgerie.autoscan.presentation.util.applySchedulers
 import com.meteoalgerie.autoscan.presentation.util.scheduler.SchedulerProvider
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @FragmentScope
 class DeskPresenter @Inject constructor(
     private val view: DeskView,
     private val deskRepository: DeskRepository,
-    private val userDao: UserDao,
+    private val storage: PreferenceStorage,
     private val schedulerProvider: SchedulerProvider,
     private val clock: Clock
 ) {
@@ -24,15 +23,15 @@ class DeskPresenter @Inject constructor(
 
     fun start() {
         val disposable = deskRepository.getScannedDesks()
-                .applySchedulers(schedulerProvider)
-                .subscribe({
-                    if (it.isEmpty()) view.displayScanDeskMessage()
+            .applySchedulers(schedulerProvider)
+            .subscribe({
+                if (it.isEmpty()) view.displayScanDeskMessage()
 
-                    view.displayDesks(it)
-                    view.enableBarcodeInput()
-                }, {
-                    view.displayGenericErrorMessage()
-                })
+                view.displayDesks(it)
+                view.enableBarcodeInput()
+            }, {
+                view.displayGenericErrorMessage()
+            })
         disposables.add(disposable)
     }
 
@@ -76,11 +75,8 @@ class DeskPresenter @Inject constructor(
     }
 
     fun onLogout() {
-        val disposable = userDao.delete()
-            .applySchedulers(schedulerProvider)
-            .subscribe({ view.displayLoginScreen() }, { view.displayGenericErrorMessage() })
-
-        disposables.add(disposable)
+        storage.user = null
+        view.displayLoginScreen()
     }
 
     fun onHideDeskClicked(desk: Desk) {

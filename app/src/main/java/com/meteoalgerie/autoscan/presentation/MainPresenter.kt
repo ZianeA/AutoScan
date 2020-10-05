@@ -1,21 +1,23 @@
 package com.meteoalgerie.autoscan.presentation
 
-import com.meteoalgerie.autoscan.data.user.UserDao
+import com.jakewharton.rxrelay2.BehaviorRelay
+import com.meteoalgerie.autoscan.data.PreferenceStorage
 import com.meteoalgerie.autoscan.presentation.di.ActivityScope
-import com.meteoalgerie.autoscan.presentation.util.applySchedulers
 import com.meteoalgerie.autoscan.presentation.util.scheduler.SchedulerProvider
-import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 @ActivityScope
-class MainPresenter @Inject constructor(userDao: UserDao, schedulerProvider: SchedulerProvider) {
+class MainPresenter @Inject constructor(storage: PreferenceStorage) {
 
-    val launchDestination = userDao.get()
-        .applySchedulers(schedulerProvider)
-        // If user is logged in go to desk screen
-        .map { LaunchDestination.DESK }
-        // Else go to login screen
-        .onErrorReturnItem(LaunchDestination.LOGIN)
+    val launchDestination = BehaviorRelay.create<LaunchDestination>()
+
+    init {
+        if (storage.user == null) {
+            launchDestination.accept(LaunchDestination.LOGIN)
+        } else {
+            launchDestination.accept(LaunchDestination.DESK)
+        }
+    }
 
     enum class LaunchDestination { LOGIN, DESK }
 }
