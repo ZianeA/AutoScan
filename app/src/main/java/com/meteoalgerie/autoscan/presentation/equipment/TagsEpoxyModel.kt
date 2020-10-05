@@ -1,6 +1,8 @@
 package com.meteoalgerie.autoscan.presentation.equipment
 
+import android.content.Context
 import android.content.res.ColorStateList
+import android.view.View
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.airbnb.epoxy.EpoxyAttribute
@@ -11,8 +13,8 @@ import com.meteoalgerie.autoscan.presentation.desk.Desk
 import com.meteoalgerie.autoscan.presentation.util.KotlinEpoxyHolder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.meteoalgerie.autoscan.data.equipment.Equipment
 import com.meteoalgerie.autoscan.data.equipment.Equipment.*
+import com.meteoalgerie.autoscan.presentation.util.getColorFromAttr
 
 @EpoxyModelClass(layout = R.layout.view_tags)
 abstract class EquipmentStatsEpoxyModel : EpoxyModelWithHolder<EquipmentStatsHolder>() {
@@ -35,21 +37,17 @@ abstract class EquipmentStatsEpoxyModel : EpoxyModelWithHolder<EquipmentStatsHol
             deselectAllTags(this)
             selectedTags.forEach {
                 when (it) {
-                    ScanState.ScannedAndSynced.name -> selectTag(
-                        syncedCount,
-                        syncedLayout,
-                        R.color.scanned_and_synced
-                    )
-                    ScanState.ScannedButNotSynced.name -> selectTag(
-                        notSyncedCount,
-                        notSyncedLayout,
-                        R.color.scanned_but_not_synced
-                    )
-                    ScanState.NotScanned.name -> selectTag(
-                        notScannedCount,
-                        notScannedLayout,
-                        R.color.not_scanned
-                    )
+                    ScanState.ScannedAndSynced.name -> {
+                        selectTag(context, syncedCount, syncedLayout, R.color.scanned_and_synced)
+                    }
+                    ScanState.ScannedButNotSynced.name -> {
+                        selectTag(
+                            context, notSyncedCount, notSyncedLayout, R.color.scanned_but_not_synced
+                        )
+                    }
+                    ScanState.NotScanned.name -> {
+                        selectTag(context, notScannedCount, notScannedLayout, R.color.not_scanned)
+                    }
                 }
             }
 
@@ -65,38 +63,36 @@ abstract class EquipmentStatsEpoxyModel : EpoxyModelWithHolder<EquipmentStatsHol
     }
 
     private fun selectTag(
+        context: Context,
         tagInput: TextInputEditText,
         tagLayout: TextInputLayout,
-        @ColorRes tagSelectedColor: Int,
-        @ColorRes tagUnselectedColor: Int = android.R.color.white
+        @ColorRes backgroundColor: Int
     ) {
-        val selectedColor = ContextCompat.getColor(tagInput.context, tagSelectedColor)
-        val unselectedColor = ContextCompat.getColor(tagInput.context, tagUnselectedColor)
+        val foregroundColor = ContextCompat.getColor(context, R.color.white)
 
-        tagInput.setTextColor(unselectedColor)
-        tagLayout.setStartIconTintList(ColorStateList.valueOf(unselectedColor))
-        tagLayout.boxBackgroundColor = selectedColor
+        tagInput.setTextColor(foregroundColor)
+        tagLayout.setStartIconTintList(ColorStateList.valueOf(foregroundColor))
+        tagLayout.boxBackgroundColor = ContextCompat.getColor(context, backgroundColor)
     }
 
     private fun deselectTag(
+        context: Context,
         tagInput: TextInputEditText,
         tagLayout: TextInputLayout,
-        @ColorRes tagSelectedColor: Int,
-        @ColorRes tagUnselectedColor: Int = android.R.color.white
+        @ColorRes foregroundColorRes: Int
     ) {
-        val selectedColor = ContextCompat.getColor(tagInput.context, tagSelectedColor)
-        val unselectedColor = ContextCompat.getColor(tagInput.context, tagUnselectedColor)
+        val foregroundColor = ContextCompat.getColor(context, foregroundColorRes)
 
-        tagInput.setTextColor(selectedColor)
-        tagLayout.setStartIconTintList(ColorStateList.valueOf(selectedColor))
-        tagLayout.boxBackgroundColor = unselectedColor
+        tagInput.setTextColor(foregroundColor)
+        tagLayout.setStartIconTintList(ColorStateList.valueOf(foregroundColor))
+        tagLayout.boxBackgroundColor = context.getColorFromAttr(R.attr.colorSurface)
     }
 
     private fun deselectAllTags(holder: EquipmentStatsHolder) {
         holder.apply {
-            deselectTag(syncedCount, syncedLayout, R.color.scanned_and_synced)
-            deselectTag(notSyncedCount, notSyncedLayout, R.color.scanned_but_not_synced)
-            deselectTag(notScannedCount, notScannedLayout, R.color.not_scanned)
+            deselectTag(context, syncedCount, syncedLayout, R.color.scanned_and_synced)
+            deselectTag(context, notSyncedCount, notSyncedLayout, R.color.scanned_but_not_synced)
+            deselectTag(context, notScannedCount, notScannedLayout, R.color.not_scanned)
         }
     }
 }
@@ -108,4 +104,11 @@ class EquipmentStatsHolder : KotlinEpoxyHolder() {
     val notSyncedLayout by bind<TextInputLayout>(R.id.notSyncedLayout)
     val notScannedCount by bind<TextInputEditText>(R.id.notScannedCount)
     val notScannedLayout by bind<TextInputLayout>(R.id.notScannedLayout)
+
+    lateinit var context: Context
+
+    override fun bindView(itemView: View) {
+        super.bindView(itemView)
+        context = itemView.context
+    }
 }

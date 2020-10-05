@@ -3,6 +3,8 @@ package com.meteoalgerie.autoscan.presentation.util
 import android.content.Context
 import android.util.TypedValue
 import android.view.View
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 
 fun dpToPx(context: Context, @Dimension(unit = Dimension.DP) dp: Int): Int {
@@ -12,6 +14,16 @@ fun dpToPx(context: Context, @Dimension(unit = Dimension.DP) dp: Int): Int {
         dp.toFloat(),
         r.displayMetrics
     ).toInt()
+}
+
+@ColorInt
+fun Context.getColorFromAttr(
+    @AttrRes attrColor: Int,
+    typedValue: TypedValue = TypedValue(),
+    resolveRefs: Boolean = true
+): Int {
+    theme.resolveAttribute(attrColor, typedValue, resolveRefs)
+    return typedValue.data
 }
 
 fun View.show() {
