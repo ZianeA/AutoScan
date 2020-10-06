@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.meteoalgerie.autoscan.R
 import com.meteoalgerie.autoscan.presentation.desk.DeskFragment
@@ -21,15 +22,22 @@ class DownloadFragment : Fragment() {
     @Inject
     lateinit var downloadService: DownloadBackgroundService
 
+    @Inject
+    lateinit var isDownloadCompleteUseCase: IsDownloadCompleteUseCase
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        downloadService.downloadData()
+        if (isDownloadCompleteUseCase.execute()) {
+            fragNavController.replaceFragment(DeskFragment.newInstance())
+        } else {
+            downloadService.downloadData()
+        }
 
         WorkManager.getInstance(requireActivity().applicationContext)
             .getWorkInfosForUniqueWorkLiveData(DownloadBackgroundService.WORK_NAME_DOWNLOAD)
             .observe(viewLifecycleOwner, Observer {
-                if (!it.isNullOrEmpty() && it.first().state.isFinished) {
+                if (!it.isNullOrEmpty() && it.first().state == WorkInfo.State.SUCCEEDED) {
                     fragNavController.replaceFragment(DeskFragment.newInstance())
                 }
             })

@@ -5,6 +5,7 @@ import de.timroes.axmlrpc.XMLRPCClient
 import io.reactivex.Maybe
 import io.reactivex.Single
 import java.net.URL
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @Reusable
@@ -12,8 +13,7 @@ class OdooService @Inject constructor(private val storage: PreferenceStorage) {
     fun authenticate(username: String, password: String): Single<Int> {
         return Single.fromCallable {
             val url = URL("${storage.serverUrl}/$PATH_BASE/$PATH_COMMON")
-            val client = XMLRPCClient(url)
-            client.call(
+            XMLRPCClient(url).call(
                 METHOD_AUTHENTICATE,
                 DB_NAME,
                 username,

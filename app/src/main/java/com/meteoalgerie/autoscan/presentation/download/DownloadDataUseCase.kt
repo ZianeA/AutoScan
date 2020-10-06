@@ -17,6 +17,7 @@ class DownloadDataUseCase @Inject constructor(
     private val deskDao: DeskDao,
     private val equipmentDao: EquipmentDao,
     private val storage: PreferenceStorage,
+    private val isDownloadCompleteUseCase: IsDownloadCompleteUseCase,
     private val deskService: DeskService,
     private val equipmentService: EquipmentService,
     private val deskResponseMapper: Mapper<HashMap<*, *>, DeskEntity>,
@@ -27,7 +28,8 @@ class DownloadDataUseCase @Inject constructor(
         private const val PAGE_SIZE = 500
     }
 
-    fun execute(): Observable<Int> = if (!isDownloadComplete()) download() else Observable.empty()
+    fun execute(): Observable<Int> =
+        if (!isDownloadCompleteUseCase.execute()) download() else Observable.empty()
 
     private fun download(): Observable<Int> {
         return Observable.concat(
@@ -69,7 +71,4 @@ class DownloadDataUseCase @Inject constructor(
                     }
             }
     }
-
-    private fun isDownloadComplete() =
-        storage.equipmentCount > 0 && storage.downloadedEquipmentCount >= storage.equipmentCount
 }

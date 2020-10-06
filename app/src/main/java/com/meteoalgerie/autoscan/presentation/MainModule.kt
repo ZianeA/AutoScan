@@ -9,7 +9,6 @@ import com.meteoalgerie.autoscan.presentation.download.DownloadFragment
 import com.meteoalgerie.autoscan.presentation.equipment.EquipmentFragment
 import com.meteoalgerie.autoscan.presentation.equipment.EquipmentModule
 import com.meteoalgerie.autoscan.presentation.login.LoginFragment
-import com.meteoalgerie.autoscan.presentation.login.LoginModule
 import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
@@ -27,7 +26,7 @@ class MainModule {
         fun deskFragment(): DeskFragment
 
         @FragmentScope
-        @ContributesAndroidInjector(modules = [LoginModule::class])
+        @ContributesAndroidInjector
         fun loginFragment(): LoginFragment
 
         @FragmentScope

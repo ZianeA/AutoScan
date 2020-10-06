@@ -18,6 +18,7 @@ import com.meteoalgerie.autoscan.R
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
 import com.uber.autodispose.autoDispose
 import dagger.android.support.AndroidSupportInjection
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.fragment_settings.view.*
 import kotlinx.android.synthetic.main.fragment_settings.view.toolbar
@@ -56,16 +57,6 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter.serverUrl
-            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
-            .subscribe { server.text = it }
-
-        presenter.theme
-            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
-            .subscribe { (name, mode) ->
-                theme.text = getString(name)
-                (requireActivity() as AppCompatActivity).delegate.localNightMode = mode
-            }
 
         editServerButton.setOnClickListener {
             val inputDialog = InputTextDialogFragment.newInstance()
@@ -88,7 +79,22 @@ class SettingsFragment : Fragment() {
             ThemeDialogFragment(theme.text.toString()) { presenter.onChangeTheme(it) }
                 .show(parentFragmentManager, null)
         }
+    }
 
+    override fun onStart() {
+        super.onStart()
+        presenter.serverUrl
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { server.text = it }
+
+        presenter.theme
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { (name, mode) ->
+                theme.text = getString(name)
+                (requireActivity() as AppCompatActivity).delegate.localNightMode = mode
+            }
     }
 
     override fun onAttach(context: Context) {

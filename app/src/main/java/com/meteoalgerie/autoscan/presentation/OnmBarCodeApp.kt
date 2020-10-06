@@ -7,6 +7,7 @@ import android.content.Context
 import android.os.Build
 import androidx.multidex.MultiDexApplication
 import androidx.work.Configuration
+import com.meteoalgerie.autoscan.BuildConfig
 import com.meteoalgerie.autoscan.presentation.di.DaggerAppComponent
 import com.meteoalgerie.autoscan.service.MyWorkerFactory
 import dagger.android.AndroidInjector
@@ -15,6 +16,7 @@ import dagger.android.HasActivityInjector
 import de.timroes.axmlrpc.XMLRPCException
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
+import timber.log.Timber
 import javax.inject.Inject
 
 class OnmBarCodeApp : MultiDexApplication(), HasActivityInjector, Configuration.Provider {
@@ -43,6 +45,10 @@ class OnmBarCodeApp : MultiDexApplication(), HasActivityInjector, Configuration.
             }
 
             throw it
+        }
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
         }
     }
 

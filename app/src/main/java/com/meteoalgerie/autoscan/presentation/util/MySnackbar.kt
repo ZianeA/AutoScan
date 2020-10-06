@@ -12,6 +12,8 @@ import androidx.core.content.ContextCompat
 import com.meteoalgerie.autoscan.R
 import kotlinx.android.synthetic.main.my_snackbar.view.*
 
+// TODO(delete)
+@Deprecated("Use regular snackbar instead.")
 class MySnackbar : CardView {
     private var isAnimating = false
     private var nextMessage: (() -> Unit)? = null

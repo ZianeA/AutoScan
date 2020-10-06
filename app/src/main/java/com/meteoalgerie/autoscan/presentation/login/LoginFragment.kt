@@ -15,22 +15,24 @@ import androidx.core.widget.doAfterTextChanged
 
 import com.meteoalgerie.autoscan.R
 import com.meteoalgerie.autoscan.presentation.settings.SettingsFragment
-import com.meteoalgerie.autoscan.presentation.desk.DeskFragment
 import com.google.android.material.snackbar.Snackbar
+import com.meteoalgerie.autoscan.presentation.desk.DeskFragment
 import com.meteoalgerie.autoscan.presentation.download.DownloadFragment
 import com.ncapdevi.fragnav.FragNavController
+import com.ncapdevi.fragnav.FragNavTransactionOptions
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
+import com.uber.autodispose.autoDispose
 import dagger.android.support.AndroidSupportInjection
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
-import kotlinx.android.synthetic.main.fragment_login.view.appBarLayout
-import kotlinx.android.synthetic.main.fragment_login.view.toolbar
 import javax.inject.Inject
 import kotlin.math.abs
 
 /**
  * A simple [Fragment] subclass.
  */
-class LoginFragment : Fragment(), LoginView {
+class LoginFragment : Fragment() {
     @Inject
     lateinit var presenter: LoginPresenter
 
@@ -58,31 +60,77 @@ class LoginFragment : Fragment(), LoginView {
             insets
         }
 
-        rootView.loginButton.setOnClickListener {
-            presenter.onLogin(username.text.toString(), password.text.toString())
-        }
-
-        rootView.username.doAfterTextChanged {
-            presenter.onLoginDataChanged(it.toString(), rootView.password.text.toString())
-        }
-
-        rootView.password.apply {
-            doAfterTextChanged {
-                presenter.onLoginDataChanged(rootView.username.text.toString(), it.toString())
-            }
-
-            setOnEditorActionListener { _, actionId, _ ->
-                when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
-                        presenter.onLogin(username.text.toString(), password.text.toString())
-                }
-                false
-            }
-        }
-
         setupKeyboardListener(rootView, rootView.content)
 
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        loginButton.setOnClickListener {
+            presenter.onLogin(usernameBox.text.toString(), passwordBox.text.toString())
+        }
+
+        usernameBox.doAfterTextChanged {
+            presenter.onLoginDataChanged(it.toString(), passwordBox.text.toString())
+        }
+
+        passwordBox.doAfterTextChanged {
+            presenter.onLoginDataChanged(usernameBox.text.toString(), it.toString())
+        }
+
+        passwordBox.setOnEditorActionListener { _, actionId, _ ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE ->
+                    presenter.onLogin(usernameBox.text.toString(), passwordBox.text.toString())
+            }
+            false
+        }
+    }
+
+    @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
+    override fun onStart() {
+        super.onStart()
+
+        presenter.canLogin
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { loginButton.isEnabled = it }
+
+        presenter.passwordBoxState
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                when (it) {
+                    LoginPresenter.TextBoxState.Idle -> passwordLayout.error = null
+                    is LoginPresenter.TextBoxState.Error -> {
+                        passwordLayout.error = getString(it.messageId)
+                    }
+                }
+            }
+
+        presenter.navigateDestination
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                when (it) {
+                    LoginPresenter.NavigationDestination.DESK -> {
+                        fragNavController.replaceFragment(DeskFragment.newInstance())
+                    }
+                    LoginPresenter.NavigationDestination.DOWNLOAD -> {
+                        fragNavController.replaceFragment(DownloadFragment.newInstance())
+                    }
+                    LoginPresenter.NavigationDestination.SETTINGS -> {
+                        fragNavController.pushFragment(SettingsFragment.newInstance())
+                    }
+                }
+            }
+
+        presenter.message
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { Snackbar.make(requireView(), getString(it), Snackbar.LENGTH_LONG).show() }
     }
 
     override fun onAttach(context: Context) {
@@ -104,60 +152,28 @@ class LoginFragment : Fragment(), LoginView {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        presenter.stop()
-    }
-
-    override fun displayDeskScreen() {
-        fragNavController.replaceFragment(DownloadFragment.newInstance())
-    }
-
-    override fun displaySettingsScreen() {
-        fragNavController.pushFragment(SettingsFragment.newInstance())
-    }
-
-    override fun enableLogin() {
-        loginButton.isEnabled = true
-    }
-
-    override fun disableLogin() {
-        loginButton.isEnabled = false
-    }
-
-    override fun displayWrongCredentialsMessage() {
-        passwordLayout.isErrorEnabled = true
-        passwordLayout.error = resources.getString(R.string.invalid_credentials)
-    }
-
-    override fun displayLoginFailedMessage() {
-        Snackbar.make(passwordLayout, R.string.login_failed, Snackbar.LENGTH_LONG).apply {
-            setAction(
-                R.string.action_retry
-            ) { presenter.onLogin(username.text.toString(), password.text.toString()) }
-            show()
-        }
-    }
-
-    override fun hideErrorMessage() {
-        passwordLayout.error = null
-    }
-
     private fun setupKeyboardListener(view: View, scrollView: ScrollView) {
         view.viewTreeObserver.addOnGlobalLayoutListener {
             val r = Rect()
             view.getWindowVisibleDisplayFrame(r)
-            if (abs(view.rootView.height - (r.bottom - r.top)) > 100) { // if more than 100 pixels, its probably a keyboard...
+            // if more than 100 pixels, its probably a keyboard...
+            if (abs(view.rootView.height - (r.bottom - r.top)) > 100) {
                 scrollView.scrollToBottomWithoutFocusChange()
             }
         }
     }
 
-    private fun ScrollView.scrollToBottomWithoutFocusChange() { // Kotlin extension to scrollView
+    // Kotlin extension to scrollView
+    private fun ScrollView.scrollToBottomWithoutFocusChange() {
         val lastChild = getChildAt(childCount - 1)
         val bottom = lastChild.bottom + paddingBottom
         val delta = bottom - (scrollY + height)
         smoothScrollBy(0, delta)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.onCleared()
     }
 
     companion object {

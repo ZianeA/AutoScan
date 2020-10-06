@@ -19,13 +19,14 @@ import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
-    FragNavController.RootFragmentListener{
+    FragNavController.RootFragmentListener {
     @Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Fragment>
 
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
     val fragNavController: FragNavController =
         FragNavController(supportFragmentManager, R.id.fragmentContainer)
 
+    @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
@@ -50,16 +52,22 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 
         fragNavController.rootFragmentListener = this
-        presenter.launchDestination.autoDispose(scopeProvider).subscribe { destination ->
-            when (destination) {
-                LaunchDestination.LOGIN -> {
-                    fragNavController.initialize(FragNavController.TAB1, savedInstanceState)
-                }
-                LaunchDestination.DESK -> {
-                    fragNavController.initialize(FragNavController.TAB2, savedInstanceState)
+        presenter.launchDestination
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(scopeProvider)
+            .subscribe { destination ->
+                when (destination) {
+                    LaunchDestination.LOGIN -> {
+                        fragNavController.initialize(FragNavController.TAB1, savedInstanceState)
+                    }
+                    LaunchDestination.DESK -> {
+                        fragNavController.initialize(FragNavController.TAB2, savedInstanceState)
+                    }
+                    LaunchDestination.DOWNLOAD -> {
+                        fragNavController.initialize(FragNavController.TAB3, savedInstanceState)
+                    }
                 }
             }
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -84,11 +92,14 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = androidInjector
 
-    override val numberOfRootFragments: Int = 2
+    override val numberOfRootFragments: Int = 3
 
     override fun getRootFragment(index: Int): Fragment {
-        if (index == FragNavController.TAB1) return LoginFragment.newInstance()
-        if (index == FragNavController.TAB2) return DeskFragment.newInstance()
-        else throw IllegalArgumentException("Unknown index")
+        return when (index) {
+            FragNavController.TAB1 -> LoginFragment.newInstance()
+            FragNavController.TAB2 -> DeskFragment.newInstance()
+            FragNavController.TAB3 -> DownloadFragment.newInstance()
+            else -> throw IllegalArgumentException("Unknown index")
+        }
     }
 }
