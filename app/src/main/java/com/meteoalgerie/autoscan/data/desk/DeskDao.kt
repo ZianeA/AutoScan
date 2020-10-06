@@ -54,7 +54,7 @@ interface DeskDao {
         GROUP BY d.id, d.barcode, d.isScanned, d.scanDate
         """
     )
-    fun getByBarcode(barcode: String): Maybe<DeskWithStatsEntity>
+    fun getByBarcode(barcode: String): Single<DeskWithStatsEntity>
 
     @Query(
         """

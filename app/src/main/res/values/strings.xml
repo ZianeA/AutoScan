@@ -10,6 +10,7 @@
     <string name="equipment_count">%1$d EQUIPEMENTS</string>
     <string name="desk_barcode">Bureau: %1$s</string>
     <string name="action_hide">Masquer</string>
+    <string name="message_desk_hidden">L\'élément a été caché</string>
 
     <string name="toolbar_title_equipment">Équipement</string>
     <string name="equipment_barcode">Équipement: %1$d</string>
@@ -21,8 +22,8 @@
     <string name="equipment_scanned_message">Scanné mais non synchronisé</string>
     <string name="equipment_not_scanned_message">Non scanné</string>
     <string name="equipment_pending_message">Scan en cours…</string>
-    <string name="unknown_error_message">Désolé, quelque chose s\'est mal passé.</string>
-    <string name="unknown_barcode_message">Code à barres non reconnu</string>
+    <string name="message_error_unknown">Désolé, quelque chose s\'est mal passé.</string>
+    <string name="message_unknown_barcode">Code à barres non reconnu</string>
     <string name="equipment_already_scanned_message">Équipement déjà scanné</string>
     <string name="equipment_condition_changed_message">L\'état de l\'équipement a bien été modifié</string>
     <string name="equipment_moved_message">Attention l\'équipement a été déplacé</string>

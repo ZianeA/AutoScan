@@ -1,9 +1,7 @@
 package com.meteoalgerie.autoscan.presentation.login
 
 import androidx.annotation.StringRes
-import com.jakewharton.rx.replayingShare
 import com.jakewharton.rxrelay2.BehaviorRelay
-import com.jakewharton.rxrelay2.PublishRelay
 import com.meteoalgerie.autoscan.R
 import com.meteoalgerie.autoscan.data.OdooService
 import com.meteoalgerie.autoscan.data.PreferenceStorage
@@ -13,7 +11,6 @@ import com.meteoalgerie.autoscan.presentation.download.IsDownloadCompleteUseCase
 import com.meteoalgerie.autoscan.presentation.util.applySchedulers
 import com.meteoalgerie.autoscan.presentation.util.scheduler.SchedulerProvider
 import hu.akarnokd.rxjava2.subjects.UnicastWorkSubject
-import io.reactivex.BackpressureStrategy
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -31,7 +28,8 @@ class LoginPresenter @Inject constructor(
     val canLogin = BehaviorRelay.createDefault(false)
     val passwordBoxState = BehaviorRelay.create<TextBoxState>()
     val message: UnicastWorkSubject<Int> = UnicastWorkSubject.create()
-    val navigateDestination: UnicastWorkSubject<NavigationDestination> = UnicastWorkSubject.create()
+    val navigationDestination: UnicastWorkSubject<NavigationDestination> =
+        UnicastWorkSubject.create()
 
     fun onLogin(username: String, password: String) {
         canLogin.accept(false)
@@ -40,9 +38,9 @@ class LoginPresenter @Inject constructor(
             .subscribeBy(
                 onSuccess = { userId ->
                     if (isDownloadCompleteUseCase.execute()) {
-                        navigateDestination.onNext(NavigationDestination.DESK)
+                        navigationDestination.onNext(NavigationDestination.DESK)
                     } else {
-                        navigateDestination.onNext(NavigationDestination.DOWNLOAD)
+                        navigationDestination.onNext(NavigationDestination.DOWNLOAD)
                     }
                     storage.user = User(userId, password)
                 },
@@ -69,7 +67,7 @@ class LoginPresenter @Inject constructor(
         }
     }
 
-    fun onSettings() = navigateDestination.onNext(NavigationDestination.SETTINGS)
+    fun onSettings() = navigationDestination.onNext(NavigationDestination.SETTINGS)
 
     fun onCleared() {
         disposables.clear()

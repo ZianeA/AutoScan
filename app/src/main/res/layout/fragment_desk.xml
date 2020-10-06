@@ -32,17 +32,17 @@
             android:layout_height="0dp"
             android:paddingHorizontal="8dp"
             android:paddingVertical="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/inputLayout"
+            app:layout_constraintBottom_toTopOf="@+id/barcodeLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/inputLayout"
+            android:id="@+id/barcodeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:contentPadding="8dp"
             app:cardCornerRadius="0dp"
             app:cardElevation="8dp"
+            app:contentPadding="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/barcodeInput"
+                    android:id="@+id/barcodeBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -67,7 +67,6 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-                <!--android:text="CNTM08"-->
 
                 <ImageButton
                     android:id="@+id/barcodeSubmitButton"
@@ -75,43 +74,27 @@
                     android:layout_height="24dp"
                     android:layout_marginEnd="8dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:tint="@color/submit_button"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_send_24dp"
-                    app:tint="@color/colorAccent" />
+                    app:srcCompat="@drawable/ic_send" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <com.meteoalgerie.autoscan.presentation.util.MySnackbar
-            android:id="@+id/snackbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone"
-            app:layout_constrainedWidth="true"
-            app:layout_constraintBottom_toBottomOf="@+id/deskRecyclerView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="invisible" />
-
+        <!--empty state views-->
         <ImageView
             android:id="@+id/barcodeIcon"
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/deskRecyclerView"
+            app:layout_constraintBottom_toTopOf="@id/barcodeLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.45"
             app:srcCompat="@drawable/ic_add_barcode"
-            app:tint="@android:color/darker_gray"
-            tools:visibility="visible" />
+            app:tint="?attr/colorControlNormal" />
 
         <TextView
             android:id="@+id/scanDeskMessage"
@@ -119,10 +102,16 @@
             android:layout_height="wrap_content"
             android:text="@string/start_scanning_message"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@+id/barcodeIcon"
             app:layout_constraintStart_toStartOf="@+id/barcodeIcon"
-            app:layout_constraintTop_toBottomOf="@+id/barcodeIcon"
+            app:layout_constraintTop_toBottomOf="@+id/barcodeIcon" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/emptyStateView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="barcodeIcon, scanDeskMessage"
             tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,7 +17,6 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyRecyclerView
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.BaseTransientBottomBar.*
 import com.google.android.material.snackbar.Snackbar
 
@@ -29,7 +28,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_equipment.*
 import kotlinx.android.synthetic.main.fragment_equipment.view.*
 import kotlinx.android.synthetic.main.fragment_equipment.view.appBarLayout
-import kotlinx.android.synthetic.main.fragment_equipment.view.barcodeInput
+import kotlinx.android.synthetic.main.fragment_equipment.view.barcodeBox
 import kotlinx.android.synthetic.main.fragment_equipment.view.toolbar
 import javax.inject.Inject
 
@@ -120,7 +119,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
             }
         }
 
-        rootView.barcodeInput.apply {
+        rootView.barcodeBox.apply {
             addTextChangedListener(afterTextChanged = {
                 presenter.onBarcodeChange(it.toString(), selectedDesk.id)
                 EquipmentEpoxyModel.tooltipList.forEach { tooltip -> tooltip.dismiss() }
@@ -226,7 +225,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     override fun clearBarcodeInputArea() {
-        barcodeInput.text.clear()
+        barcodeBox.text.clear()
     }
 
     override fun displayEquipmentConditionChangedMessage() {
@@ -234,11 +233,11 @@ class EquipmentFragment : Fragment(), EquipmentView {
     }
 
     override fun showErrorMessage() {
-        showSnackbar(R.string.unknown_error_message)
+        showSnackbar(R.string.message_error_unknown)
     }
 
     override fun showUnknownBarcodeMessage() {
-        showSnackbar(R.string.unknown_barcode_message)
+        showSnackbar(R.string.message_unknown_barcode)
     }
 
     override fun showEquipmentAlreadyScannedMessage() {

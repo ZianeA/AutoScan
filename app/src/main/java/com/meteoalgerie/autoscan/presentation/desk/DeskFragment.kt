@@ -10,14 +10,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
-import com.airbnb.epoxy.EpoxyRecyclerView
+import com.google.android.material.snackbar.Snackbar
 
 import com.meteoalgerie.autoscan.R
 import com.meteoalgerie.autoscan.presentation.equipment.EquipmentFragment
 import com.meteoalgerie.autoscan.presentation.login.LoginFragment
-import com.meteoalgerie.autoscan.presentation.util.ItemDecoration
+import com.meteoalgerie.autoscan.presentation.util.getColorFromAttr
+import com.meteoalgerie.autoscan.presentation.util.showIf
 import com.ncapdevi.fragnav.FragNavController
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
+import com.uber.autodispose.autoDispose
 import dagger.android.support.AndroidSupportInjection
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_desk.*
 import kotlinx.android.synthetic.main.fragment_desk.view.*
 import javax.inject.Inject
@@ -27,23 +31,18 @@ import javax.inject.Inject
  * Use the [DeskFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class DeskFragment : Fragment(), DeskView {
+class DeskFragment : Fragment() {
     @Inject
     lateinit var presenter: DeskPresenter
 
     @Inject
     lateinit var fragNavController: FragNavController
 
-    private lateinit var recyclerView: EpoxyRecyclerView
-
     private lateinit var epoxyController: DeskEpoxyController
-
-    private var delayScanDeskMessage = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        epoxyController =
-            DeskEpoxyController(presenter::onDeskClicked) { d, _ -> presenter.onHideDeskClicked(d) }
+        presenter.onStart()
     }
 
     override fun onCreateView(
@@ -62,37 +61,86 @@ class DeskFragment : Fragment(), DeskView {
             insets
         }
 
-        (activity as AppCompatActivity).apply {
-            setSupportActionBar(rootView.toolbar)
-        }
-
-        recyclerView = rootView.deskRecyclerView
-        recyclerView.setItemSpacingDp(8)
-
-        rootView.barcodeSubmitButton.setOnClickListener {
-            presenter.onBarcodeEntered(rootView.barcodeInput.text.toString())
-        }
-
-
-        rootView.barcodeInput.apply {
-            (activity as AppCompatActivity).window
-                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-            requestFocus()
-        }
+        (activity as AppCompatActivity).setSupportActionBar(rootView.toolbar)
 
         setHasOptionsMenu(true)
 
         return rootView
     }
 
-    override fun onStart() {
-        super.onStart()
-        presenter.start()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        epoxyController =
+            DeskEpoxyController(presenter::onDeskClicked) { d, _ -> presenter.onHideDeskClicked(d) }
+        deskRecyclerView.setItemSpacingDp(8)
+
+        barcodeSubmitButton.setOnClickListener {
+            presenter.onBarcodeEntered(barcodeBox.text.toString())
+        }
+
+        barcodeBox.apply {
+            (activity as AppCompatActivity).window
+                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+            requestFocus()
+        }
     }
 
-    override fun onStop() {
-        super.onStop()
-        presenter.stop()
+    override fun onStart() {
+        super.onStart()
+        presenter.desks
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                if (deskRecyclerView.adapter == null) {
+                    deskRecyclerView.setController(epoxyController)
+                }
+                epoxyController.desks = it
+            }
+
+        presenter.displayEmptyState
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { display -> emptyStateView.showIf { display } }
+
+        presenter.canScan
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { barcodeSubmitButton.isEnabled = it }
+
+        presenter.clearBarcodeBox
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { barcodeBox.text.clear() }
+
+        presenter.message
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).apply {
+                    setAnchorView(R.id.barcodeLayout)
+                    show()
+                }
+            }
+
+        presenter.navigationDestination
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                when (it) {
+                    DeskPresenter.NavigationDestination.Login -> {
+                        fragNavController.replaceFragment(LoginFragment.newInstance())
+                    }
+                    is DeskPresenter.NavigationDestination.Equipment -> {
+                        fragNavController.pushFragment(EquipmentFragment.newInstance(it.desk))
+                    }
+                }
+            }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.onCleared()
     }
 
     override fun onAttach(context: Context) {
@@ -112,60 +160,6 @@ class DeskFragment : Fragment(), DeskView {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun displayDesks(desks: List<Desk>) {
-        if (recyclerView.adapter == null) {
-            recyclerView.setController(epoxyController)
-        }
-        epoxyController.desks = desks
-    }
-
-    override fun displayEquipmentsScreen(desk: Desk) {
-        fragNavController.pushFragment(EquipmentFragment.newInstance(desk))
-    }
-
-    override fun displayUnknownBarcodeMessage() {
-        snackbar.showMessage(R.string.unknown_barcode_message)
-    }
-
-    override fun displayGenericErrorMessage() {
-        snackbar.showMessage(R.string.unknown_error_message)
-    }
-
-    override fun clearBarcodeInputArea() {
-        barcodeInput.text.clear()
-    }
-
-    override fun disableBarcodeInput() {
-        barcodeSubmitButton.apply {
-            isEnabled = false
-            ViewCompat.setBackgroundTintList(
-                this,
-                ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.darker_gray))
-            )
-        }
-    }
-
-    override fun enableBarcodeInput() {
-        barcodeSubmitButton.apply {
-            isEnabled = true
-            ViewCompat.setBackgroundTintList(
-                this,
-                ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorAccent))
-            )
-        }
-    }
-
-    override fun displayLoginScreen() {
-        fragNavController.replaceFragment(LoginFragment.newInstance())
-    }
-
-    override fun displayScanDeskMessage() {
-        if (delayScanDeskMessage) return
-
-        scanDeskMessage.visibility = View.VISIBLE
-        barcodeIcon.visibility = View.VISIBLE
     }
 
     companion object {

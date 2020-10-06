@@ -19,8 +19,8 @@
     <string name="equipment_scanned_message">ممسوح غير مبعوث</string>
     <string name="equipment_not_scanned_message">لم يبعث</string>
     <string name="equipment_pending_message">مسح...</string>
-    <string name="unknown_error_message">معذرة وقع خطأ ما</string>
-    <string name="unknown_barcode_message">باركود مجهول</string>
+    <string name="message_error_unknown">معذرة وقع خطأ ما</string>
+    <string name="message_unknown_barcode">باركود مجهول</string>
     <string name="equipment_already_scanned_message">العتاد ممسوح من قبل</string>
     <string name="equipment_condition_changed_message">تم تغيير حالة العتاد</string>
     <string name="equipment_moved_message"> تنبيه: العتاد تغير موضعه</string>

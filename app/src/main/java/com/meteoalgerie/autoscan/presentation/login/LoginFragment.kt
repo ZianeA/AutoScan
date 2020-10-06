@@ -19,7 +19,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.meteoalgerie.autoscan.presentation.desk.DeskFragment
 import com.meteoalgerie.autoscan.presentation.download.DownloadFragment
 import com.ncapdevi.fragnav.FragNavController
-import com.ncapdevi.fragnav.FragNavTransactionOptions
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
 import com.uber.autodispose.autoDispose
 import dagger.android.support.AndroidSupportInjection
@@ -110,7 +109,7 @@ class LoginFragment : Fragment() {
                 }
             }
 
-        presenter.navigateDestination
+        presenter.navigationDestination
             .observeOn(AndroidSchedulers.mainThread())
             .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
             .subscribe {

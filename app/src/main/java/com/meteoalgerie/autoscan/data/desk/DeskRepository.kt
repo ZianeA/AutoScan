@@ -7,6 +7,7 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,7 +21,7 @@ class DeskRepository @Inject constructor(
             .map { deskEntities -> deskEntities.map { deskEntityMapper.map(it) } }
     }
 
-    fun findDesk(barcode: String): Maybe<Desk> {
+    fun findDesk(barcode: String): Single<Desk> {
         return deskDao.getByBarcode(barcode)
             .map(deskEntityMapper::map)
     }
