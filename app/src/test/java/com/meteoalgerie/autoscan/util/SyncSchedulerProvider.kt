@@ -1,6 +1,6 @@
 package com.meteoalgerie.autoscan.util
 
-import com.meteoalgerie.autoscan.presentation.util.scheduler.SchedulerProvider
+import com.meteoalgerie.autoscan.common.scheduler.SchedulerProvider
 import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
 

@@ -1,7 +1,7 @@
 package com.meteoalgerie.autoscan.util
 
-import com.meteoalgerie.autoscan.data.desk.DeskEntity
-import com.meteoalgerie.autoscan.presentation.desk.Desk
+import com.meteoalgerie.autoscan.desk.DeskEntity
+import com.meteoalgerie.autoscan.desk.Desk
 import kotlin.collections.HashMap
 
 private const val EQUIPMENT_ID = 101
