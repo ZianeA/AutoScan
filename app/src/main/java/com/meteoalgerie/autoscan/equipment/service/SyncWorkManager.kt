@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 @Reusable
 class SyncWorkManager @Inject constructor(private val app: Application) : SyncBackgroundService {
-    override fun syncEquipments() {
+    override fun syncEquipment() {
         val syncConstraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()

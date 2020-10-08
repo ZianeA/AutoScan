@@ -12,7 +12,7 @@ interface EquipmentDao {
     fun getAll(): Single<List<Equipment>>
 
     @Query("SELECT * FROM EquipmentEntity e WHERE e.barcode=:barcode")
-    fun getByBarcode(barcode: String): Maybe<Equipment>
+    fun getByBarcode(barcode: String): Single<Equipment>
 
     @Query("SELECT * FROM EquipmentEntity e WHERE e.deskId=:deskId ORDER BY e.scanDate Desc")
     fun getByDesk(deskId: Int): Observable<List<Equipment>>

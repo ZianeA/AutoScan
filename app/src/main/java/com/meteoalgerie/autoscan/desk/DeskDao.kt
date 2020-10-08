@@ -73,7 +73,7 @@ interface DeskDao {
         GROUP BY d.id, d.barcode, d.isScanned, d.scanDate
         """
     )
-    fun getById(id: Int): Single<DeskWithStatsEntity>
+    fun getById(id: Int): Observable<DeskWithStatsEntity>
 
     @Update
     fun update(desk: DeskEntity): Completable

@@ -21,7 +21,7 @@ class DeskRepository @Inject constructor(
             .map(deskEntityMapper::map)
     }
 
-    fun getDeskById(id: Int): Single<Desk> {
+    fun getDeskById(id: Int): Observable<Desk> {
         return deskDao.getById(id)
             .map(deskEntityMapper::map)
     }

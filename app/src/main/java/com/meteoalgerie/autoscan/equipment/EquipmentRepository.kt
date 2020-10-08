@@ -14,13 +14,10 @@ class EquipmentRepository @Inject constructor(
     private val equipmentApi: EquipmentApi,
     private val equipmentResponseMapper: EquipmentResponseMapper
 ) {
-    fun getAllEquipmentForDesk(deskId: Int): Observable<List<Equipment>> {
-        return equipmentDao.getByDesk(deskId)
-    }
 
     fun getEquipmentForDeskAndScanState(
         deskId: Int,
-        vararg scanState: ScanState
+        scanState: List<ScanState>
     ): Observable<List<Equipment>> {
         return Observable.just(scanState)
             .flatMap {
@@ -36,22 +33,20 @@ class EquipmentRepository @Inject constructor(
     fun refreshEquipmentForDesk(deskId: Int): Completable {
         return equipmentApi.getByDesk(deskId)
             .map { list -> list.map { item -> equipmentResponseMapper.map(item as HashMap<*, *>) } }
-            .flatMap {
+            .flatMap { refreshList ->
+                // Prevent the refresh from overriding the not synced equipment
                 equipmentDao.getByDeskAndScanState(deskId, ScanState.ScannedButNotSynced)
                     .first(emptyList())
-                    .map { notSyncedEquipmentList ->
-                        it.toMutableList().apply { removeAll(notSyncedEquipmentList) } //TODO use id
+                    // filter out the not synced equipment from the refreshed list
+                    .map { notSyncedList ->
+                        refreshList.toMutableList().apply { removeAll(notSyncedList) }
                     }
             }
             .flatMapCompletable { equipmentDao.updateAll(it) }
     }
 
-    fun findEquipment(barcode: String): Maybe<Equipment> {
+    fun findEquipment(barcode: String): Single<Equipment> {
         return equipmentDao.getByBarcode(barcode)
-    }
-
-    fun getAllUnsyncedEquipment(): Single<List<Equipment>> {
-        return equipmentDao.getByScanState(ScanState.ScannedButNotSynced)
     }
 
     fun updateEquipment(equipment: Equipment): Completable {
@@ -65,8 +60,4 @@ class EquipmentRepository @Inject constructor(
             )
             .andThen(Completable.defer { equipmentDao.update(scannedAndSyncedEquipment) })
     }
-
-    fun getAllEquipmentCount(): Single<Int> = equipmentDao.getAllCount()
-
-    fun deleteAllEquipments(): Completable = equipmentDao.deleteAll()
 }

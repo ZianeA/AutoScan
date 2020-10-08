@@ -1,29 +1,33 @@
 package com.meteoalgerie.autoscan.equipment
 
+import androidx.room.EmptyResultSetException
+import com.jakewharton.rxrelay2.BehaviorRelay
+import com.meteoalgerie.autoscan.R
 import com.meteoalgerie.autoscan.common.database.PreferenceStorage
 import com.meteoalgerie.autoscan.desk.DeskRepository
 import com.meteoalgerie.autoscan.equipment.Equipment.*
 import com.meteoalgerie.autoscan.desk.Desk
 import com.meteoalgerie.autoscan.common.di.FragmentScope
 import com.meteoalgerie.autoscan.common.util.Clock
-import com.meteoalgerie.autoscan.common.util.applySchedulers
 import com.meteoalgerie.autoscan.common.scheduler.SchedulerProvider
+import com.meteoalgerie.autoscan.common.util.Lce
+import com.meteoalgerie.autoscan.common.util.toLce
 import com.meteoalgerie.autoscan.equipment.service.SyncBackgroundService
 import de.timroes.axmlrpc.XMLRPCException
 import hu.akarnokd.rxjava2.operators.ObservableTransformers
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Single
+import hu.akarnokd.rxjava2.subjects.UnicastWorkSubject
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.PublishProcessor
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.BehaviorSubject
-import java.lang.IllegalArgumentException
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.IllegalArgumentException
 
 @FragmentScope
 class EquipmentPresenter @Inject constructor(
-    private val view: EquipmentView,
+    private val equipmentDesk: Desk,
     private val equipmentRepository: EquipmentRepository,
     private val deskRepository: DeskRepository,
     private val storage: PreferenceStorage,
@@ -32,148 +36,133 @@ class EquipmentPresenter @Inject constructor(
     private val clock: Clock
 ) {
     private val disposables = CompositeDisposable()
-    private val scrollingValve = PublishProcessor.create<Boolean>()
-    private val filterSubject = BehaviorSubject.createDefault(storage.equipmentFilter)
 
-    fun start(refresh: Boolean, desk: Desk) {
-        if (refresh) view.showLoadingView()
+    val equipment = BehaviorRelay.create<List<Equipment>>()
+    val desk = BehaviorRelay.createDefault<Desk>(equipmentDesk)
+    val selectedTags = BehaviorSubject.createDefault(storage.equipmentFilter)
+    val isLoading = BehaviorRelay.create<Boolean>()
+    val isRefreshing = BehaviorRelay.create<Boolean>()
+    val scanningEquipment = BehaviorRelay.createDefault(emptyList<Int>())
 
-        val disposable = Single.just(refresh)
-            .flatMapCompletable {
-                if (it) {
-                    equipmentRepository.refreshEquipmentForDesk(desk.id)
-                } else {
-                    Completable.complete()
-                }
-            }
-            .observeOn(schedulerProvider.main)
-            // hide loading view regardless if completable completes normally or fails
-            .doOnTerminate { view.hideLoadingView() }
-            .onErrorResumeNext {
-                if (it is XMLRPCException) {
-                    view.showNetworkErrorMessage()
-                    Completable.complete()
-                } else {
-                    Completable.error(it)
-                }
-            }
-            .observeOn(schedulerProvider.worker)
-            .andThen(filterSubject)
-            .switchMap { tags ->
-                equipmentRepository.getEquipmentForDeskAndScanState(
-                    desk.id,
-                    *tags.map { ScanState.valueOf(it) }.toTypedArray()
-                )
-            }
-            .flatMapSingle { e ->
-                deskRepository.getDeskById(desk.id)
-                    .map {
-                        object {
-                            val desk: Desk = it
-                            val equipment: List<Equipment> = e
+    val message: UnicastWorkSubject<Int> = UnicastWorkSubject.create()
+    val clearBarcodeBox: UnicastWorkSubject<Unit> = UnicastWorkSubject.create()
+    val displayEquipmentMoved: UnicastWorkSubject<Int> = UnicastWorkSubject.create()
+    val animateEquipment: UnicastWorkSubject<Int> = UnicastWorkSubject.create()
+    val scrollToTop: UnicastWorkSubject<Unit> = UnicastWorkSubject.create()
+
+    fun start() {
+        disposables += Observable.concat(
+            equipmentRepository.refreshEquipmentForDesk(equipmentDesk.id).toLce<List<Equipment>>(),
+            loadEquipment()
+        )
+            .subscribeOn(schedulerProvider.worker)
+            .startWith(Lce.Loading())
+            .subscribe { lce ->
+                when (lce) {
+                    is Lce.Loading -> isLoading.accept(true)
+                    is Lce.Content -> {
+                        isLoading.accept(false)
+                        equipment.accept(lce.data)
+                    }
+                    is Lce.Error -> {
+                        isLoading.accept(false)
+                        if (lce.error is XMLRPCException) {
+                            message.onNext(R.string.message_you_are_offline)
+                        } else {
+                            message.onNext(R.string.message_error_unknown)
                         }
                     }
+                }
             }
-            .compose(ObservableTransformers.valve(scrollingValve.toObservable(), true))
-            .applySchedulers(schedulerProvider)
-            .subscribe(
-                { view.displayEquipments(it.desk, it.equipment, storage.equipmentFilter) },
-                { view.showErrorMessage() }
-            )
 
-        disposables.add(disposable)
+        disposables += deskRepository.getDeskById(equipmentDesk.id)
+            .subscribeOn(schedulerProvider.worker)
+            .subscribe { desk.accept(it) }
     }
 
     fun onRefresh(deskId: Int) {
-        val disposable = equipmentRepository.refreshEquipmentForDesk(deskId)
-            .applySchedulers(schedulerProvider)
-            .subscribe({ view.hideLoadingView() },
-                {
-                    view.hideLoadingView()
+        isRefreshing.accept(true)
 
-                    if (it is XMLRPCException) {
-                        view.showNetworkErrorMessage()
+        disposables += equipmentRepository.refreshEquipmentForDesk(deskId)
+            .subscribeOn(schedulerProvider.worker)
+            .subscribeBy(
+                onComplete = { isRefreshing.accept(false) },
+                onError = { error ->
+                    isRefreshing.accept(false)
+
+                    if (error is XMLRPCException) {
+                        message.onNext(R.string.message_you_are_offline)
                     } else {
-                        view.showErrorMessage()
+                        message.onNext(R.string.message_error_unknown)
                     }
                 })
-
-        disposables.add(disposable)
     }
 
-    fun onScrollEnded() {
-        scrollingValve.onNext(true)
-    }
-
-    // TODO add more unit tests, notably for error messages
     private fun scanBarcode(barcode: String, deskId: Int) {
         barcode.toIntOrNull()
-            ?: throw IllegalArgumentException(
-                "Malformed equipment barcode. Equipment barcode must contain only numeric values"
-            )
-        view.clearBarcodeInputArea()
-        var equipmentId: Int? = null
+            ?: throw IllegalArgumentException("Equipment barcode must contain only numeric values")
+        clearBarcodeBox.onNext(Unit)
 
-        val disposable = equipmentRepository.findEquipment(barcode)
-            .observeOn(schedulerProvider.main)
-            .doOnEvent { e, t -> if (e == null && t == null) view.showUnknownBarcodeMessage() }
-            .doOnSuccess { equipmentId = it.id }
-            .flatMap {
+        disposables += equipmentRepository.findEquipment(barcode)
+            .map {
                 if (it.scanState != ScanState.NotScanned) {
-                    view.showEquipmentAlreadyScannedMessage()
-                    Maybe.empty()
+                    ScanResult.Error(it, IllegalArgumentException("Equipment already scanned"))
                 } else {
-                    view.displayProgressBarForEquipment(it.id)
-                    if (view.isScrolling.not()) {
-                        scrollingValve.onNext(false)
-                        view.scrollToTop()
-                    }
-                    Maybe.just(it)
+                    ScanResult.Loading(it)
                 }
             }
-            .observeOn(schedulerProvider.worker)
-            .flatMap { scannedEquipment ->
-                val updatedEquipment =
-                    scannedEquipment.copy(scanDate = clock.currentTimeSeconds, deskId = deskId)
-                equipmentRepository.updateEquipment(updatedEquipment)
-                    .andThen(Maybe.just(updatedEquipment))
-                    .onErrorResumeNext { it: Throwable ->
-                        when (it) {
-                            is XMLRPCException -> {
-                                //TODO should probably do this only if it's a no internet connexion exception
-                                syncService.syncEquipments()
-                                Maybe.just(updatedEquipment)
+            .onErrorReturn { error -> ScanResult.Error(null, error) }
+            .flatMapObservable { scanAndSynchronize(it, deskId) }
+            .subscribeOn(schedulerProvider.worker)
+            .subscribeBy(
+                onNext = { result ->
+                    when (result) {
+                        is ScanResult.Loading -> {
+                            // Add equipment to scanning list
+                            scanningEquipment.accept(scanningEquipment.value!! + result.equipment.id)
+                            scrollToTop.onNext(Unit)
+                        }
+                        is ScanResult.Success -> {
+                            val id = result.equipment.id
+                            // Remove equipment from scanning list
+                            scanningEquipment.accept(scanningEquipment.value!! - id)
+                            if (result.equipment.deskId != result.equipment.previousDeskId) {
+                                displayEquipmentMoved.onNext(id)
                             }
-                            else -> {
-                                // This is probably a serious error
-                                Maybe.error(it)
+                            // Animate equipment
+                            animateEquipment.onNext(id)
+                        }
+                        is ScanResult.Error -> {
+                            when (result.error) {
+                                is EmptyResultSetException -> {
+                                    message.onNext(R.string.message_error_unknown_barcode)
+                                }
+                                is IllegalArgumentException -> {
+                                    message.onNext(R.string.message_error_equipment_already_scanned)
+                                }
+                                is XMLRPCException -> {
+                                    syncService.syncEquipment()
+                                    message.onNext(R.string.message_error_network)
+                                }
+                                else -> {
+                                    message.onNext(R.string.message_error_unknown)
+                                }
+                            }
+
+                            // Remove equipment from scanning list
+                            result.equipment?.let {
+                                scanningEquipment.accept(scanningEquipment.value!! - it.id)
                             }
                         }
                     }
-            }
-            .doOnDispose {
-                // Sync in the background if the scanning was interrupted
-                syncService.syncEquipments()
-                equipmentId?.let { view.hideProgressBarForEquipment(it) }
-            }
-            .toObservable()
-            .compose(ObservableTransformers.valve(scrollingValve.toObservable(), true))
-            .delay(1, TimeUnit.SECONDS)
-            .applySchedulers(schedulerProvider)
-            .subscribe(
-                {
-                    view.hideProgressBarForEquipment(it.id)
-                    if (it.deskId != it.previousDeskId) view.showEquipmentMovedMessage(it.id)
-                    view.animateEquipment(it.id)
-                },
-                { _ ->
-                    view.showErrorMessage()
-                    equipmentId?.let { view.hideProgressBarForEquipment(it) }
-                },
-                { /*onComplete*/ }
+                }
             )
+    }
 
-        disposables.add(disposable)
+    sealed class ScanResult {
+        data class Loading(val equipment: Equipment) : ScanResult()
+        data class Error(val equipment: Equipment?, val error: Throwable) : ScanResult()
+        data class Success(val equipment: Equipment) : ScanResult()
     }
 
     fun onBarcodeChange(barcode: String, deskId: Int) {
@@ -185,36 +174,27 @@ class EquipmentPresenter @Inject constructor(
     }
 
     fun onEquipmentConditionPicked(conditionIndex: Int, equipment: Equipment) {
-        view.displayProgressBarForEquipment(equipment.id)
+        scanningEquipment.accept(scanningEquipment.value!! + equipment.id)
 
-        val disposable = equipmentRepository.updateEquipment(
-            equipment.copy(
-                condition = EquipmentCondition.getByValue(conditionIndex)
-            )
+        disposables += equipmentRepository.updateEquipment(
+            equipment.copy(condition = EquipmentCondition.getByValue(conditionIndex))
         )
-            .onErrorResumeNext {
-                when (it) {
-                    is XMLRPCException -> {
-                        //TODO should probably do this only if it's a no internet connexion exception
-                        syncService.syncEquipments()
-                        Completable.complete()
+            // Sync in the background if the scanning is interrupted
+            .doOnDispose { syncService.syncEquipment() }
+            .subscribeOn(schedulerProvider.worker)
+            .subscribeBy(
+                onComplete = {
+                    scanningEquipment.accept(scanningEquipment.value!! - equipment.id)
+                    message.onNext(R.string.message_equipment_condition_changed)
+                },
+                onError = {
+                    if (it is XMLRPCException) {
+                        syncService.syncEquipment()
+                        message.onNext(R.string.message_error_network)
+                    } else {
+                        message.onNext(R.string.message_error_unknown)
                     }
-                    else -> {
-                        // This is probably a serious error
-                        Completable.error(it)
-                    }
-                }
-            }
-            .doOnDispose { syncService.syncEquipments() } // Sync in the background if the scanning was interrupted
-            .applySchedulers(schedulerProvider)
-            .subscribe({
-                view.hideProgressBarForEquipment(equipment.id)
-                if (view.isScrolling.not()) view.rebuildUi()
-                view.displayEquipmentConditionChangedMessage()
-            },
-                { view.showErrorMessage() })
-
-        disposables.add(disposable)
+                })
     }
 
     fun onTagClicked(tag: ScanState) {
@@ -228,10 +208,39 @@ class EquipmentPresenter @Inject constructor(
             storage.equipmentFilter += tag.name
         }
 
-        filterSubject.onNext(storage.equipmentFilter)
+        selectedTags.onNext(storage.equipmentFilter)
     }
 
-    fun stop() {
+    private fun loadEquipment() = selectedTags.switchMap { tags ->
+        equipmentRepository.getEquipmentForDeskAndScanState(
+            equipmentDesk.id,
+            tags.map { ScanState.valueOf(it) })
+    }
+        .toLce()
+
+    private fun scanAndSynchronize(scanResult: ScanResult, deskId: Int): Observable<ScanResult> {
+        return when (scanResult) {
+            is ScanResult.Error -> Observable.just(scanResult)
+            is ScanResult.Loading -> {
+                val updatedEquipment = scanResult.equipment.copy(
+                    scanDate = clock.currentTimeSeconds,
+                    deskId = deskId
+                )
+                equipmentRepository.updateEquipment(updatedEquipment)
+                    .andThen(Observable.just(ScanResult.Success(updatedEquipment) as ScanResult))
+                    .onErrorReturn { ScanResult.Error(scanResult.equipment, it) }
+                    // Start by emitting the loading state
+                    .startWith(scanResult)
+                    // Sync in the background if the scanning is interrupted
+                    .doOnDispose { syncService.syncEquipment() }
+            }
+            else -> {
+                throw IllegalStateException("ScanResult can't be a success at this stage")
+            }
+        }
+    }
+
+    fun onCleared() {
         disposables.clear()
     }
 

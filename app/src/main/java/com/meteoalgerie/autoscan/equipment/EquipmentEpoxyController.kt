@@ -10,9 +10,9 @@ class EquipmentEpoxyController(
     private val onTagClickedListener: ((tag: Equipment.ScanState) -> Unit)
 ) :
     AsyncEpoxyController() {
-    lateinit var desk: Desk
-    lateinit var selectedTags: Set<String>
-    var equipments: List<Equipment> = emptyList()
+    var desk: Desk? = null
+    var selectedTags: Set<String> = emptySet()
+    var equipment: List<Equipment> = emptyList()
     var skeletonEquipmentCount = 0
 
     override fun buildModels() {
@@ -23,17 +23,22 @@ class EquipmentEpoxyController(
                 skeletonEquipment { id("s", i.toLong()) }
             }
 
+            // When equipment are loading don't show the stats
             return
         }
 
-        EquipmentStatsEpoxyModel_()
-            .id(desk.id)
-            .desk(desk)
-            .selectedTags(selectedTags)
-            .onTagClickedListener(onTagClickedListener)
-            .addTo(this)
+        desk?.let {
+            if(selectedTags.isNotEmpty()) {
+                EquipmentStatsEpoxyModel_()
+                    .id(it.id)
+                    .desk(it)
+                    .selectedTags(selectedTags)
+                    .onTagClickedListener(onTagClickedListener)
+                    .addTo(this)
+            }
+        }
 
-        equipments.forEach {
+        equipment.forEach {
             EquipmentEpoxyModel_()
                 .id(it.barcode)
                 .equipment(it)

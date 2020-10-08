@@ -26,11 +26,11 @@ class DeskPresenter @Inject constructor(
     val displayEmptyState = BehaviorRelay.create<Boolean>()
     val desks = BehaviorRelay.create<List<Desk>>()
     val canScan = BehaviorRelay.createDefault(true)
-    val clearBarcodeBox = BehaviorRelay.create<Unit>()
 
     val message: UnicastWorkSubject<Int> = UnicastWorkSubject.create()
     val navigationDestination: UnicastWorkSubject<NavigationDestination> =
         UnicastWorkSubject.create()
+    val clearBarcodeBox = UnicastWorkSubject.create<Unit>()
 
     fun onStart() {
         val disposable = deskRepository.getScannedDesks()
@@ -63,14 +63,14 @@ class DeskPresenter @Inject constructor(
             .applySchedulers(schedulerProvider)
             .subscribeBy(
                 onSuccess = { desk ->
-                    clearBarcodeBox.accept(Unit)
+                    clearBarcodeBox.onNext(Unit)
                     navigationDestination.onNext(NavigationDestination.Equipment(desk))
                     canScan.accept(true)
                 },
                 onError = { error ->
                     canScan.accept(true)
                     if (error is EmptyResultSetException) {
-                        message.onNext(R.string.message_unknown_barcode)
+                        message.onNext(R.string.message_error_unknown_barcode)
                     } else {
                         message.onNext(R.string.message_error_unknown)
                     }

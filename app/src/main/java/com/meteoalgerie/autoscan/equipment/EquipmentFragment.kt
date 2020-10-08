@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.ViewCompat
@@ -16,19 +15,24 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.epoxy.EpoxyRecyclerView
-import com.google.android.material.snackbar.BaseTransientBottomBar.*
 import com.google.android.material.snackbar.Snackbar
+import com.jakewharton.rxrelay2.PublishRelay
 
 import com.meteoalgerie.autoscan.R
 import com.meteoalgerie.autoscan.desk.Desk
 import com.meteoalgerie.autoscan.common.util.ItemDecoration
+import com.meteoalgerie.autoscan.common.util.hide
+import com.meteoalgerie.autoscan.common.util.show
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
+import com.uber.autodispose.autoDispose
 import dagger.android.support.AndroidSupportInjection
+import hu.akarnokd.rxjava2.operators.ObservableTransformers
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_equipment.*
 import kotlinx.android.synthetic.main.fragment_equipment.view.*
 import kotlinx.android.synthetic.main.fragment_equipment.view.appBarLayout
-import kotlinx.android.synthetic.main.fragment_equipment.view.barcodeBox
 import kotlinx.android.synthetic.main.fragment_equipment.view.toolbar
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -41,21 +45,12 @@ class EquipmentFragment : Fragment(), EquipmentView {
     lateinit var presenter: EquipmentPresenter
 
     private lateinit var epoxyController: EquipmentEpoxyController
-    private lateinit var recyclerView: EpoxyRecyclerView
     private var scrollToTop = false
-    var savedInstanceState: Bundle? = null
-
-    override var isScrolling = false
-        set(value) {
-            if (value) scrollDisabler.visibility = View.VISIBLE
-            else scrollDisabler.visibility = View.GONE
-
-            field = value
-        }
+    private val scrollingValve = PublishRelay.create<Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        this.savedInstanceState = savedInstanceState
+        presenter.start()
     }
 
     override fun onCreateView(
@@ -79,17 +74,32 @@ class EquipmentFragment : Fragment(), EquipmentView {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
-        rootView.scrollUpButton.apply {
+        return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        scrollUpButton.apply {
             hide()
             setOnClickListener { smoothScrollToTop() }
         }
 
-        rootView.equipmentRecyclerView.apply {
-            recyclerView = this
+        scrollDisabler.setOnClickListener { }
+        epoxyController =
+            EquipmentEpoxyController(presenter::onEquipmentConditionPicked, presenter::onTagClicked)
+        epoxyController.addModelBuildListener {
+            if (scrollToTop) {
+                equipmentRecyclerView.scrollToPosition(0)
+                scrollToTop = false
+            }
+        }
+
+        equipmentRecyclerView.apply {
+            setController(epoxyController)
+
             addItemDecoration(
-                ItemDecoration(
-                    resources.getDimension(R.dimen.equipment_item_spacing).toInt()
-                )
+                ItemDecoration(resources.getDimension(R.dimen.equipment_item_spacing).toInt())
             )
 
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -107,18 +117,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
             })
         }
 
-
-        rootView.scrollDisabler.setOnClickListener { }
-        epoxyController =
-            EquipmentEpoxyController(presenter::onEquipmentConditionPicked, presenter::onTagClicked)
-        epoxyController.addModelBuildListener {
-            if (scrollToTop) {
-                recyclerView.scrollToPosition(0)
-                scrollToTop = false
-            }
-        }
-
-        rootView.barcodeBox.apply {
+        barcodeBox.apply {
             addTextChangedListener(afterTextChanged = {
                 presenter.onBarcodeChange(it.toString(), selectedDesk.id)
                 EquipmentEpoxyModel.tooltipList.forEach { tooltip -> tooltip.dismiss() }
@@ -129,19 +128,116 @@ class EquipmentFragment : Fragment(), EquipmentView {
                 ?.hideSoftInputFromWindow(windowToken, 0)
         }
 
-        rootView.swipeRefreshLayout.setOnRefreshListener { presenter.onRefresh(selectedDesk.id) }
-
-        return rootView
+        swipeRefreshLayout.setOnRefreshListener { presenter.onRefresh(selectedDesk.id) }
     }
 
     override fun onStart() {
         super.onStart()
-        presenter.start(savedInstanceState == null, selectedDesk)
-    }
+        presenter.equipment
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(ObservableTransformers.valve(scrollingValve, true))
+            .doOnNext { Timber.d("---- equipment = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                epoxyController.equipment = it
+                epoxyController.requestModelBuild()
+            }
 
-    override fun onStop() {
-        super.onStop()
-        presenter.stop()
+        presenter.isLoading
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(ObservableTransformers.valve(scrollingValve, true))
+            .doOnNext { Timber.d("---- isLoading = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                if (it) {
+                    epoxyController.skeletonEquipmentCount = selectedDesk.equipmentCount
+                } else {
+                    epoxyController.skeletonEquipmentCount = 0
+                }
+
+                epoxyController.requestModelBuild()
+            }
+
+        presenter.desk
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(ObservableTransformers.valve(scrollingValve, true))
+            .doOnNext { Timber.d("---- desk = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                epoxyController.desk = it
+                epoxyController.requestModelBuild()
+            }
+
+        presenter.selectedTags
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(ObservableTransformers.valve(scrollingValve, true))
+            .doOnNext { Timber.d("---- selectedTags = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                epoxyController.selectedTags = it
+                epoxyController.requestModelBuild()
+            }
+
+        presenter.isRefreshing
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext { Timber.d("---- isRefreshing = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { swipeRefreshLayout.isRefreshing = it }
+
+        presenter.scanningEquipment
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(ObservableTransformers.valve(scrollingValve, true))
+            .doOnNext { Timber.d("---- scanningEquipment = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                EquipmentEpoxyModel.loadingEquipment = it
+                epoxyController.requestModelBuild()
+            }
+
+        // events
+        presenter.message
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext { Timber.d("---- message = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                Snackbar.make(requireView(), getString(it), Snackbar.LENGTH_LONG).apply {
+                    setAnchorView(R.id.inputLayout)
+                    show()
+                }
+            }
+
+        presenter.displayEquipmentMoved
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(ObservableTransformers.valve(scrollingValve, true))
+            .doOnNext { Timber.d("---- displayEquipmentMoved = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                EquipmentEpoxyModel.equipmentMoved.add(it)
+                epoxyController.requestModelBuild()
+            }
+
+        presenter.animateEquipment
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(ObservableTransformers.valve(scrollingValve, true))
+            .doOnNext { Timber.d("---- animateEquipment = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                EquipmentEpoxyModel.equipmentToAnimateId = it
+                epoxyController.requestModelBuild()
+            }
+
+        presenter.clearBarcodeBox
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext { Timber.d("---- clearBarcodeBox = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { barcodeBox.text.clear() }
+
+        presenter.scrollToTop
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(ObservableTransformers.valve(scrollingValve, true))
+            .doOnNext { Timber.d("---- scrollToTop = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { scrollToTop() }
     }
 
     override fun onAttach(context: Context) {
@@ -149,41 +245,26 @@ class EquipmentFragment : Fragment(), EquipmentView {
         super.onAttach(context)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        savedInstanceState = outState
-    }
-
-    override fun displayEquipments(desk: Desk, equipment: List<Equipment>, tags: Set<String>) {
-        if (recyclerView.adapter == null) {
-            recyclerView.setController(epoxyController)
-        }
-
-        epoxyController.desk = desk
-        epoxyController.selectedTags = tags
-        epoxyController.equipments = equipment
-        epoxyController.requestModelBuild()
-    }
-
     // Smooth scroll to top -> display equipment with the new order
     // After displaying equipment, the first element will be hidden so we scroll to the top again
-    override fun scrollToTop() {
-        isScrolling = true
+    private fun scrollToTop() {
+        scrollDisabler.show()
+        scrollingValve.accept(false)
 
-        if (recyclerView.computeVerticalScrollOffset() == 0) {
-            isScrolling = false
-            presenter.onScrollEnded()
+        if (equipmentRecyclerView.computeVerticalScrollOffset() == 0) {
+            scrollDisabler.hide()
+            scrollingValve.accept(true)
             scrollToTop = true
             return
         }
 
         smoothScrollToTop()
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        equipmentRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (recyclerView.computeVerticalScrollOffset() == 0) {
-                    isScrolling = false
-                    presenter.onScrollEnded()
+                    scrollDisabler.hide()
+                    scrollingValve.accept(true)
                     scrollToTop = true
                     recyclerView.removeOnScrollListener(this)
                 }
@@ -194,7 +275,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
     private fun smoothScrollToTop() {
         val targetItem = 0
         val topItem =
-            (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+            (equipmentRecyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
         val distance = topItem - targetItem
         val anchorItem = when {
             distance > MAX_SMOOTH_SCROLL -> targetItem + MAX_SMOOTH_SCROLL
@@ -202,81 +283,16 @@ class EquipmentFragment : Fragment(), EquipmentView {
             else -> topItem
         }
 
-        if (anchorItem != topItem) recyclerView.scrollToPosition(anchorItem)
-        recyclerView.smoothScrollToPosition(targetItem)
+        if (anchorItem != topItem) equipmentRecyclerView.scrollToPosition(anchorItem)
+        equipmentRecyclerView.smoothScrollToPosition(targetItem)
     }
 
-    override fun animateEquipment(equipmentId: Int) {
-        EquipmentEpoxyModel.equipmentToAnimateId = equipmentId
-        epoxyController.requestModelBuild()
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.onCleared()
     }
 
-    override fun rebuildUi() {
-        epoxyController.requestModelBuild()
-    }
-
-    override fun displayProgressBarForEquipment(equipmentId: Int) {
-        EquipmentEpoxyModel.loadingEquipments.add(equipmentId)
-    }
-
-    override fun hideProgressBarForEquipment(equipmentId: Int) {
-        EquipmentEpoxyModel.loadingEquipments.remove(equipmentId)
-    }
-
-    override fun clearBarcodeInputArea() {
-        barcodeBox.text.clear()
-    }
-
-    override fun displayEquipmentConditionChangedMessage() {
-        showSnackbar(R.string.equipment_condition_changed_message)
-    }
-
-    override fun showErrorMessage() {
-        showSnackbar(R.string.message_error_unknown)
-    }
-
-    override fun showUnknownBarcodeMessage() {
-        showSnackbar(R.string.message_unknown_barcode)
-    }
-
-    override fun showEquipmentAlreadyScannedMessage() {
-        showSnackbar(R.string.equipment_already_scanned_message)
-    }
-
-    private fun showSnackbar(
-        @StringRes text: Int,
-        @Duration duration: Int = Snackbar.LENGTH_SHORT
-    ) {
-        Snackbar.make(requireView(), getString(text), duration).apply {
-            setAnchorView(R.id.inputLayout)
-            show()
-        }
-    }
-
-    override fun showEquipmentMovedMessage(equipmentId: Int) {
-        EquipmentEpoxyModel.equipmentMoved.add(equipmentId)
-    }
-
-    // TODO refactor these error messages
-    override fun showNetworkErrorMessage() {
-        showSnackbar(R.string.you_are_offline_message)
-    }
-
-    override fun showLoadingView() {
-        if (recyclerView.adapter == null) {
-            recyclerView.setController(epoxyController)
-        }
-
-        epoxyController.skeletonEquipmentCount = selectedDesk.equipmentCount
-        epoxyController.requestModelBuild()
-    }
-
-    override fun hideLoadingView() {
-        epoxyController.skeletonEquipmentCount = 0
-        swipeRefreshLayout.isRefreshing = false
-    }
-
-    private val selectedDesk
+    val selectedDesk
         get() = arguments?.getParcelable<Desk>(ARG_SELECTED_DESK)
             ?: throw IllegalStateException("Use the newInstance method to instantiate this fragment.")
 

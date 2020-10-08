@@ -72,7 +72,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             warningIcon.visibility = View.GONE
             progressBar.visibility = View.GONE
 
-            val isLoading = loadingEquipments.find { it == equipment.id } != null
+            val isLoading = loadingEquipment.any { it == equipment.id }
 
             if (isLoading) {
                 val progressBarColor = ContextCompat.getColor(view.context, android.R.color.white)
@@ -236,7 +236,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
         private const val ANIMATION_DURATION: Long = 1000
         private const val TOOLTIP_DURATION: Long = 4000
         var equipmentToAnimateId: Int? = null
-        var loadingEquipments: MutableList<Int> = mutableListOf()
+        var loadingEquipment: List<Int> = emptyList()
         var equipmentMoved: MutableList<Int> = mutableListOf()
         var tooltipList: MutableList<PopupWindow> = mutableListOf()
     }

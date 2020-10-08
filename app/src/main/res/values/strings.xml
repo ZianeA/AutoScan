@@ -23,11 +23,11 @@
     <string name="equipment_not_scanned_message">Non scanné</string>
     <string name="equipment_pending_message">Scan en cours…</string>
     <string name="message_error_unknown">Désolé, quelque chose s\'est mal passé.</string>
-    <string name="message_unknown_barcode">Code à barres non reconnu</string>
-    <string name="equipment_already_scanned_message">Équipement déjà scanné</string>
-    <string name="equipment_condition_changed_message">L\'état de l\'équipement a bien été modifié</string>
+    <string name="message_error_unknown_barcode">Code à barres non reconnu</string>
+    <string name="message_error_equipment_already_scanned">Équipement déjà scanné</string>
+    <string name="message_equipment_condition_changed">L\'état de l\'équipement a bien été modifié</string>
     <string name="equipment_moved_message">Attention l\'équipement a été déplacé</string>
-    <string name="you_are_offline_message">Vous êtes actuellement hors connexion</string>
+    <string name="message_you_are_offline">Vous êtes actuellement hors connexion</string>
 
     <string name="toolbar_title_login">Connexion</string>
     <string name="prompt_email">Adresse e-mail</string>
@@ -76,4 +76,5 @@
     <string name="theme_light">Clair</string>
     <string name="theme_dark">Sombre</string>
     <string name="theme_follow_os_setting">Thème du système</string>
+    <string name="message_error_network">Connexion échoué</string>
 </resources>
