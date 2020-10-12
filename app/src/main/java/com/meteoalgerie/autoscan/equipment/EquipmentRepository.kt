@@ -5,6 +5,7 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -35,12 +36,11 @@ class EquipmentRepository @Inject constructor(
             .map { list -> list.map { item -> equipmentResponseMapper.map(item as HashMap<*, *>) } }
             .flatMap { refreshList ->
                 // Prevent the refresh from overriding the not synced equipment
-                equipmentDao.getByDeskAndScanState(deskId, ScanState.ScannedButNotSynced)
-                    .first(emptyList())
+                // We get all the unsynchronized equipment instead of just the current desk equipment,
+                // because some equipment may have been moved and we risk accidentally replacing it.
+                equipmentDao.getByScanState(ScanState.ScannedButNotSynced)
                     // filter out the not synced equipment from the refreshed list
-                    .map { notSyncedList ->
-                        refreshList.toMutableList().apply { removeAll(notSyncedList) }
-                    }
+                    .map { unsyncedList -> refreshList.filter { !unsyncedList.has(it) } }
             }
             .flatMapCompletable { equipmentDao.updateAll(it) }
     }
@@ -60,4 +60,6 @@ class EquipmentRepository @Inject constructor(
             )
             .andThen(Completable.defer { equipmentDao.update(scannedAndSyncedEquipment) })
     }
+
+    private fun List<Equipment>.has(equipment: Equipment) = any { equipment.id == it.id }
 }

@@ -11,18 +11,18 @@ interface EquipmentDao {
     @Query("SELECT * FROM EquipmentEntity")
     fun getAll(): Single<List<Equipment>>
 
-    @Query("SELECT * FROM EquipmentEntity e WHERE e.barcode=:barcode")
+    @Query("SELECT * FROM EquipmentEntity WHERE barcode=:barcode")
     fun getByBarcode(barcode: String): Single<Equipment>
 
-    @Query("SELECT * FROM EquipmentEntity e WHERE e.deskId=:deskId ORDER BY e.scanDate Desc")
+    @Query("SELECT * FROM EquipmentEntity WHERE deskId=:deskId ORDER BY scanDate Desc")
     fun getByDesk(deskId: Int): Observable<List<Equipment>>
 
     @Query(
         """SELECT * 
-        FROM EquipmentEntity e 
-        WHERE e.deskId=:deskId 
-        AND e.scanState=:scanState 
-        ORDER BY e.scanDate Desc"""
+        FROM EquipmentEntity
+        WHERE deskId=:deskId 
+        AND scanState=:scanState 
+        ORDER BY scanDate Desc"""
     )
     fun getByDeskAndScanState(
         deskId: Int,
@@ -32,10 +32,10 @@ interface EquipmentDao {
     @Query(
         """
         SELECT * 
-        FROM EquipmentEntity e 
-        WHERE e.deskId=:deskId 
-        AND (e.scanState=:scanState1 OR e.scanState=:scanState2)
-        ORDER BY e.scanDate Desc"""
+        FROM EquipmentEntity 
+        WHERE deskId=:deskId 
+        AND (scanState=:scanState1 OR scanState=:scanState2)
+        ORDER BY scanDate Desc"""
     )
     fun getByDeskAndScanState(
         deskId: Int,
@@ -52,7 +52,7 @@ interface EquipmentDao {
     @Update
     fun updateAll(equipments: List<Equipment>): Completable
 
-    @Query("SELECT * FROM EquipmentEntity e WHERE e.scanState=:scanState")
+    @Query("SELECT * FROM EquipmentEntity WHERE scanState=:scanState")
     fun getByScanState(scanState: Equipment.ScanState): Single<List<Equipment>>
 
     @Query("SELECT COUNT(*) FROM EquipmentEntity")

@@ -133,6 +133,27 @@ class EquipmentFragment : Fragment(), EquipmentView {
 
     override fun onStart() {
         super.onStart()
+
+        presenter.desk
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(ObservableTransformers.valve(scrollingValve, true))
+            .doOnNext { Timber.d("---- desk = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                epoxyController.desk = it
+                epoxyController.requestModelBuild()
+            }
+
+        presenter.selectedTags
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(ObservableTransformers.valve(scrollingValve, true))
+            .doOnNext { Timber.d("---- selectedTags = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe {
+                epoxyController.selectedTags = it
+                epoxyController.requestModelBuild()
+            }
+
         presenter.equipment
             .observeOn(AndroidSchedulers.mainThread())
             .compose(ObservableTransformers.valve(scrollingValve, true))
@@ -155,26 +176,6 @@ class EquipmentFragment : Fragment(), EquipmentView {
                     epoxyController.skeletonEquipmentCount = 0
                 }
 
-                epoxyController.requestModelBuild()
-            }
-
-        presenter.desk
-            .observeOn(AndroidSchedulers.mainThread())
-            .compose(ObservableTransformers.valve(scrollingValve, true))
-            .doOnNext { Timber.d("---- desk = $it") }
-            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
-            .subscribe {
-                epoxyController.desk = it
-                epoxyController.requestModelBuild()
-            }
-
-        presenter.selectedTags
-            .observeOn(AndroidSchedulers.mainThread())
-            .compose(ObservableTransformers.valve(scrollingValve, true))
-            .doOnNext { Timber.d("---- selectedTags = $it") }
-            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
-            .subscribe {
-                epoxyController.selectedTags = it
                 epoxyController.requestModelBuild()
             }
 
@@ -222,7 +223,7 @@ class EquipmentFragment : Fragment(), EquipmentView {
             .doOnNext { Timber.d("---- animateEquipment = $it") }
             .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
             .subscribe {
-                EquipmentEpoxyModel.equipmentToAnimateId = it
+                EquipmentEpoxyModel.equipmentToAnimate = it
                 epoxyController.requestModelBuild()
             }
 

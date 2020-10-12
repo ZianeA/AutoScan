@@ -14,11 +14,9 @@ import com.meteoalgerie.autoscan.common.util.Lce
 import com.meteoalgerie.autoscan.common.util.toLce
 import com.meteoalgerie.autoscan.equipment.service.SyncBackgroundService
 import de.timroes.axmlrpc.XMLRPCException
-import hu.akarnokd.rxjava2.operators.ObservableTransformers
 import hu.akarnokd.rxjava2.subjects.UnicastWorkSubject
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.processors.PublishProcessor
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.BehaviorSubject
@@ -47,7 +45,7 @@ class EquipmentPresenter @Inject constructor(
     val message: UnicastWorkSubject<Int> = UnicastWorkSubject.create()
     val clearBarcodeBox: UnicastWorkSubject<Unit> = UnicastWorkSubject.create()
     val displayEquipmentMoved: UnicastWorkSubject<Int> = UnicastWorkSubject.create()
-    val animateEquipment: UnicastWorkSubject<Int> = UnicastWorkSubject.create()
+    val animateEquipment: UnicastWorkSubject<Pair<Int, AnimationType>> = UnicastWorkSubject.create()
     val scrollToTop: UnicastWorkSubject<Unit> = UnicastWorkSubject.create()
 
     fun start() {
@@ -126,11 +124,13 @@ class EquipmentPresenter @Inject constructor(
                             val id = result.equipment.id
                             // Remove equipment from scanning list
                             scanningEquipment.accept(scanningEquipment.value!! - id)
+
+                            // Show equipment moved
                             if (result.equipment.deskId != result.equipment.previousDeskId) {
                                 displayEquipmentMoved.onNext(id)
                             }
                             // Animate equipment
-                            animateEquipment.onNext(id)
+                            animateEquipment.onNext(id to AnimationType.SUCCESS)
                         }
                         is ScanResult.Error -> {
                             when (result.error) {
@@ -143,6 +143,14 @@ class EquipmentPresenter @Inject constructor(
                                 is XMLRPCException -> {
                                     syncService.syncEquipment()
                                     message.onNext(R.string.message_error_network)
+
+                                    // Show equipment moved
+                                    val equipment = result.equipment!!
+                                    if (equipment.deskId != equipment.previousDeskId) {
+                                        displayEquipmentMoved.onNext(equipment.id)
+                                    }
+                                    // Animate equipment
+                                    animateEquipment.onNext(equipment.id to AnimationType.FAILURE)
                                 }
                                 else -> {
                                     message.onNext(R.string.message_error_unknown)
@@ -188,6 +196,8 @@ class EquipmentPresenter @Inject constructor(
                     message.onNext(R.string.message_equipment_condition_changed)
                 },
                 onError = {
+                    scanningEquipment.accept(scanningEquipment.value!! - equipment.id)
+
                     if (it is XMLRPCException) {
                         syncService.syncEquipment()
                         message.onNext(R.string.message_error_network)
@@ -228,7 +238,7 @@ class EquipmentPresenter @Inject constructor(
                 )
                 equipmentRepository.updateEquipment(updatedEquipment)
                     .andThen(Observable.just(ScanResult.Success(updatedEquipment) as ScanResult))
-                    .onErrorReturn { ScanResult.Error(scanResult.equipment, it) }
+                    .onErrorReturn { ScanResult.Error(updatedEquipment, it) }
                     // Start by emitting the loading state
                     .startWith(scanResult)
                     // Sync in the background if the scanning is interrupted
@@ -247,4 +257,6 @@ class EquipmentPresenter @Inject constructor(
     companion object {
         private const val EQUIPMENT_BARCODE_LENGTH = 5
     }
+
+    enum class AnimationType { SUCCESS, FAILURE }
 }

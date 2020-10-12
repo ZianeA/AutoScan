@@ -15,13 +15,13 @@
             android:id="@+id/illustration"
             android:layout_width="220dp"
             android:layout_height="220dp"
-            app:srcCompat="@drawable/il_download"
             app:layout_constraintBottom_toTopOf="@+id/welcome"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
+            app:layout_constraintVertical_chainStyle="packed"
+            app:srcCompat="@drawable/il_download" />
 
         <TextView
             android:id="@+id/welcome"
@@ -58,6 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
+            android:theme="@style/LightProgressBar"
             app:layout_constraintBottom_toTopOf="@+id/loading"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

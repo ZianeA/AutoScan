@@ -1,9 +1,9 @@
 package com.meteoalgerie.autoscan.equipment
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Handler
 import android.text.InputType
@@ -13,11 +13,11 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.os.postDelayed
 import androidx.core.view.ViewCompat
 import androidx.core.view.postDelayed
-import androidx.core.widget.ImageViewCompat
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
@@ -25,6 +25,9 @@ import com.google.android.material.elevation.ElevationOverlayProvider
 import com.meteoalgerie.autoscan.R
 import com.meteoalgerie.autoscan.common.util.KotlinEpoxyHolder
 import com.google.android.material.textfield.TextInputLayout
+import com.meteoalgerie.autoscan.common.util.hide
+import com.meteoalgerie.autoscan.common.util.show
+import com.meteoalgerie.autoscan.common.util.showIf
 import com.meteoalgerie.autoscan.equipment.Equipment.*
 import kotlinx.android.synthetic.main.popup_window_equipment_moved.view.*
 import java.util.*
@@ -46,48 +49,38 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
 
             equipmentBarcode.apply {
                 text = equipment.barcode
-                visibility =
-                    if (equipment.scanState == ScanState.NotScanned) View.GONE else View.VISIBLE
+                showIf { equipment.scanState != ScanState.NotScanned }
             }
 
-            dropdownMenu.setAdapter(
-                ArrayAdapter(
-                    view.context,
-                    R.layout.dropdown_menu_popup_item,
-                    equipmentConditions
+            dropdownMenu.apply {
+                setAdapter(
+                    ArrayAdapter(
+                        context,
+                        R.layout.dropdown_menu_popup_item,
+                        equipmentConditions
+                    )
                 )
-            )
-            dropdownMenu.inputType = InputType.TYPE_NULL
-            dropdownMenu.filters = emptyArray()
-            dropdownMenu.setText(equipmentConditions[equipment.condition.ordinal], false)
-            dropdownMenu.onItemClickListener = dropdownMenuItemClickListener
-            dropdownMenu.isEnabled = when (equipment.scanState) {
-                ScanState.ScannedAndSynced -> true
-                ScanState.ScannedButNotSynced -> true
-                else -> false
+
+                inputType = InputType.TYPE_NULL
+                filters = emptyArray()
+                setText(equipmentConditions[equipment.condition.ordinal], false)
+                onItemClickListener = dropdownMenuItemClickListener
+                isEnabled = equipment.scanState != ScanState.NotScanned
             }
             dropdownLayout.isEndIconVisible = dropdownMenu.isEnabled
 
-            // Show progress bar and warning icon
-            warningIcon.visibility = View.GONE
-            progressBar.visibility = View.GONE
-
             val isLoading = loadingEquipment.any { it == equipment.id }
 
-            if (isLoading) {
-                val progressBarColor = ContextCompat.getColor(view.context, android.R.color.white)
-                progressBar.apply {
-                    indeterminateDrawable.setColorFilter(progressBarColor, PorterDuff.Mode.MULTIPLY)
-                    visibility = View.VISIBLE
-                }
-            } else if (equipment.deskId != equipment.previousDeskId && equipment.scanState != ScanState.NotScanned) {
-                warningIcon.visibility = View.VISIBLE
+            progressBar.showIf { isLoading }
+            warningIcon.showIf {
+                !isLoading && equipment.deskId != equipment.previousDeskId
+                        && equipment.scanState != ScanState.NotScanned
             }
 
             // Show equipment moved tooltip on click
             warningIcon.setOnClickListener {
                 it.isEnabled = false
-                showTooltip(view.context, it)
+                showTooltip(context, it)
             }
 
             // Pick scan state message and background color
@@ -95,7 +88,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             val equipmentColor: Int
 
             when {
-                isLoading || equipmentToAnimateId == equipment.id -> {
+                isLoading || equipmentToAnimate?.first == equipment.id -> {
                     messageResource = R.string.equipment_pending_message
                     equipmentColor = notScannedColor
                 }
@@ -105,7 +98,7 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
                 }
                 equipment.scanState == ScanState.ScannedButNotSynced -> {
                     messageResource = R.string.equipment_scanned_message
-                    equipmentColor = scannedColor
+                    equipmentColor = unsyncedColor
                 }
                 else -> {
                     messageResource = R.string.equipment_not_scanned_message
@@ -114,16 +107,18 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
             }
 
             // Set scan state message
-            val message = view.context.getString(messageResource)
-            scanStateMessage.text = message
+            scanStateMessage.text = context.getString(messageResource)
 
             // Set cardview background color
-            revealView.visibility = View.INVISIBLE
+            revealView.hide()
             cardView.setCardBackgroundColor(equipmentColor)
 
-            if (equipmentToAnimateId == equipment.id) {
-                animateEquipmentColor(this)
-                equipmentToAnimateId = null
+            if (equipmentToAnimate?.first == equipment.id) {
+                when (equipmentToAnimate?.second) {
+                    EquipmentPresenter.AnimationType.SUCCESS -> animateToGreen(this)
+                    EquipmentPresenter.AnimationType.FAILURE -> animateToOrange(this)
+                }
+                equipmentToAnimate = null
             }
         }
     }
@@ -178,90 +173,94 @@ abstract class EquipmentEpoxyModel : EpoxyModelWithHolder<EquipmentHolder>() {
         tooltipList.add(tooltip)
     }
 
-    override fun onViewDetachedFromWindow(holder: EquipmentHolder) {
-        super.onViewDetachedFromWindow(holder)
-        holder.view.clearAnimation()
-    }
-
     override fun unbind(holder: EquipmentHolder) {
         super.unbind(holder)
-        holder.apply {
-            revealView.scaleX = 1f
-            revealView.visibility = View.INVISIBLE
-            progressBar.visibility = View.GONE
-            warningIcon.visibility = View.GONE
-        }
+        holder.revealView.visibility = View.INVISIBLE
     }
 
-    private fun animateEquipmentColor(holder: EquipmentHolder) {
-        val endColor: Int
-        val endMessage: String
-
-        when (equipment.scanState) {
-            ScanState.ScannedAndSynced -> {
-                endColor = holder.syncedColor
-                endMessage = holder.view.context.getString(R.string.equipment_synced_message)
-            }
-            ScanState.ScannedButNotSynced -> {
-                endColor = holder.scannedColor
-                endMessage = holder.view.context.getString(R.string.equipment_scanned_message)
-            }
-            else -> throw IllegalStateException("Invalid equipment state")
-        }
-
+    private fun animateToGreen(holder: EquipmentHolder) {
         holder.apply {
-            revealView.visibility = View.VISIBLE
-            progressBar.visibility = View.GONE
-            ImageViewCompat.setImageTintList(revealView, ColorStateList.valueOf(endColor))
             revealView.animate()
                 .scaleXBy(cardView.width.toFloat())
-                .setDuration(ANIMATION_DURATION)
+                .setDuration(800L)
+                .withStartAction {
+                    revealView.setBackgroundColor(syncedColor)
+                    revealView.show()
+                    progressBar.hide()
+                }
                 .withEndAction {
-                    revealView.visibility = View.INVISIBLE
+                    revealView.hide()
                     revealView.scaleX = 1f
-                    cardView.setCardBackgroundColor(endColor)
-                    scanStateMessage.text = endMessage
+                    cardView.setCardBackgroundColor(syncedColor)
+                    scanStateMessage.text = context.getString(R.string.equipment_synced_message)
 
                     // Show equipment moved tooltip
-                    if (equipmentMoved.find { it == equipment.id } != null) {
+                    if (equipmentMoved.any { it == equipment.id }) {
                         equipmentMoved.remove(equipment.id)
                         warningIcon.performClick()
                     }
                 }
+                .setStartDelay(400L)
                 .start()
         }
     }
 
+    private fun animateToOrange(holder: EquipmentHolder) {
+        holder.apply {
+            ObjectAnimator.ofArgb(
+                cardView,
+                "cardBackgroundColor",
+                notScannedColor,
+                unsyncedColor
+            ).apply {
+                duration = 800L
+                startDelay = 400L
+                doOnEnd {
+                    scanStateMessage.text =
+                        context.getString(R.string.equipment_scanned_message)
+
+                    // Show equipment moved tooltip
+                    if (equipmentMoved.any { it == equipment.id }) {
+                        equipmentMoved.remove(equipment.id)
+                        warningIcon.performClick()
+                    }
+                }
+                start()
+            }
+        }
+    }
+
     companion object {
-        private const val ANIMATION_DURATION: Long = 1000
-        private const val TOOLTIP_DURATION: Long = 4000
-        var equipmentToAnimateId: Int? = null
-        var loadingEquipment: List<Int> = emptyList()
-        var equipmentMoved: MutableList<Int> = mutableListOf()
-        var tooltipList: MutableList<PopupWindow> = mutableListOf()
+        private const val TOOLTIP_DURATION = 4000L
+        var equipmentToAnimate: Pair<Int, EquipmentPresenter.AnimationType>? = null
+        var loadingEquipment = emptyList<Int>()
+        var equipmentMoved = mutableListOf<Int>()
+        var tooltipList = mutableListOf<PopupWindow>()
     }
 }
 
 class EquipmentHolder : KotlinEpoxyHolder() {
     lateinit var view: View
+    lateinit var context: Context
     var syncedColor: Int = 0
     var notScannedColor: Int = 0
-    var scannedColor: Int = 0
+    var unsyncedColor: Int = 0
     lateinit var equipmentConditions: Array<String>
 
     override fun bindView(itemView: View) {
         super.bindView(itemView)
         view = itemView
-        syncedColor = ContextCompat.getColor(view.context, R.color.scanned_and_synced)
-        notScannedColor = ContextCompat.getColor(view.context, R.color.not_scanned)
-        scannedColor = ContextCompat.getColor(view.context, R.color.scanned_but_not_synced)
+        context = itemView.context
+        syncedColor = ContextCompat.getColor(context, R.color.scanned_and_synced)
+        notScannedColor = ContextCompat.getColor(context, R.color.not_scanned)
+        unsyncedColor = ContextCompat.getColor(context, R.color.scanned_but_not_synced)
         equipmentConditions = view.resources.getStringArray(R.array.equipment_condition)
     }
 
     val equipmentBarcode by bind<TextView>(R.id.equipmentBarcode)
     val equipmentType by bind<TextView>(R.id.equipmentType)
     val cardView by bind<CardView>(R.id.equipmentCardView)
-    val revealView by bind<ImageView>(R.id.revealView)
+    val revealView by bind<View>(R.id.revealView)
     val progressBar by bind<ProgressBar>(R.id.progressBar)
     val dropdownMenu by bind<AutoCompleteTextView>(R.id.dropdownMenu)
     val dropdownLayout by bind<TextInputLayout>(R.id.textInputLayout)

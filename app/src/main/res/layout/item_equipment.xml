@@ -13,17 +13,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
+        <View
             android:id="@+id/revealView"
             android:layout_width="1dp"
             android:layout_height="0dp"
+            android:background="@drawable/rounded_corners_8dp"
             android:tint="@color/scanned_and_synced"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/rounded_corners_8dp" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/equipmentBarcode"
@@ -80,11 +80,11 @@
 
         <ProgressBar
             android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:theme="@style/LightProgressBar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="gone" />
@@ -139,9 +139,9 @@
 
             <AutoCompleteTextView
                 android:id="@+id/dropdownMenu"
-                android:focusable="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:focusable="false"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white"
                 android:textCursorDrawable="@drawable/cursor" />
