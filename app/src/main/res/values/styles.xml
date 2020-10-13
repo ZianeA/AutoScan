@@ -16,6 +16,7 @@
             @bool/use_light_navigation
         </item>
         <item name="android:navigationBarColor">@color/nav_bar_scrim</item>
+        <item name="windowActionModeOverlay">true</item>
     </style>
 
     <style name="AppBar" parent="@style/Widget.MaterialComponents.AppBarLayout.Surface" />

@@ -30,4 +30,9 @@ class DeskRepository @Inject constructor(
         val deskEntity = deskEntityMapper.mapReverse(desk).deskEntity
         return deskDao.update(deskEntity)
     }
+
+    fun updateDesks(desks: List<Desk>): Completable {
+        val deskEntities = desks.map { deskEntityMapper.mapReverse(it).deskEntity }
+        return deskDao.updateAll(deskEntities)
+    }
 }

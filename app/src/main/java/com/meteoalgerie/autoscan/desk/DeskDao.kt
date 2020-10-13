@@ -78,6 +78,9 @@ interface DeskDao {
     @Update
     fun update(desk: DeskEntity): Completable
 
+    @Update
+    fun updateAll(desks: List<DeskEntity>): Completable
+
     @Query("SELECT CASE WHEN EXISTS(SELECT 1 from DeskEntity) THEN 0 ELSE 1 END")
     fun isEmpty(): Single<Boolean>
 

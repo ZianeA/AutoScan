@@ -14,6 +14,7 @@ import com.meteoalgerie.autoscan.R
 import com.meteoalgerie.autoscan.equipment.EquipmentFragment
 import com.meteoalgerie.autoscan.login.LoginFragment
 import com.meteoalgerie.autoscan.common.util.showIf
+import com.meteoalgerie.autoscan.settings.SettingsFragment
 import com.ncapdevi.fragnav.FragNavController
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
 import com.uber.autodispose.autoDispose
@@ -21,6 +22,7 @@ import dagger.android.support.AndroidSupportInjection
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_desk.*
 import kotlinx.android.synthetic.main.fragment_desk.view.*
+import androidx.appcompat.view.ActionMode
 import javax.inject.Inject
 
 /**
@@ -36,6 +38,7 @@ class DeskFragment : Fragment() {
     lateinit var fragNavController: FragNavController
 
     private lateinit var epoxyController: DeskEpoxyController
+    private var actionMode: ActionMode? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +61,7 @@ class DeskFragment : Fragment() {
             insets
         }
 
-        (activity as AppCompatActivity).setSupportActionBar(rootView.toolbar)
+        compatActivity.setSupportActionBar(rootView.toolbar)
 
         setHasOptionsMenu(true)
 
@@ -68,8 +71,15 @@ class DeskFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        epoxyController =
-            DeskEpoxyController(presenter::onDeskClicked) { d, _ -> presenter.onHideDeskClicked(d) }
+        epoxyController = DeskEpoxyController()
+        epoxyController.onDeskClickListener = presenter::onDeskClicked
+        epoxyController.onDeskLongClickListener = {
+            if (actionMode == null) {
+                actionMode = compatActivity.startSupportActionMode(actionModeCallback)
+            }
+            val selectionCount = epoxyController.selectedDesks.size
+            actionMode?.title = selectionCount.toString()
+        }
         deskRecyclerView.setItemSpacingDp(8)
 
         barcodeSubmitButton.setOnClickListener {
@@ -77,11 +87,14 @@ class DeskFragment : Fragment() {
         }
 
         barcodeBox.apply {
-            (activity as AppCompatActivity).window
+            compatActivity.window
                 .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
             requestFocus()
         }
     }
+
+    private val compatActivity: AppCompatActivity
+        get() = activity as AppCompatActivity
 
     override fun onStart() {
         super.onStart()
@@ -124,9 +137,14 @@ class DeskFragment : Fragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
             .subscribe {
+                actionMode?.finish()
+
                 when (it) {
                     DeskPresenter.NavigationDestination.Login -> {
                         fragNavController.replaceFragment(LoginFragment.newInstance())
+                    }
+                    DeskPresenter.NavigationDestination.Settings -> {
+                        fragNavController.pushFragment(SettingsFragment.newInstance())
                     }
                     is DeskPresenter.NavigationDestination.Equipment -> {
                         fragNavController.pushFragment(EquipmentFragment.newInstance(it.desk))
@@ -151,11 +169,49 @@ class DeskFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_settings -> {
+                presenter.onSettingsClicked()
+                true
+            }
             R.id.action_logout -> {
-                presenter.onLogout()
+                presenter.onLogoutClicked()
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private val actionModeCallback = object : ActionMode.Callback {
+        // Called when the action mode is created; startActionMode() was called
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            // Inflate a menu resource providing context menu items
+            mode.menuInflater.inflate(R.menu.context_menu_desk, menu)
+            return true
+        }
+
+        // Called each time the action mode is shown. Always called after onCreateActionMode, but
+        // may be called multiple times if the mode is invalidated.
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+            return false // Return false if nothing is done
+        }
+
+        // Called when the user selects a contextual menu item
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            return when (item.itemId) {
+                R.id.action_hide -> {
+                    presenter.onHideDesksClicked(epoxyController.selectedDesks.toList())
+                    mode.finish() // Action picked, so close the CAB
+                    true
+                }
+                else -> false
+            }
+        }
+
+        // Called when the user exits the action mode
+        override fun onDestroyActionMode(mode: ActionMode) {
+            actionMode = null
+            epoxyController.selectedDesks.clear()
+            epoxyController.requestModelBuild()
         }
     }
 

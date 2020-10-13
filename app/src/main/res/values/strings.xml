@@ -10,7 +10,7 @@
     <string name="equipment_count">%1$d EQUIPEMENTS</string>
     <string name="desk_barcode">Bureau: %1$s</string>
     <string name="action_hide">Masquer</string>
-    <string name="message_desk_hidden">L\'élément a été caché</string>
+    <string name="message_desks_hidden">Les éléments ont été masqués</string>
 
     <string name="toolbar_title_equipment">Équipement</string>
     <string name="equipment_barcode">Équipement: %1$d</string>

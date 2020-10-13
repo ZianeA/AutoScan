@@ -80,16 +80,16 @@ class DeskPresenter @Inject constructor(
         disposables.add(disposable)
     }
 
-    fun onLogout() {
+    fun onLogoutClicked() {
         storage.user = null
         navigationDestination.onNext(NavigationDestination.Login)
     }
 
-    fun onHideDeskClicked(desk: Desk) {
-        val disposable = deskRepository.updateDesk(desk.copy(isHidden = true))
+    fun onHideDesksClicked(desks: List<Desk>) {
+        val disposable = deskRepository.updateDesks(desks.map { it.copy(isHidden = true) })
             .applySchedulers(schedulerProvider)
             .subscribeBy(
-                onComplete = { message.onNext(R.string.message_desk_hidden) },
+                onComplete = { message.onNext(R.string.message_desks_hidden) },
                 onError = { message.onNext(R.string.message_error_unknown) }
             )
 
@@ -100,12 +100,17 @@ class DeskPresenter @Inject constructor(
         navigationDestination.onNext(NavigationDestination.Equipment(desk))
     }
 
+    fun onSettingsClicked() {
+        navigationDestination.onNext(NavigationDestination.Settings)
+    }
+
     fun onCleared() {
         disposables.clear()
     }
 
     sealed class NavigationDestination {
         object Login : NavigationDestination()
+        object Settings : NavigationDestination()
         data class Equipment(val desk: Desk) : NavigationDestination()
     }
 }
