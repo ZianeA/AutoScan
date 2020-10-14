@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.meteoalgerie.autoscan.equipment.Equipment
 import com.meteoalgerie.autoscan.login.User
+import com.meteoalgerie.autoscan.settings.ScanMode
+import com.meteoalgerie.autoscan.settings.ThemeMode
 import hu.autsoft.krate.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,8 +37,9 @@ class PreferenceStorage @Inject constructor(context: Application) : SimpleKrate(
             Equipment.ScanState.NotScanned.name
         )
     )
-    var themeMode: Int by intPref("theme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-
+    var themeMode: String by stringPref("theme_mode", ThemeMode.SYSTEM.name)
+    var scanMode: String by stringPref("scan_mode", ScanMode.AUTOMATIC.name)
+    var barcodeLength: Int by intPref("barcode_length", 5)
 
     private inline fun <T1 : Any, T2 : Any, R : Any> safeLet(
         p1: T1?,

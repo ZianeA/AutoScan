@@ -20,135 +20,241 @@
             app:title="@string/toolbar_title_desk" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/content"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-        <TextView
-            android:id="@+id/serverTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:text="@string/server"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="?android:textColorSecondary"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/server"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="?android:textColorPrimary"
-            app:layout_constraintEnd_toStartOf="@+id/editServerButton"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/serverTitle"
-            app:layout_constraintTop_toBottomOf="@+id/serverTitle"
-            tools:text='http://192.168.4.94:8069' />
+            <TextView
+                android:id="@+id/serverTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/server"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/editServerButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="?attr/colorControlNormal"
-            app:layout_constraintBottom_toBottomOf="@+id/server"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/server"
-            app:srcCompat="@drawable/ic_edit" />
+            <TextView
+                android:id="@+id/server"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:textColorPrimary"
+                app:layout_constraintEnd_toStartOf="@+id/editServerButton"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/serverTitle"
+                app:layout_constraintTop_toBottomOf="@+id/serverTitle"
+                tools:text='http://192.168.4.94:8069' />
 
-        <ImageView
-            android:id="@+id/divider1"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:src="?attr/colorControlHighlight"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/server" />
+            <ImageButton
+                android:id="@+id/editServerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="?attr/colorControlNormal"
+                app:layout_constraintBottom_toBottomOf="@+id/server"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/server"
+                app:srcCompat="@drawable/ic_edit" />
 
-        <TextView
-            android:id="@+id/themeTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:text="@string/theme"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="?android:textColorSecondary"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider1" />
+            <View
+                android:id="@+id/serverDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/colorControlHighlight"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/server" />
 
-        <TextView
-            android:id="@+id/theme"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="?android:textColorPrimary"
-            app:layout_constraintEnd_toStartOf="@id/editThemeButton"
-            app:layout_constraintStart_toStartOf="@+id/themeTitle"
-            app:layout_constraintTop_toBottomOf="@+id/themeTitle"
-            tools:text="Follow OS Setting" />
+            <TextView
+                android:id="@+id/themeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/theme"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/serverDivider" />
 
-        <ImageButton
-            android:id="@+id/editThemeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="?attr/colorControlNormal"
-            app:layout_constraintBottom_toBottomOf="@+id/theme"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/theme"
-            app:srcCompat="@drawable/ic_arrow_drop_down" />
+            <TextView
+                android:id="@+id/theme"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:textColorPrimary"
+                app:layout_constraintEnd_toStartOf="@id/editThemeButton"
+                app:layout_constraintStart_toStartOf="@+id/themeTitle"
+                app:layout_constraintTop_toBottomOf="@+id/themeTitle"
+                tools:text="Follow OS Setting" />
 
-        <ImageView
-            android:id="@+id/divider2"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:src="?attr/colorControlHighlight"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/theme" />
+            <ImageButton
+                android:id="@+id/editThemeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="?attr/colorControlNormal"
+                app:layout_constraintBottom_toBottomOf="@+id/theme"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/theme"
+                app:srcCompat="@drawable/ic_arrow_drop_down" />
 
-        <TextView
-            android:id="@+id/aboutTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/about"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="?android:textColorSecondary"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="@+id/serverTitle"
-            app:layout_constraintTop_toBottomOf="@+id/divider2" />
+            <View
+                android:id="@+id/themeDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/colorControlHighlight"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/theme" />
 
-        <TextView
-            android:id="@+id/about"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:text="@string/developed_by"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="?android:textColorPrimary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/aboutTitle"
-            app:layout_constraintTop_toBottomOf="@+id/aboutTitle" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/scanModeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/scan_mode"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/themeDivider" />
+
+            <TextView
+                android:id="@+id/scanMode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:textColorPrimary"
+                app:layout_constraintEnd_toStartOf="@id/editScanModeButton"
+                app:layout_constraintStart_toStartOf="@+id/scanModeTitle"
+                app:layout_constraintTop_toBottomOf="@+id/scanModeTitle"
+                tools:text="Automatique" />
+
+            <ImageButton
+                android:id="@+id/editScanModeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="?attr/colorControlNormal"
+                app:layout_constraintBottom_toBottomOf="@+id/scanMode"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/scanMode"
+                app:srcCompat="@drawable/ic_arrow_drop_down" />
+
+            <View
+                android:id="@+id/scanModeDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/colorControlHighlight"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/scanMode" />
+
+            <TextView
+                android:id="@+id/barcodeLengthTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/barcode_length"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/scanModeDivider" />
+
+            <TextView
+                android:id="@+id/barcodeLength"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:textColorPrimary"
+                app:layout_constraintEnd_toStartOf="@+id/editBarcodeLengthButton"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/barcodeLengthTitle"
+                app:layout_constraintTop_toBottomOf="@+id/barcodeLengthTitle"
+                tools:text='5' />
+
+            <ImageButton
+                android:id="@+id/editBarcodeLengthButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="?attr/colorControlNormal"
+                app:layout_constraintBottom_toBottomOf="@+id/barcodeLength"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/barcodeLength"
+                app:srcCompat="@drawable/ic_edit" />
+
+            <View
+                android:id="@+id/barcodeLengthDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/colorControlHighlight"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/barcodeLength" />
+
+            <TextView
+                android:id="@+id/aboutTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/about"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/serverTitle"
+                app:layout_constraintTop_toBottomOf="@+id/barcodeLengthDivider" />
+
+            <TextView
+                android:id="@+id/about"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:text="@string/developed_by"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:textColorPrimary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/aboutTitle"
+                app:layout_constraintTop_toBottomOf="@+id/aboutTitle" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

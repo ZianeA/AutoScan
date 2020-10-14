@@ -16,6 +16,7 @@
             @bool/use_light_navigation
         </item>
         <item name="android:navigationBarColor">@color/nav_bar_scrim</item>
+        <!--Contextual ActionMode-->
         <item name="windowActionModeOverlay">true</item>
     </style>
 
@@ -50,5 +51,9 @@
         <item name="colorAccent">@color/white</item>
     </style>
 
-
+    <style name="BottomSheetDialog" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@color/transparent</item>
+        <item name="android:navigationBarColor">@color/dialog_nav_bar_scrim</item>
+    </style>
 </resources>

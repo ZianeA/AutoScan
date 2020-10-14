@@ -11,6 +11,7 @@ import com.meteoalgerie.autoscan.common.main.MainPresenter.*
 import com.meteoalgerie.autoscan.desk.DeskFragment
 import com.meteoalgerie.autoscan.download.DownloadFragment
 import com.meteoalgerie.autoscan.login.LoginFragment
+import com.meteoalgerie.autoscan.settings.ThemeMode
 import com.ncapdevi.fragnav.FragNavController
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
 import com.uber.autodispose.autoDispose
@@ -44,7 +45,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector,
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        delegate.localNightMode = storage.themeMode
+        delegate.localNightMode = ThemeMode.valueOf(storage.themeMode).toNightMode()
         setContentView(R.layout.activity_main)
 
         content.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or

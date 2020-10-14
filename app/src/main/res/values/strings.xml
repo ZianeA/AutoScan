@@ -28,6 +28,7 @@
     <string name="message_equipment_condition_changed">L\'état de l\'équipement a bien été modifié</string>
     <string name="equipment_moved_message">Attention l\'équipement a été déplacé</string>
     <string name="message_you_are_offline">Vous êtes actuellement hors connexion</string>
+    <string name="message_error_network">Connexion échoué</string>
 
     <string name="toolbar_title_login">Connexion</string>
     <string name="prompt_email">Adresse e-mail</string>
@@ -46,12 +47,6 @@
     </string-array>
 
     <string name="action_logout">Déconnexion</string>
-    <string name="toolbar_title_settings">Paramètres</string>
-    <string name="edit_server_dialog_title">Modifier l\'adresse du serveur</string>
-    <string name="prompt_server_url">URL</string>
-    <string name="dialog_ok">OK</string>
-    <string name="dialog_cancel">Annuler</string>
-    <string name="error_Invalid_url">URL erronée</string>
     <string name="return_to_top">Aller en haut</string>
     <string name="download_in_progress_message">Téléchargement en cours... Veuillez patienter.</string>
     <string name="download_complete_message">Téléchargement terminé.</string>
@@ -72,9 +67,20 @@
 
     <string name="download_message">Veuillez patienter pendant le téléchargement des données.</string>
     <string name="loading">Chargement...</string>
+
+    <string name="toolbar_title_settings">Paramètres</string>
     <string name="theme">Theme</string>
     <string name="theme_light">Clair</string>
     <string name="theme_dark">Sombre</string>
     <string name="theme_follow_os_setting">Thème du système</string>
-    <string name="message_error_network">Connexion échoué</string>
+    <string name="scan_mode">Mode de scan</string>
+    <string name="scan_mode_automatic">Automatique</string>
+    <string name="scan_mode_manual">Manuel</string>
+    <string name="barcode_length">Longueur du code-barres</string>
+    <string name="edit_barcode_length_dialog_title">Modifier la longueur du code-barres</string>
+    <string name="edit_server_dialog_title">Modifier l\'adresse du serveur</string>
+    <string name="prompt_server_url">URL</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Annuler</string>
+    <string name="error_Invalid_url">URL erronée</string>
 </resources>

@@ -73,9 +73,30 @@ class SettingsFragment : Fragment() {
             inputDialog.show(childFragmentManager, null)
         }
 
-        editThemeButton.setOnClickListener {
-            ThemeDialogFragment(theme.text.toString()) { presenter.onChangeTheme(it) }
+        val themeModes = ThemeMode.values().map { getString(it.text) }
+        editThemeButton.setOnClickListener { _ ->
+            ConfirmationDialogFragment(
+                getString(R.string.theme),
+                themeModes,
+                theme.text.toString()
+            ) { index -> presenter.onChangeTheme(ThemeMode.getByIndex(index)) }
                 .show(parentFragmentManager, null)
+        }
+
+        val scanModes = ScanMode.values().map { getString(it.text) }
+        editScanModeButton.setOnClickListener { _ ->
+            ConfirmationDialogFragment(
+                getString(R.string.scan_mode),
+                scanModes,
+                scanMode.text.toString()
+            ) { index -> presenter.onChangeScanMode(ScanMode.getByIndex(index)) }
+                .show(parentFragmentManager, null)
+        }
+        editBarcodeLengthButton.setOnClickListener { _ ->
+            val barcodeLength = barcodeLength.text.toString().toInt()
+            val dialog = NumberPickerFragment(barcodeLength, 1, 100)
+            dialog.doOnPositiveButtonClick = { presenter.onChangeBarcodeLength(it) }
+            dialog.show(parentFragmentManager, null)
         }
     }
 
@@ -93,6 +114,16 @@ class SettingsFragment : Fragment() {
                 theme.text = getString(name)
                 (requireActivity() as AppCompatActivity).delegate.localNightMode = mode
             }
+
+        presenter.scanMode
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { scanMode.text = getString(it) }
+
+        presenter.barcodeLength
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { barcodeLength.text = it.toString() }
     }
 
     override fun onAttach(context: Context) {

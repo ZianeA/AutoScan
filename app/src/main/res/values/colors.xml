@@ -27,6 +27,8 @@
     <!-- We use a dark scrim by default since light nav bar is API 27+ -->
     <color name="nav_bar_scrim">@color/system_ui_scrim_black</color>
 
+    <color name="dialog_nav_bar_scrim">@color/system_ui_scrim_light</color>
+
     <color name="white">#fff</color>
     <color name="black">#000</color>
     <color name="transparent">#0fff</color>

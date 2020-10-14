@@ -13,6 +13,7 @@ import com.meteoalgerie.autoscan.common.scheduler.SchedulerProvider
 import com.meteoalgerie.autoscan.common.util.Lce
 import com.meteoalgerie.autoscan.common.util.toLce
 import com.meteoalgerie.autoscan.equipment.service.SyncBackgroundService
+import com.meteoalgerie.autoscan.settings.ScanMode
 import de.timroes.axmlrpc.XMLRPCException
 import hu.akarnokd.rxjava2.subjects.UnicastWorkSubject
 import io.reactivex.Observable
@@ -41,6 +42,7 @@ class EquipmentPresenter @Inject constructor(
     val isLoading = BehaviorRelay.create<Boolean>()
     val isRefreshing = BehaviorRelay.create<Boolean>()
     val scanningEquipment = BehaviorRelay.createDefault(emptyList<Int>())
+    val isManualScan = BehaviorRelay.create<Boolean>()
 
     val message: UnicastWorkSubject<Int> = UnicastWorkSubject.create()
     val clearBarcodeBox: UnicastWorkSubject<Unit> = UnicastWorkSubject.create()
@@ -76,6 +78,8 @@ class EquipmentPresenter @Inject constructor(
         disposables += deskRepository.getDeskById(equipmentDesk.id)
             .subscribeOn(schedulerProvider.worker)
             .subscribe { desk.accept(it) }
+
+        isManualScan.accept(storage.scanMode == ScanMode.MANUAL.name)
     }
 
     fun onRefresh(deskId: Int) {
@@ -97,8 +101,6 @@ class EquipmentPresenter @Inject constructor(
     }
 
     private fun scanBarcode(barcode: String, deskId: Int) {
-        barcode.toIntOrNull()
-            ?: throw IllegalArgumentException("Equipment barcode must contain only numeric values")
         clearBarcodeBox.onNext(Unit)
 
         disposables += equipmentRepository.findEquipment(barcode)
@@ -174,11 +176,19 @@ class EquipmentPresenter @Inject constructor(
     }
 
     fun onBarcodeChange(barcode: String, deskId: Int) {
+        if (storage.scanMode == ScanMode.MANUAL.name) return
+
         when {
-            barcode.length < 5 -> return
-            barcode.length == EQUIPMENT_BARCODE_LENGTH -> scanBarcode(barcode, deskId)
-            else -> throw IllegalArgumentException("Equipment barcode must not be more than 5 digits long")
+            barcode.length < storage.barcodeLength -> return
+            barcode.length == storage.barcodeLength -> scanBarcode(barcode, deskId)
+            else -> clearBarcodeBox.onNext(Unit)
         }
+    }
+
+    fun onSubmitBarcode(barcode: String, deskId: Int) {
+        if (storage.scanMode == ScanMode.AUTOMATIC.name) throw IllegalStateException("Cannot submit a barcode in auto-scan mode")
+
+        scanBarcode(barcode, deskId)
     }
 
     fun onEquipmentConditionPicked(conditionIndex: Int, equipment: Equipment) {
@@ -252,10 +262,6 @@ class EquipmentPresenter @Inject constructor(
 
     fun onCleared() {
         disposables.clear()
-    }
-
-    companion object {
-        private const val EQUIPMENT_BARCODE_LENGTH = 5
     }
 
     enum class AnimationType { SUCCESS, FAILURE }

@@ -23,6 +23,7 @@ import com.meteoalgerie.autoscan.desk.Desk
 import com.meteoalgerie.autoscan.common.util.ItemDecoration
 import com.meteoalgerie.autoscan.common.util.hide
 import com.meteoalgerie.autoscan.common.util.show
+import com.meteoalgerie.autoscan.common.util.showIf
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
 import com.uber.autodispose.autoDispose
 import dagger.android.support.AndroidSupportInjection
@@ -128,6 +129,10 @@ class EquipmentFragment : Fragment(), EquipmentView {
                 ?.hideSoftInputFromWindow(windowToken, 0)
         }
 
+        barcodeSubmitButton.setOnClickListener {
+            presenter.onSubmitBarcode(barcodeBox.text.toString(), selectedDesk.id)
+        }
+
         swipeRefreshLayout.setOnRefreshListener { presenter.onRefresh(selectedDesk.id) }
     }
 
@@ -163,6 +168,13 @@ class EquipmentFragment : Fragment(), EquipmentView {
                 epoxyController.equipment = it
                 epoxyController.requestModelBuild()
             }
+
+        presenter.isManualScan
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(ObservableTransformers.valve(scrollingValve, true))
+            .doOnNext { Timber.d("---- manualScan = $it") }
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { barcodeSubmitButton.showIf { _ -> it } }
 
         presenter.isLoading
             .observeOn(AndroidSchedulers.mainThread())
