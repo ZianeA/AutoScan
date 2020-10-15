@@ -81,6 +81,55 @@
                 app:layout_constraintTop_toBottomOf="@+id/server" />
 
             <TextView
+                android:id="@+id/databaseNameTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/database_name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/serverDivider" />
+
+            <TextView
+                android:id="@+id/databaseName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:textColorPrimary"
+                app:layout_constraintEnd_toStartOf="@id/editDatabaseName"
+                app:layout_constraintStart_toStartOf="@+id/databaseNameTitle"
+                app:layout_constraintTop_toBottomOf="@+id/databaseNameTitle"
+                tools:text="AutoScan" />
+
+            <ImageButton
+                android:id="@+id/editDatabaseName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="?attr/colorControlNormal"
+                app:layout_constraintBottom_toBottomOf="@+id/databaseName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/databaseName"
+                app:srcCompat="@drawable/ic_edit" />
+
+            <View
+                android:id="@+id/DatabaseNameDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/colorControlHighlight"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/databaseName" />
+
+            <TextView
                 android:id="@+id/themeTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -91,7 +140,7 @@
                 android:textColor="?android:textColorSecondary"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/serverDivider" />
+                app:layout_constraintTop_toBottomOf="@id/DatabaseNameDivider" />
 
             <TextView
                 android:id="@+id/theme"

@@ -58,7 +58,8 @@ class SettingsFragment : Fragment() {
 
         editServerButton.setOnClickListener {
             val inputDialog = InputTextDialogFragment.newInstance()
-            inputDialog.setInputText(server.text.toString())
+            inputDialog.title = R.string.dialog_title_edit_server
+            inputDialog.inputText = server.text.toString()
             inputDialog.setInputListener(
                 doOnPositiveButtonClick = { dialog, _, inputLayout, text ->
                     if (!Patterns.WEB_URL.matcher(text.toString()).matches()) {
@@ -69,6 +70,19 @@ class SettingsFragment : Fragment() {
                     }
                 },
                 doAfterTextChanged = { _, inputLayout, _ -> inputLayout.error = null })
+
+            inputDialog.show(childFragmentManager, null)
+        }
+
+        editDatabaseName.setOnClickListener {
+            val inputDialog = InputTextDialogFragment.newInstance()
+            inputDialog.title = R.string.dialog_title_edit_database_name
+            inputDialog.inputText = databaseName.text.toString()
+            inputDialog.setInputListener(
+                doOnPositiveButtonClick = { dialog, _, _, text ->
+                    presenter.onChangeDatabaseName(text.toString())
+                    dialog.dismiss()
+                })
 
             inputDialog.show(childFragmentManager, null)
         }
@@ -106,6 +120,11 @@ class SettingsFragment : Fragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
             .subscribe { server.text = it }
+
+        presenter.databaseName
+            .observeOn(AndroidSchedulers.mainThread())
+            .autoDispose(AndroidLifecycleScopeProvider.from(viewLifecycleOwner))
+            .subscribe { databaseName.text = it.toString() }
 
         presenter.theme
             .observeOn(AndroidSchedulers.mainThread())

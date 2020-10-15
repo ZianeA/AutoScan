@@ -11,7 +11,7 @@ import javax.inject.Inject
 @Reusable
 class EquipmentApi @Inject constructor(
     private val client: XMLRPCClient,
-    storage: PreferenceStorage
+    private val storage: PreferenceStorage
 ) {
     private val user by lazy { storage.user!! }
 
@@ -19,7 +19,7 @@ class EquipmentApi @Inject constructor(
         return Single.fromCallable {
             client.call(
                 METHOD_MAIN,
-                DB_NAME,
+                storage.databaseName,
                 user.id,
                 user.password,
                 MODEL_EQUIPMENT_NAME,
@@ -34,7 +34,7 @@ class EquipmentApi @Inject constructor(
         return Single.fromCallable {
             client.call(
                 METHOD_MAIN,
-                DB_NAME,
+                storage.databaseName,
                 user.id,
                 user.password,
                 MODEL_EQUIPMENT_NAME,
@@ -49,7 +49,7 @@ class EquipmentApi @Inject constructor(
                 Single.fromCallable {
                     client.call(
                         METHOD_MAIN,
-                        DB_NAME,
+                        storage.databaseName,
                         user.id,
                         user.password,
                         MODEL_EQUIPMENT_NAME,
@@ -65,7 +65,7 @@ class EquipmentApi @Inject constructor(
         return Single.fromCallable {
             client.call(
                 METHOD_MAIN,
-                DB_NAME,
+                storage.databaseName,
                 user.id,
                 user.password,
                 MODEL_EQUIPMENT_NAME,
@@ -92,7 +92,7 @@ class EquipmentApi @Inject constructor(
         return Completable.fromAction {
             client.call(
                 METHOD_MAIN,
-                DB_NAME,
+                storage.databaseName,
                 user.id,
                 user.password,
                 MODEL_EQUIPMENT_NAME,
@@ -113,7 +113,7 @@ class EquipmentApi @Inject constructor(
         return Single.fromCallable {
             client.call(
                 METHOD_MAIN,
-                DB_NAME,
+                storage.databaseName,
                 user.id,
                 user.password,
                 MODEL_EQUIPMENT_NAME,

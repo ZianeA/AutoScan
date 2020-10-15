@@ -78,9 +78,11 @@
     <string name="scan_mode_manual">Manuel</string>
     <string name="barcode_length">Longueur du code-barres</string>
     <string name="edit_barcode_length_dialog_title">Modifier la longueur du code-barres</string>
-    <string name="edit_server_dialog_title">Modifier l\'adresse du serveur</string>
+    <string name="dialog_title_edit_server">Modifier l\'adresse du serveur</string>
     <string name="prompt_server_url">URL</string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Annuler</string>
     <string name="error_Invalid_url">URL erronée</string>
+    <string name="database_name">Database name</string>
+    <string name="dialog_title_edit_database_name">Modifier le nom de la base de données</string>
 </resources>

@@ -10,6 +10,7 @@ import javax.inject.Inject
 @FragmentScope
 class SettingsPresenter @Inject constructor(private val storage: PreferenceStorage) {
     val serverUrl = BehaviorRelay.createDefault(storage.serverUrl)
+    val databaseName = BehaviorRelay.createDefault(storage.databaseName)
     val theme = BehaviorRelay.createDefault(getDefaultTheme())
     val scanMode = BehaviorRelay.createDefault(getDefaultScanMode())
     val barcodeLength = BehaviorRelay.createDefault(storage.barcodeLength)
@@ -40,6 +41,11 @@ class SettingsPresenter @Inject constructor(private val storage: PreferenceStora
     fun onChangeBarcodeLength(length: Int) {
         storage.barcodeLength = length
         this.barcodeLength.accept(length)
+    }
+
+    fun onChangeDatabaseName(name: String) {
+        storage.databaseName = name
+        this.databaseName.accept(name)
     }
 
     private fun getDefaultTheme(): Pair<Int, Int> {

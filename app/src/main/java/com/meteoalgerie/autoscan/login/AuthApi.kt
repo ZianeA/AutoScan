@@ -1,7 +1,6 @@
 package com.meteoalgerie.autoscan.login
 
 import com.meteoalgerie.autoscan.common.database.PreferenceStorage
-import com.meteoalgerie.autoscan.common.network.DB_NAME
 import com.meteoalgerie.autoscan.common.network.METHOD_AUTHENTICATE
 import com.meteoalgerie.autoscan.common.network.PATH_BASE
 import com.meteoalgerie.autoscan.common.network.PATH_COMMON
@@ -18,7 +17,7 @@ class AuthApi @Inject constructor(private val storage: PreferenceStorage) {
             val url = URL("${storage.serverUrl}/$PATH_BASE/$PATH_COMMON")
             XMLRPCClient(url).call(
                 METHOD_AUTHENTICATE,
-                DB_NAME,
+                storage.databaseName,
                 username,
                 password,
                 emptyMap<Any, Any>()

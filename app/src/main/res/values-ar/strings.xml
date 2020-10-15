@@ -43,7 +43,7 @@
 
     <string name="action_logout">خروج</string>
     <string name="toolbar_title_settings">إعدادات السرفر</string>
-    <string name="edit_server_dialog_title">تغيير عنوان السرفر</string>
+    <string name="dialog_title_edit_server">تغيير عنوان السرفر</string>
     <string name="prompt_server_url">عنوان السرفر</string>
     <string name="dialog_ok">موافق</string>
     <string name="dialog_cancel">إلغاء</string>

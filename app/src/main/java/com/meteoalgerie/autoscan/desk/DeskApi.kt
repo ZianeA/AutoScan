@@ -1,7 +1,6 @@
 package com.meteoalgerie.autoscan.desk
 
 import com.meteoalgerie.autoscan.common.database.PreferenceStorage
-import com.meteoalgerie.autoscan.common.network.DB_NAME
 import com.meteoalgerie.autoscan.common.network.METHOD_MAIN
 import com.meteoalgerie.autoscan.common.network.METHOD_SEARCH_READ
 import dagger.Reusable
@@ -12,7 +11,7 @@ import javax.inject.Inject
 @Reusable
 class DeskApi @Inject constructor(
     private val client: XMLRPCClient,
-    storage: PreferenceStorage
+    private val storage: PreferenceStorage
 ) {
     private val user by lazy { storage.user!! }
 
@@ -20,7 +19,7 @@ class DeskApi @Inject constructor(
         return Single.fromCallable {
             client.call(
                 METHOD_MAIN,
-                DB_NAME,
+                storage.databaseName,
                 user.id,
                 user.password,
                 MODEL_DESK_NAME,

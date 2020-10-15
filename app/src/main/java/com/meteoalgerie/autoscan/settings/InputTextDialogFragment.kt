@@ -14,9 +14,11 @@ import kotlinx.android.synthetic.main.dialog_input_text.view.*
 
 class InputTextDialogFragment : DialogFragment() {
     var inputTextDialogListener: InputTextDialogListener? = null
+    var inputText: String = ""
+    var title: Int = R.string.app_name
+
     private lateinit var input: TextInputEditText
     private lateinit var inputLayout: TextInputLayout
-    private var inputText: String = ""
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireContext())
@@ -25,15 +27,11 @@ class InputTextDialogFragment : DialogFragment() {
         inputLayout = view.inputLayout
 
         input.doAfterTextChanged {
-            inputTextDialogListener?.doAfterTextChanged(
-                view.input,
-                view.inputLayout,
-                it
-            )
+            inputTextDialogListener?.doAfterTextChanged(view.input, view.inputLayout, it)
         }
 
         builder.setView(view)
-            .setTitle(R.string.edit_server_dialog_title)
+            .setTitle(title)
             .setPositiveButton(R.string.dialog_ok) { _, _ -> }
             .setNegativeButton(R.string.dialog_cancel) { _, _ ->
                 inputTextDialogListener?.doOnNegativeButtonClick()
@@ -94,10 +92,6 @@ class InputTextDialogFragment : DialogFragment() {
                 doOnNegativeButtonClick?.invoke()
             }
         }
-    }
-
-    fun setInputText(text: String) {
-        inputText = text
     }
 
     companion object {

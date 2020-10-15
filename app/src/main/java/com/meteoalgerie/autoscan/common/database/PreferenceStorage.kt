@@ -27,6 +27,7 @@ class PreferenceStorage @Inject constructor(context: Application) : SimpleKrate(
         }
 
     var serverUrl: String by stringPref("server_url", "http://192.168.0.177:8069")
+    var databaseName: String by stringPref("database_name", "AutoScan")
     var equipmentCount: Int by intPref("equipment_count", 0)
     var downloadedEquipmentCount: Int by intPref("downloaded_equipment_count", 0)
     var equipmentFilter: Set<String> by stringSetPref(

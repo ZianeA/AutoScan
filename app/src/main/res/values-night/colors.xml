@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorPrimary">#6f74dd</color>
+    <color name="colorPrimaryDark">#3949ab</color>
+    <color name="colorAccent">#6f74dd</color>
+
     <!-- Scrim colors -->
     <color name="system_ui_scrim_light">#2EFFFFFF</color> <!-- 18% white -->
     <color name="system_ui_scrim_black">#B3000000</color> <!-- 70% black -->
