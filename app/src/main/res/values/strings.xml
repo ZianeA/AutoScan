@@ -83,6 +83,6 @@
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Annuler</string>
     <string name="error_Invalid_url">URL erronée</string>
-    <string name="database_name">Database name</string>
+    <string name="database_name">Nom de la base de données</string>
     <string name="dialog_title_edit_database_name">Modifier le nom de la base de données</string>
 </resources>

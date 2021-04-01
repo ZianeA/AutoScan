@@ -89,22 +89,28 @@ class SettingsFragment : Fragment() {
 
         val themeModes = ThemeMode.values().map { getString(it.text) }
         editThemeButton.setOnClickListener { _ ->
-            ConfirmationDialogFragment(
+            val dialog = ConfirmationDialogFragment.newInstance(
                 getString(R.string.theme),
                 themeModes,
-                theme.text.toString()
-            ) { index -> presenter.onChangeTheme(ThemeMode.getByIndex(index)) }
-                .show(parentFragmentManager, null)
+                themeModes.indexOf(theme.text)
+            )
+            dialog.setOnCheckedChangeListener { index ->
+                presenter.onChangeTheme(ThemeMode.getByIndex(index))
+            }
+            dialog.show(parentFragmentManager, null)
         }
 
         val scanModes = ScanMode.values().map { getString(it.text) }
         editScanModeButton.setOnClickListener { _ ->
-            ConfirmationDialogFragment(
+            val dialog = ConfirmationDialogFragment.newInstance(
                 getString(R.string.scan_mode),
                 scanModes,
-                scanMode.text.toString()
-            ) { index -> presenter.onChangeScanMode(ScanMode.getByIndex(index)) }
-                .show(parentFragmentManager, null)
+                scanModes.indexOf(theme.text)
+            )
+            dialog.setOnCheckedChangeListener { index ->
+                presenter.onChangeScanMode(ScanMode.getByIndex(index))
+            }
+            dialog.show(parentFragmentManager, null)
         }
         editBarcodeLengthButton.setOnClickListener { _ ->
             val barcodeLength = barcodeLength.text.toString().toInt()
